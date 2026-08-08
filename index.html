@@ -864,53 +864,47 @@
 
             // ─── Export to Excel ───
             function exportExcel() {
-                const data = loadData();
-                if (data.length === 0) {
-                    showToast('📭 Tidak ada data untuk diexport.', 'info');
-                    return;
-                }
+    const data = loadData();
+    if (data.length === 0) {
+        showToast('📭 Tidak ada data untuk diexport.', 'info');
+        return;
+    }
 
-                try {
-                    // Prepare rows
-                    const rows = [
-                        ['Tanggal', 'Check-In', 'Check-Out', 'Foto Masuk (base64)', 'Foto Pulang (base64)']
-                    ];
+    try {
+        // Baris header (tanpa kolom foto)
+        const rows = [
+            ['Tanggal', 'Check-In', 'Check-Out']
+        ];
 
-                    for (const rec of data) {
-                        const inTime = rec.checkIn ? rec.checkIn.time : '';
-                        const outTime = rec.checkOut ? rec.checkOut.time : '';
-                        const inPhoto = rec.checkIn && rec.checkIn.photo ? rec.checkIn.photo : '';
-                        const outPhoto = rec.checkOut && rec.checkOut.photo ? rec.checkOut.photo : '';
-                        rows.push([
-                            rec.date,
-                            inTime,
-                            outTime,
-                            inPhoto,
-                            outPhoto,
-                        ]);
-                    }
+        for (const rec of data) {
+            const inTime = rec.checkIn ? rec.checkIn.time : '';
+            const outTime = rec.checkOut ? rec.checkOut.time : '';
+            rows.push([
+                rec.date,
+                inTime,
+                outTime,
+            ]);
+        }
 
-                    const wb = XLSX.utils.book_new();
-                    const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
 
-                    // Set column widths
-                    ws['!cols'] = [
-                        { wch: 14 },
-                        { wch: 14 },
-                        { wch: 14 },
-                        { wch: 40 },
-                        { wch: 40 },
-                    ];
+        // Lebar kolom
+        ws['!cols'] = [
+            { wch: 14 },
+            { wch: 14 },
+            { wch: 14 },
+        ];
 
-                    XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
-                    const fileName = `Absensi_${todayStr()}.xlsx`;
-                    XLSX.writeFile(wb, fileName);
-                    showToast(`📊 Excel berhasil diexport: ${fileName}`, 'success', 3500);
-                } catch (err) {
-                    console.error('Export error:', err);
-                    showToast('❌ Gagal export Excel: ' + err.message, 'error');
-                }
-            }
+        XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
+        const fileName = `Absensi_${todayStr()}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+        showToast(`📊 Excel berhasil diexport: ${fileName}`, 'success', 3500);
+    } catch (err) {
+        console.error('Export error:', err);
+        showToast('❌ Gagal export Excel: ' + err.message, 'error');
+    }
+}
 
             // ─── Init ───
             async function init() {
