@@ -1657,47 +1657,49 @@
 
             // ─── Export Excel ───
             function exportExcel() {
-                const data = loadData();
-                if (data.length === 0) {
-                    showToast('📭 Tidak ada data untuk diexport.', 'info');
-                    return;
-                }
-                try {
-                    const rows = [
-                        ['Tanggal', 'Masuk', 'Pulang', 'Total Kerja (menit)', 'Foto Masuk (base64)', 'Foto Pulang (base64)', 'Latitude', 'Longitude',
-                            'Alamat Masuk', 'Alamat Pulang'
-                        ]
-                    ];
-                    for (const rec of data) {
-                        const inTime = rec.checkIn ? rec.checkIn.time : '';
-                        const outTime = rec.checkOut ? rec.checkOut.time : '';
-                        let workMin = '';
-                        if (rec.checkIn && rec.checkOut) {
-                            const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
-                            const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
-                            workMin = (hOut * 60 + mOut) - (hIn * 60 + mIn);
-                        }
-                        const inPhoto = rec.checkIn && rec.checkIn.photo ? rec.checkIn.photo : '';
-                        const outPhoto = rec.checkOut && rec.checkOut.photo ? rec.checkOut.photo : '';
-                        const lat = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lat : '';
-                        const lng = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lng : '';
-                        const inAddr = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.address : '';
-                        const outAddr = rec.checkOut && rec.checkOut.location ? rec.checkOut.location.address : '';
-                        rows.push([rec.date, inTime, outTime, workMin, inPhoto, outPhoto, lat, lng, inAddr, outAddr]);
-                    }
-                    const wb = XLSX.utils.book_new();
-                    const ws = XLSX.utils.aoa_to_sheet(rows);
-                    ws['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 40 }, { wch: 40 }, { wch: 16 }, { wch: 16 },
-                        { wch: 30 }, { wch: 30 }
-                    ];
-                    XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
-                    XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
-                    showToast(`📊 Excel berhasil diexport.`, 'success', 3000);
-                } catch (err) {
-                    showToast('❌ Gagal export Excel: ' + err.message, 'error');
-                }
+    const data = loadData();
+    if (data.length === 0) {
+        showToast('📭 Tidak ada data untuk diexport.', 'info');
+        return;
+    }
+    try {
+        const rows = [
+            ['Tanggal', 'Masuk', 'Pulang', 'Total Kerja (menit)', 'Foto Masuk', 'Foto Pulang', 'Latitude', 'Longitude',
+                'Alamat Masuk', 'Alamat Pulang'
+            ]
+        ];
+        for (const rec of data) {
+            const inTime = rec.checkIn ? rec.checkIn.time : '';
+            const outTime = rec.checkOut ? rec.checkOut.time : '';
+            let workMin = '';
+            if (rec.checkIn && rec.checkOut) {
+                const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                workMin = (hOut * 60 + mOut) - (hIn * 60 + mIn);
             }
-
+            // Indikator foto: "Ada" jika ada foto, else "-"
+            const inPhoto = rec.checkIn && rec.checkIn.photo ? 'Ada' : '-';
+            const outPhoto = rec.checkOut && rec.checkOut.photo ? 'Ada' : '-';
+            const lat = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lat : '';
+            const lng = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lng : '';
+            const inAddr = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.address : '';
+            const outAddr = rec.checkOut && rec.checkOut.location ? rec.checkOut.location.address : '';
+            rows.push([rec.date, inTime, outTime, workMin, inPhoto, outPhoto, lat, lng, inAddr, outAddr]);
+        }
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols'] = [
+            { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 18 },
+            { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 16 },
+            { wch: 30 }, { wch: 30 }
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
+        XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
+        showToast(`📊 Excel berhasil diexport.`, 'success', 3000);
+    } catch (err) {
+        showToast('❌ Gagal export Excel: ' + err.message, 'error');
+    }
+}
             // ─── Backup & Restore ───
             function backupData() {
                 const data = loadData();
