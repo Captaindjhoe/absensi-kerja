@@ -142,4 +142,823 @@
         }
         .status-label {
             font-size: 14px;
-            font-we
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-label .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #94a3b8;
+            transition: background 0.3s;
+        }
+        .status-label .dot.in {
+            background: #22c55e;
+        }
+        .status-label .dot.out {
+            background: #f59e0b;
+        }
+        .status-time {
+            font-size: 13px;
+            color: #64748b;
+            background: #eef2f6;
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
+        .status-time strong {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        /* ─── Buttons ─── */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 10px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-in {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .btn-in:hover:not(:disabled) {
+            background: #bbf7d0;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+        }
+        .btn-out {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .btn-out:hover:not(:disabled) {
+            background: #fde68a;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+        .btn-export {
+            background: #e0e7ff;
+            color: #3730a3;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .btn-export:hover {
+            background: #c7d2fe;
+            box-shadow: 0 4px 12px rgba(55, 48, 163, 0.15);
+        }
+        .btn-export:active {
+            transform: scale(0.97);
+        }
+
+        /* ─── Today's Record ─── */
+        .today-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .today-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 14px;
+            text-align: center;
+        }
+        .today-item .label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .today-item .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+        .today-item .value.empty {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 14px;
+        }
+        .today-item .photo-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 6px auto 0;
+            display: block;
+            border: 2px solid #e2e8f0;
+            background: #f1f5f9;
+        }
+
+        /* ─── History Table ─── */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 6px;
+            border-radius: 12px;
+            border: 1px solid #e9edf2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 380px;
+        }
+        thead {
+            background: #f1f5f9;
+        }
+        th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        td {
+            padding: 10px 12px;
+            border-top: 1px solid #e9edf2;
+            vertical-align: middle;
+        }
+        td .mini-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #e2e8f0;
+            background: #f1f5f9;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        td .mini-photo + .mini-photo {
+            margin-left: 4px;
+        }
+        .text-muted {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .empty-row td {
+            text-align: center;
+            color: #94a3b8;
+            padding: 24px 12px;
+            font-style: italic;
+        }
+
+        /* ─── Footer ─── */
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            padding: 12px 0 4px;
+            border-top: 1px solid #e9edf2;
+            margin-top: 18px;
+        }
+
+        /* ─── Toast Notification ─── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #0f172a;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.20);
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            z-index: 999;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success {
+            background: #065f46;
+        }
+        .toast.error {
+            background: #991b1b;
+        }
+        .toast.info {
+            background: #1e3a5f;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            .btn {
+                font-size: 14px;
+                padding: 12px 8px;
+            }
+            .today-item .value {
+                font-size: 17px;
+            }
+            .card {
+                padding: 16px 12px 20px;
+            }
+            .status-bar {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .status-time {
+                text-align: center;
+            }
+            .btn-group {
+                gap: 8px;
+            }
+        }
+        @media (max-width: 380px) {
+            .today-grid {
+                grid-template-columns: 1fr;
+            }
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+
+        <!-- ─── HEADER ─── -->
+        <header class="header">
+            <h1><span>📋</span> Absensi Kerja</h1>
+            <p>Pelacak Absensi Pribadi</p>
+        </header>
+
+        <!-- ─── MAIN CARD ─── -->
+        <div class="card">
+
+            <!-- Camera -->
+            <div class="camera-wrapper" id="cameraWrapper">
+                <video id="video" autoplay playsinline muted></video>
+                <div class="placeholder" id="cameraPlaceholder">
+                    <span class="icon">📷</span>
+                    Menunggu akses kamera…<br />
+                    <span style="font-size:12px;opacity:0.7;">Izinkan akses kamera untuk melanjutkan</span>
+                </div>
+                <div class="camera-overlay" id="cameraOverlay">● Siaran langsung</div>
+            </div>
+
+            <!-- Status -->
+            <div class="status-bar">
+                <span class="status-label">
+                    <span class="dot" id="statusDot"></span>
+                    <span id="statusText">Belum absen</span>
+                </span>
+                <span class="status-time" id="statusTime">
+                    ⏱ <strong id="clockDisplay">--:--:--</strong>
+                </span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-in" id="btnIn">📸 Masuk</button>
+                <button class="btn btn-out" id="btnOut">🚪 Pulang</button>
+            </div>
+
+            <!-- Today's Record -->
+            <div class="card-title">📅 Catatan Hari Ini</div>
+            <div class="today-grid">
+                <div class="today-item">
+                    <div class="label">Masuk</div>
+                    <div class="value" id="todayIn">--:--:--</div>
+                    <img class="photo-thumb" id="todayInPhoto" style="display:none;" alt="foto masuk" />
+                </div>
+                <div class="today-item">
+                    <div class="label">Pulang</div>
+                    <div class="value" id="todayOut">--:--:--</div>
+                    <img class="photo-thumb" id="todayOutPhoto" style="display:none;" alt="foto pulang" />
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="card-title" style="margin-top:18px;">📂 Riwayat</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Masuk</th>
+                            <th>Pulang</th>
+                            <th style="text-align:center;">Foto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr class="empty-row">
+                            <td colspan="4">Belum ada data absensi</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Export -->
+            <button class="btn-export" id="btnExport">📊 Export ke Excel</button>
+
+            <!-- Footer -->
+            <div class="footer">
+                Data tersimpan di perangkat Anda &bull; <span id="recordCount">0</span> catatan
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── TOAST ─── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ─── JAVASCRIPT ─── -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── DOM refs ───
+            const video = document.getElementById('video');
+            const placeholder = document.getElementById('cameraPlaceholder');
+            const overlay = document.getElementById('cameraOverlay');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const clockDisplay = document.getElementById('clockDisplay');
+            const btnIn = document.getElementById('btnIn');
+            const btnOut = document.getElementById('btnOut');
+            const btnExport = document.getElementById('btnExport');
+            const todayIn = document.getElementById('todayIn');
+            const todayOut = document.getElementById('todayOut');
+            const todayInPhoto = document.getElementById('todayInPhoto');
+            const todayOutPhoto = document.getElementById('todayOutPhoto');
+            const historyBody = document.getElementById('historyBody');
+            const recordCount = document.getElementById('recordCount');
+            const toast = document.getElementById('toast');
+
+            // ─── State ───
+            let cameraReady = false;
+            let stream = null;
+            let toastTimer = null;
+
+            // ─── Data ───
+            const STORAGE_KEY = 'attendance_data';
+
+            function loadData() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function saveData(data) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            }
+
+            // ─── Helpers ───
+            function todayStr() {
+                const d = new Date();
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${y}-${m}-${day}`;
+            }
+
+            function timeStr(d) {
+                if (!d) return '--:--:--';
+                const h = String(d.getHours()).padStart(2, '0');
+                const m = String(d.getMinutes()).padStart(2, '0');
+                const s = String(d.getSeconds()).padStart(2, '0');
+                return `${h}:${m}:${s}`;
+            }
+
+            function formatDateDisplay(dateStr) {
+                const parts = dateStr.split('-');
+                if (parts.length !== 3) return dateStr;
+                return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`;
+            }
+
+            function showToast(message, type = 'info', duration = 2800) {
+                if (toastTimer) clearTimeout(toastTimer);
+                toast.textContent = message;
+                toast.className = 'toast ' + type;
+                // force reflow
+                void toast.offsetWidth;
+                toast.classList.add('show');
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                    toastTimer = null;
+                }, duration);
+            }
+
+            // ─── Camera ───
+            async function initCamera() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+                        audio: false,
+                    });
+                    video.srcObject = stream;
+                    await video.play();
+                    cameraReady = true;
+                    placeholder.style.display = 'none';
+                    overlay.style.display = 'block';
+                    updateButtons();
+                    return true;
+                } catch (err) {
+                    console.warn('Kamera error:', err);
+                    placeholder.innerHTML = `
+                <span class="icon">⚠️</span>
+                Kamera tidak dapat diakses.<br />
+                <span style="font-size:12px;opacity:0.7;">Pastikan izin kamera diberikan.</span>
+              `;
+                    overlay.style.display = 'none';
+                    cameraReady = false;
+                    updateButtons();
+                    showToast('⚠️ Akses kamera ditolak. Periksa izin browser.', 'error', 4000);
+                    return false;
+                }
+            }
+
+            function capturePhoto() {
+                if (!cameraReady || !stream) return null;
+                const canvas = document.createElement('canvas');
+                const vw = video.videoWidth || 640;
+                const vh = video.videoHeight || 480;
+                const size = Math.min(vw, vh, 480);
+                const sx = (vw - size) / 2;
+                const sy = (vh - size) / 2;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
+                return canvas.toDataURL('image/jpeg', 0.80);
+            }
+
+            // ─── Clock ───
+            function updateClock() {
+                const now = new Date();
+                clockDisplay.textContent = timeStr(now);
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            // ─── Attendance Logic ───
+            function getTodayRecord(data) {
+                const today = todayStr();
+                return data.find(r => r.date === today) || null;
+            }
+
+            function getRecordForDate(data, dateStr) {
+                return data.find(r => r.date === dateStr) || null;
+            }
+
+            function renderUI() {
+                const data = loadData();
+                const today = todayStr();
+                const todayRecord = getTodayRecord(data);
+
+                // Today
+                if (todayRecord) {
+                    if (todayRecord.checkIn) {
+                        todayIn.textContent = todayRecord.checkIn.time;
+                        if (todayRecord.checkIn.photo) {
+                            todayInPhoto.src = todayRecord.checkIn.photo;
+                            todayInPhoto.style.display = 'block';
+                        } else {
+                            todayInPhoto.style.display = 'none';
+                        }
+                    } else {
+                        todayIn.textContent = '--:--:--';
+                        todayInPhoto.style.display = 'none';
+                    }
+                    if (todayRecord.checkOut) {
+                        todayOut.textContent = todayRecord.checkOut.time;
+                        if (todayRecord.checkOut.photo) {
+                            todayOutPhoto.src = todayRecord.checkOut.photo;
+                            todayOutPhoto.style.display = 'block';
+                        } else {
+                            todayOutPhoto.style.display = 'none';
+                        }
+                    } else {
+                        todayOut.textContent = '--:--:--';
+                        todayOutPhoto.style.display = 'none';
+                    }
+
+                    // Status
+                    if (todayRecord.checkIn && !todayRecord.checkOut) {
+                        statusDot.className = 'dot in';
+                        statusText.textContent = '✅ Sedang bekerja';
+                    } else if (todayRecord.checkIn && todayRecord.checkOut) {
+                        statusDot.className = 'dot out';
+                        statusText.textContent = '✅ Selesai (pulang)';
+                    } else {
+                        statusDot.className = 'dot';
+                        statusText.textContent = 'Belum absen';
+                    }
+                } else {
+                    todayIn.textContent = '--:--:--';
+                    todayOut.textContent = '--:--:--';
+                    todayInPhoto.style.display = 'none';
+                    todayOutPhoto.style.display = 'none';
+                    statusDot.className = 'dot';
+                    statusText.textContent = 'Belum absen';
+                }
+
+                // History
+                renderHistory(data);
+
+                // Record count
+                recordCount.textContent = data.length;
+
+                // Buttons
+                updateButtons();
+
+                // Export button
+                btnExport.disabled = data.length === 0;
+            }
+
+            function renderHistory(data) {
+                if (!data || data.length === 0) {
+                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="4">Belum ada data absensi</td></tr>`;
+                    return;
+                }
+                // Sort descending by date
+                const sorted = [...data].sort((a, b) => b.date.localeCompare(a.date));
+                let html = '';
+                for (const rec of sorted) {
+                    const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
+                    const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
+                    let photosHtml = '';
+                    if (rec.checkIn && rec.checkIn.photo) {
+                        photosHtml += `<img class="mini-photo" src="${rec.checkIn.photo}" alt="masuk" title="Foto masuk" />`;
+                    } else {
+                        photosHtml += `<span class="text-muted" style="font-size:12px;">-</span>`;
+                    }
+                    if (rec.checkOut && rec.checkOut.photo) {
+                        photosHtml += `<img class="mini-photo" src="${rec.checkOut.photo}" alt="pulang" title="Foto pulang" />`;
+                    } else {
+                        if (rec.checkIn && rec.checkIn.photo) {
+                            photosHtml += `<span class="text-muted" style="font-size:12px;margin-left:4px;">-</span>`;
+                        } else {
+                            // fallback
+                        }
+                    }
+
+                    html += `
+                <tr>
+                  <td><strong>${formatDateDisplay(rec.date)}</strong></td>
+                  <td>${inTime}</td>
+                  <td>${outTime}</td>
+                  <td style="text-align:center;white-space:nowrap;">${photosHtml}</td>
+                </tr>
+              `;
+                }
+                historyBody.innerHTML = html;
+            }
+
+            function updateButtons() {
+                const data = loadData();
+                const todayRecord = getTodayRecord(data);
+                const hasCheckIn = todayRecord && todayRecord.checkIn ? true : false;
+                const hasCheckOut = todayRecord && todayRecord.checkOut ? true : false;
+
+                // If camera not ready, disable both
+                if (!cameraReady) {
+                    btnIn.disabled = true;
+                    btnOut.disabled = true;
+                    return;
+                }
+
+                if (!hasCheckIn) {
+                    btnIn.disabled = false;
+                    btnOut.disabled = true;
+                } else if (hasCheckIn && !hasCheckOut) {
+                    btnIn.disabled = true;
+                    btnOut.disabled = false;
+                } else {
+                    // already checked out today
+                    btnIn.disabled = true;
+                    btnOut.disabled = true;
+                }
+            }
+
+            // ─── Actions ───
+            function handleCheckIn() {
+                if (!cameraReady) {
+                    showToast('📷 Kamera belum siap.', 'error');
+                    return;
+                }
+                const data = loadData();
+                const today = todayStr();
+                const existing = getTodayRecord(data);
+
+                if (existing && existing.checkIn) {
+                    showToast('⏳ Anda sudah melakukan absen masuk hari ini.', 'info');
+                    return;
+                }
+
+                const photo = capturePhoto();
+                if (!photo) {
+                    showToast('❌ Gagal mengambil foto. Coba lagi.', 'error');
+                    return;
+                }
+
+                const now = new Date();
+                const time = timeStr(now);
+
+                let record;
+                if (existing) {
+                    record = existing;
+                } else {
+                    record = { date: today, checkIn: null, checkOut: null };
+                    data.push(record);
+                }
+
+                record.checkIn = {
+                    time: time,
+                    timestamp: now.getTime(),
+                    photo: photo,
+                };
+
+                saveData(data);
+                renderUI();
+                showToast(`✅ Absen masuk berhasil pada ${time}`, 'success');
+            }
+
+            function handleCheckOut() {
+                if (!cameraReady) {
+                    showToast('📷 Kamera belum siap.', 'error');
+                    return;
+                }
+                const data = loadData();
+                const today = todayStr();
+                const record = getTodayRecord(data);
+
+                if (!record || !record.checkIn) {
+                    showToast('⚠️ Anda belum absen masuk hari ini.', 'error');
+                    return;
+                }
+                if (record.checkOut) {
+                    showToast('⏳ Anda sudah absen pulang hari ini.', 'info');
+                    return;
+                }
+
+                const photo = capturePhoto();
+                if (!photo) {
+                    showToast('❌ Gagal mengambil foto. Coba lagi.', 'error');
+                    return;
+                }
+
+                const now = new Date();
+                const time = timeStr(now);
+
+                record.checkOut = {
+                    time: time,
+                    timestamp: now.getTime(),
+                    photo: photo,
+                };
+
+                saveData(data);
+                renderUI();
+                showToast(`✅ Absen pulang berhasil pada ${time}`, 'success');
+            }
+
+            // ─── Export to Excel ───
+            function exportExcel() {
+                const data = loadData();
+                if (data.length === 0) {
+                    showToast('📭 Tidak ada data untuk diexport.', 'info');
+                    return;
+                }
+
+                try {
+                    // Prepare rows
+                    const rows = [
+                        ['Tanggal', 'Check-In', 'Check-Out', 'Foto Masuk (base64)', 'Foto Pulang (base64)']
+                    ];
+
+                    for (const rec of data) {
+                        const inTime = rec.checkIn ? rec.checkIn.time : '';
+                        const outTime = rec.checkOut ? rec.checkOut.time : '';
+                        const inPhoto = rec.checkIn && rec.checkIn.photo ? rec.checkIn.photo : '';
+                        const outPhoto = rec.checkOut && rec.checkOut.photo ? rec.checkOut.photo : '';
+                        rows.push([
+                            rec.date,
+                            inTime,
+                            outTime,
+                            inPhoto,
+                            outPhoto,
+                        ]);
+                    }
+
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+                    // Set column widths
+                    ws['!cols'] = [
+                        { wch: 14 },
+                        { wch: 14 },
+                        { wch: 14 },
+                        { wch: 40 },
+                        { wch: 40 },
+                    ];
+
+                    XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
+                    const fileName = `Absensi_${todayStr()}.xlsx`;
+                    XLSX.writeFile(wb, fileName);
+                    showToast(`📊 Excel berhasil diexport: ${fileName}`, 'success', 3500);
+                } catch (err) {
+                    console.error('Export error:', err);
+                    showToast('❌ Gagal export Excel: ' + err.message, 'error');
+                }
+            }
+
+            // ─── Init ───
+            async function init() {
+                // Load initial data
+                renderUI();
+
+                // Camera
+                await initCamera();
+
+                // Re-render after camera is ready
+                renderUI();
+
+                // Event listeners
+                btnIn.addEventListener('click', handleCheckIn);
+                btnOut.addEventListener('click', handleCheckOut);
+                btnExport.addEventListener('click', exportExcel);
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === '1' && !e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                        if (!btnIn.disabled) btnIn.click();
+                    }
+                    if (e.key === '2' && !e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                        if (!btnOut.disabled) btnOut.click();
+                    }
+                    if (e.key === 'e' && (e.ctrlKey || e.metaKey)) {
+                        // Ctrl+E / Cmd+E for export
+                        e.preventDefault();
+                        btnExport.click();
+                    }
+                });
+
+                // Auto-refresh UI every 10s (in case of external changes)
+                setInterval(() => {
+                    renderUI();
+                }, 10000);
+
+                console.log('📋 Aplikasi Absensi siap digunakan.');
+                console.log('⌨️ Pintasan: [1] Masuk  [2] Pulang  [Ctrl+E] Export');
+            }
+
+            // Run
+            init().catch(console.warn);
+
+        })();
+    </script>
+
+</body>
+</html>
