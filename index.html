@@ -757,7 +757,7 @@
 
         <!-- HEADER -->
         <header class="header">
-            <h1><span>📋</span> Absensi Kerja Captain Famz</h1>
+            <h1><span>📋</span> Absensi Kerja</h1>
             <p>Created By Captain Famz</p>
             <div class="user-info">
                 <span>👤 <span id="displayUser">-</span></span>
@@ -846,6 +846,7 @@
                     <thead>
                         <tr>
                             <th>Tanggal</th>
+                            <th>Nama</th>
                             <th>Masuk</th>
                             <th>Pulang</th>
                             <th style="text-align:center;">Total Kerja</th>
@@ -855,7 +856,7 @@
                     </thead>
                     <tbody id="historyBody">
                         <tr class="empty-row">
-                            <td colspan="6">Belum ada data absensi</td>
+                            <td colspan="7">Belum ada data absensi</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1356,16 +1357,17 @@
 
             function renderHistory(filteredData) {
                 if (!filteredData || filteredData.length === 0) {
-                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="6">Tidak ada data sesuai filter</td></tr>`;
+                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="7">Tidak ada data sesuai filter</td></tr>`;
                     return;
                 }
                 const sorted = [...filteredData].sort((a, b) => b.date.localeCompare(a.date));
                 let html = '';
                 for (const rec of sorted) {
+                    const nama = rec.nama || 'Tidak diketahui';
                     const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
                     const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
 
-                    // Total Kerja per hari (selisih pulang - masuk)
+                    // Total Kerja per hari
                     let workHours = '-';
                     if (rec.checkIn && rec.checkOut) {
                         const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
@@ -1404,6 +1406,7 @@
                     html += `
                         <tr>
                             <td><strong>${formatDateDisplay(rec.date)}</strong></td>
+                            <td>${nama}</td>
                             <td>${inTime}</td>
                             <td>${outTime}</td>
                             <td style="text-align:center;">${workHours}</td>
@@ -1446,7 +1449,7 @@
                     statAvgOut.textContent = '--:--';
                 }
 
-                // Total Jam Kerja (akumulasi semua hari yang sudah pulang)
+                // Total Jam Kerja
                 const workMinutes = data.filter(r => r.checkIn && r.checkOut).map(r => {
                     const [hIn, mIn] = r.checkIn.time.split(':').map(Number);
                     const [hOut, mOut] = r.checkOut.time.split(':').map(Number);
@@ -1587,7 +1590,7 @@
                 if (existing) {
                     record = existing;
                 } else {
-                    record = { date: today, checkIn: null, checkOut: null };
+                    record = { date: today, nama: currentUser, checkIn: null, checkOut: null };
                     data.push(record);
                 }
 
@@ -1655,51 +1658,60 @@
                 showToast(`✅ Absen pulang berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
             }
 
-            // ─── Export Excel ───
+            // ─── Export Excel (TANPA FOTO base64 agar tidak error) ───
             function exportExcel() {
-    const data = loadData();
-    if (data.length === 0) {
-        showToast('📭 Tidak ada data untuk diexport.', 'info');
-        return;
-    }
-    try {
-        const rows = [
-            ['Tanggal', 'Masuk', 'Pulang', 'Total Kerja (menit)', 'Foto Masuk', 'Foto Pulang', 'Latitude', 'Longitude',
-                'Alamat Masuk', 'Alamat Pulang'
-            ]
-        ];
-        for (const rec of data) {
-            const inTime = rec.checkIn ? rec.checkIn.time : '';
-            const outTime = rec.checkOut ? rec.checkOut.time : '';
-            let workMin = '';
-            if (rec.checkIn && rec.checkOut) {
-                const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
-                const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
-                workMin = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                const data = loadData();
+                if (data.length === 0) {
+                    showToast('📭 Tidak ada data untuk diexport.', 'info');
+                    return;
+                }
+                try {
+                    const rows = [
+                        ['Tanggal', 'Nama', 'Masuk', 'Pulang', 'Total Kerja (jam:menit)', 'Latitude', 'Longitude', 'Alamat Masuk', 'Alamat Pulang']
+                    ];
+                    for (const rec of data) {
+                        const nama = rec.nama || 'Tidak diketahui';
+                        const inTime = rec.checkIn ? rec.checkIn.time : '';
+                        const outTime = rec.checkOut ? rec.checkOut.time : '';
+                        let workStr = '';
+                        if (rec.checkIn && rec.checkOut) {
+                            const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                            const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                            const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                            if (diff >= 0) {
+                                const hrs = Math.floor(diff / 60);
+                                const mins = diff % 60;
+                                workStr = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                            }
+                        }
+                        const lat = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lat : '';
+                        const lng = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lng : '';
+                        const inAddr = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.address : '';
+                        const outAddr = rec.checkOut && rec.checkOut.location ? rec.checkOut.location.address : '';
+                        rows.push([rec.date, nama, inTime, outTime, workStr, lat, lng, inAddr, outAddr]);
+                    }
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+                    ws['!cols'] = [
+                        { wch: 14 }, // Tanggal
+                        { wch: 18 }, // Nama
+                        { wch: 14 }, // Masuk
+                        { wch: 14 }, // Pulang
+                        { wch: 18 }, // Total Kerja
+                        { wch: 16 }, // Latitude
+                        { wch: 16 }, // Longitude
+                        { wch: 30 }, // Alamat Masuk
+                        { wch: 30 }  // Alamat Pulang
+                    ];
+                    XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
+                    XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
+                    showToast(`📊 Excel berhasil diexport (tanpa foto).`, 'success', 3000);
+                } catch (err) {
+                    console.error('Export error:', err);
+                    showToast('❌ Gagal export Excel: ' + err.message, 'error');
+                }
             }
-            // Indikator foto: "Ada" jika ada foto, else "-"
-            const inPhoto = rec.checkIn && rec.checkIn.photo ? 'Ada' : '-';
-            const outPhoto = rec.checkOut && rec.checkOut.photo ? 'Ada' : '-';
-            const lat = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lat : '';
-            const lng = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lng : '';
-            const inAddr = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.address : '';
-            const outAddr = rec.checkOut && rec.checkOut.location ? rec.checkOut.location.address : '';
-            rows.push([rec.date, inTime, outTime, workMin, inPhoto, outPhoto, lat, lng, inAddr, outAddr]);
-        }
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        ws['!cols'] = [
-            { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 18 },
-            { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 16 },
-            { wch: 30 }, { wch: 30 }
-        ];
-        XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
-        XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
-        showToast(`📊 Excel berhasil diexport.`, 'success', 3000);
-    } catch (err) {
-        showToast('❌ Gagal export Excel: ' + err.message, 'error');
-    }
-}
+
             // ─── Backup & Restore ───
             function backupData() {
                 const data = loadData();
@@ -1725,6 +1737,10 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         if (!Array.isArray(data)) throw new Error('Format tidak valid');
+                        // Pastikan setiap record punya field 'nama'
+                        data.forEach(rec => {
+                            if (!rec.nama) rec.nama = currentUser || 'Tidak diketahui';
+                        });
                         saveData(data);
                         renderUI();
                         showToast(`📂 Restore berhasil! ${data.length} catatan dimuat.`, 'success');
@@ -1828,7 +1844,7 @@
                 appContainer.style.display = 'none';
                 hidePinSection();
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan PIN & Total Kerja)');
+                console.log('📋 Aplikasi Absensi siap digunakan (dengan Nama & Export tanpa foto)');
                 console.log('⌨️ Pintasan: [1] Masuk  [2] Pulang  [Ctrl+E] Export (tidak aktif saat mengetik)');
                 console.log('🔑 Admin: gunakan fitur Reset PIN di layar login untuk mereset PIN pengguna lain.');
             }
