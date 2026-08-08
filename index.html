@@ -758,7 +758,7 @@
         <!-- HEADER -->
         <header class="header">
             <h1><span>📋</span> Absensi Kerja Captain Famz</h1>
-            <p>Created by Captain Famz</p>
+            <p>Created By Captain Famz</p>
             <div class="user-info">
                 <span>👤 <span id="displayUser">-</span></span>
                 <button class="btn-logout" id="btnLogout">🚪 Keluar</button>
@@ -945,7 +945,7 @@
             let toastTimer = null;
             let currentFilters = { startDate: '', endDate: '', status: 'all' };
             let currentUser = null;
-            let pendingUsername = null; // untuk flow PIN
+            let pendingUsername = null;
 
             // ─── Data ───
             const STORAGE_PREFIX = 'attendance_data_';
@@ -1007,7 +1007,6 @@
                     btn.textContent = u;
                     btn.addEventListener('click', () => {
                         loginInput.value = u;
-                        // Trigger login flow after a moment
                         setTimeout(() => attemptLogin(u), 100);
                     });
                     userList.appendChild(btn);
@@ -1029,9 +1028,6 @@
                     pinStatus.textContent = `🔑 Masukkan PIN untuk ${username}`;
                     pinConfirm.style.display = 'none';
                     btnPin.textContent = 'Verifikasi';
-                    // Sembunyikan admin reset kecuali jika username = 'admin' (contoh)
-                    // Tapi kita kasih akses admin untuk reset siapa saja dengan tombol tersembunyi
-                    // Untuk sederhana, admin reset selalu muncul tapi hanya untuk admin yang tahu caranya.
                     adminReset.style.display = 'block';
                 } else if (mode === 'register') {
                     pinStatus.textContent = `🔑 Buat PIN 4 digit untuk ${username}`;
@@ -1039,7 +1035,8 @@
                     btnPin.textContent = 'Daftarkan PIN';
                     adminReset.style.display = 'none';
                 }
-                pinInput.focus();
+                // Fokus ke PIN input setelah beberapa ms (biar DOM siap)
+                setTimeout(() => pinInput.focus(), 100);
             }
 
             function hidePinSection() {
@@ -1067,12 +1064,13 @@
                     setPin(username, pin);
                     pinError.textContent = '';
                     showToast(`✅ PIN untuk ${username} berhasil didaftarkan.`, 'success');
-                    // Lanjutkan login
                     doLogin(username);
                 } else {
                     // Verify
                     if (pin !== existingPin) {
                         pinError.textContent = 'PIN salah. Coba lagi.';
+                        pinInput.value = '';
+                        setTimeout(() => pinInput.focus(), 100);
                         return;
                     }
                     pinError.textContent = '';
@@ -1104,7 +1102,6 @@
                 renderUI();
                 initCamera().then(() => renderUI());
                 showToast(`👋 Selamat datang, ${currentUser}!`, 'success');
-                // Reset input login
                 loginInput.value = '';
             }
 
@@ -1130,7 +1127,6 @@
                     showToast('⚠️ Masukkan nama pengguna yang akan direset PIN-nya.', 'error');
                     return;
                 }
-                // Cek apakah user ada (punya data)
                 const users = getUsers();
                 if (!users.includes(trimmed)) {
                     showToast(`❌ Pengguna "${trimmed}" tidak ditemukan.`, 'error');
@@ -1780,8 +1776,14 @@
                     renderUI();
                 });
 
-                // Keyboard shortcuts
+                // ─── Keyboard shortcuts (FIX: skip if focus is on input/textarea) ───
                 document.addEventListener('keydown', (e) => {
+                    const target = e.target;
+                    // Jangan jalankan shortcut jika sedang mengetik di input atau textarea
+                    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+                        return;
+                    }
+
                     if (e.key === '1' && !e.ctrlKey && !e.metaKey) {
                         e.preventDefault();
                         if (!btnIn.disabled) btnIn.click();
@@ -1803,7 +1805,7 @@
                 hidePinSection();
 
                 console.log('📋 Aplikasi Absensi siap digunakan (dengan PIN)');
-                console.log('⌨️ Pintasan: [1] Masuk  [2] Pulang  [Ctrl+E] Export');
+                console.log('⌨️ Pintasan: [1] Masuk  [2] Pulang  [Ctrl+E] Export (tidak aktif saat mengetik)');
                 console.log('🔑 Admin: gunakan fitur Reset PIN di layar login untuk mereset PIN pengguna lain.');
             }
 
