@@ -701,7 +701,7 @@
             flex-wrap: wrap;
         }
 
-        /* ─── Admin reset PIN (opsional) ─── */
+        /* ─── Admin reset PIN ─── */
         .admin-reset {
             margin-top: 12px;
             font-size: 12px;
@@ -743,7 +743,7 @@
                 <input type="password" id="pinConfirm" maxlength="4" placeholder="Konfirmasi PIN" inputmode="numeric" style="display:none;" />
                 <button class="btn-pin" id="btnPin">Verifikasi</button>
                 <div id="pinError" class="pin-error"></div>
-                <!-- Admin reset (hanya untuk Anda) -->
+                <!-- Admin reset -->
                 <div class="admin-reset" id="adminReset" style="display:none;">
                     <span>🔑 Reset PIN untuk: </span>
                     <input type="text" id="resetUserInput" placeholder="nama" />
@@ -819,7 +819,7 @@
                 <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total Hari</div></div>
                 <div class="stat-card"><div class="num" id="statAvgIn">--:--</div><div class="label">Rata-rata Masuk</div></div>
                 <div class="stat-card"><div class="num" id="statAvgOut">--:--</div><div class="label">Rata-rata Pulang</div></div>
-                <div class="stat-card"><div class="num" id="statOnTime">0%</div><div class="label">Tepat Waktu (≤08:30)</div></div>
+                <div class="stat-card"><div class="num" id="statTotalWork">--:--</div><div class="label">Total Jam Kerja</div></div>
             </div>
             <div class="chart-container">
                 <canvas id="statsChart"></canvas>
@@ -848,13 +848,14 @@
                             <th>Tanggal</th>
                             <th>Masuk</th>
                             <th>Pulang</th>
+                            <th style="text-align:center;">Total Kerja</th>
                             <th style="text-align:center;">Foto</th>
                             <th style="text-align:center;">Lokasi</th>
                         </tr>
                     </thead>
                     <tbody id="historyBody">
                         <tr class="empty-row">
-                            <td colspan="5">Belum ada data absensi</td>
+                            <td colspan="6">Belum ada data absensi</td>
                         </tr>
                     </tbody>
                 </table>
@@ -935,7 +936,7 @@
             const statTotal = document.getElementById('statTotal');
             const statAvgIn = document.getElementById('statAvgIn');
             const statAvgOut = document.getElementById('statAvgOut');
-            const statOnTime = document.getElementById('statOnTime');
+            const statTotalWork = document.getElementById('statTotalWork');
 
             let chartInstance = null;
 
@@ -1035,7 +1036,6 @@
                     btnPin.textContent = 'Daftarkan PIN';
                     adminReset.style.display = 'none';
                 }
-                // Fokus ke PIN input setelah beberapa ms (biar DOM siap)
                 setTimeout(() => pinInput.focus(), 100);
             }
 
@@ -1051,7 +1051,6 @@
                 const existingPin = getPin(username);
 
                 if (!existingPin) {
-                    // Mode register
                     const confirm = pinConfirm.value.trim();
                     if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                         pinError.textContent = 'PIN harus 4 digit angka.';
@@ -1066,7 +1065,6 @@
                     showToast(`✅ PIN untuk ${username} berhasil didaftarkan.`, 'success');
                     doLogin(username);
                 } else {
-                    // Verify
                     if (pin !== existingPin) {
                         pinError.textContent = 'PIN salah. Coba lagi.';
                         pinInput.value = '';
@@ -1358,7 +1356,7 @@
 
             function renderHistory(filteredData) {
                 if (!filteredData || filteredData.length === 0) {
-                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="5">Tidak ada data sesuai filter</td></tr>`;
+                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="6">Tidak ada data sesuai filter</td></tr>`;
                     return;
                 }
                 const sorted = [...filteredData].sort((a, b) => b.date.localeCompare(a.date));
@@ -1366,6 +1364,20 @@
                 for (const rec of sorted) {
                     const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
                     const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
+
+                    // Total Kerja per hari (selisih pulang - masuk)
+                    let workHours = '-';
+                    if (rec.checkIn && rec.checkOut) {
+                        const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                        const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                        const diffMinutes = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                        if (diffMinutes >= 0) {
+                            const hrs = Math.floor(diffMinutes / 60);
+                            const mins = diffMinutes % 60;
+                            workHours = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                        }
+                    }
+
                     let photosHtml = '';
                     if (rec.checkIn && rec.checkIn.photo) {
                         photosHtml += `<img class="mini-photo" src="${rec.checkIn.photo}" alt="masuk" title="Foto masuk" />`;
@@ -1390,14 +1402,15 @@
                     if (!locHtml) locHtml = '<span class="text-muted">-</span>';
 
                     html += `
-                <tr>
-                  <td><strong>${formatDateDisplay(rec.date)}</strong></td>
-                  <td>${inTime}</td>
-                  <td>${outTime}</td>
-                  <td style="text-align:center;white-space:nowrap;">${photosHtml}</td>
-                  <td style="text-align:center;">${locHtml}</td>
-                </tr>
-              `;
+                        <tr>
+                            <td><strong>${formatDateDisplay(rec.date)}</strong></td>
+                            <td>${inTime}</td>
+                            <td>${outTime}</td>
+                            <td style="text-align:center;">${workHours}</td>
+                            <td style="text-align:center;white-space:nowrap;">${photosHtml}</td>
+                            <td style="text-align:center;">${locHtml}</td>
+                        </tr>
+                    `;
                 }
                 historyBody.innerHTML = html;
             }
@@ -1433,15 +1446,20 @@
                     statAvgOut.textContent = '--:--';
                 }
 
-                const onTime = data.filter(r => r.checkIn).filter(r => {
-                    const [h, m] = r.checkIn.time.split(':').map(Number);
-                    return (h < 8) || (h === 8 && m <= 30);
+                // Total Jam Kerja (akumulasi semua hari yang sudah pulang)
+                const workMinutes = data.filter(r => r.checkIn && r.checkOut).map(r => {
+                    const [hIn, mIn] = r.checkIn.time.split(':').map(Number);
+                    const [hOut, mOut] = r.checkOut.time.split(':').map(Number);
+                    return (hOut * 60 + mOut) - (hIn * 60 + mIn);
                 });
-                const totalWithIn = data.filter(r => r.checkIn).length;
-                if (totalWithIn > 0) {
-                    statOnTime.textContent = Math.round((onTime.length / totalWithIn) * 100) + '%';
+                if (workMinutes.length > 0) {
+                    const totalMinutes = workMinutes.reduce((a, b) => a + b, 0);
+                    const hours = Math.floor(totalMinutes / 60);
+                    const mins = Math.round(totalMinutes % 60);
+                    statTotalWork.textContent =
+                        `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
                 } else {
-                    statOnTime.textContent = '0%';
+                    statTotalWork.textContent = '--:--';
                 }
 
                 updateChart(data);
@@ -1646,24 +1664,30 @@
                 }
                 try {
                     const rows = [
-                        ['Tanggal', 'Masuk', 'Pulang', 'Foto Masuk (base64)', 'Foto Pulang (base64)', 'Latitude', 'Longitude',
+                        ['Tanggal', 'Masuk', 'Pulang', 'Total Kerja (menit)', 'Foto Masuk (base64)', 'Foto Pulang (base64)', 'Latitude', 'Longitude',
                             'Alamat Masuk', 'Alamat Pulang'
                         ]
                     ];
                     for (const rec of data) {
                         const inTime = rec.checkIn ? rec.checkIn.time : '';
                         const outTime = rec.checkOut ? rec.checkOut.time : '';
+                        let workMin = '';
+                        if (rec.checkIn && rec.checkOut) {
+                            const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                            const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                            workMin = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                        }
                         const inPhoto = rec.checkIn && rec.checkIn.photo ? rec.checkIn.photo : '';
                         const outPhoto = rec.checkOut && rec.checkOut.photo ? rec.checkOut.photo : '';
                         const lat = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lat : '';
                         const lng = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lng : '';
                         const inAddr = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.address : '';
                         const outAddr = rec.checkOut && rec.checkOut.location ? rec.checkOut.location.address : '';
-                        rows.push([rec.date, inTime, outTime, inPhoto, outPhoto, lat, lng, inAddr, outAddr]);
+                        rows.push([rec.date, inTime, outTime, workMin, inPhoto, outPhoto, lat, lng, inAddr, outAddr]);
                     }
                     const wb = XLSX.utils.book_new();
                     const ws = XLSX.utils.aoa_to_sheet(rows);
-                    ws['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 40 }, { wch: 40 }, { wch: 16 }, { wch: 16 },
+                    ws['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 40 }, { wch: 40 }, { wch: 16 }, { wch: 16 },
                         { wch: 30 }, { wch: 30 }
                     ];
                     XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
@@ -1776,14 +1800,12 @@
                     renderUI();
                 });
 
-                // ─── Keyboard shortcuts (FIX: skip if focus is on input/textarea) ───
+                // Keyboard shortcuts (tidak aktif saat di input)
                 document.addEventListener('keydown', (e) => {
                     const target = e.target;
-                    // Jangan jalankan shortcut jika sedang mengetik di input atau textarea
                     if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
                         return;
                     }
-
                     if (e.key === '1' && !e.ctrlKey && !e.metaKey) {
                         e.preventDefault();
                         if (!btnIn.disabled) btnIn.click();
@@ -1804,7 +1826,7 @@
                 appContainer.style.display = 'none';
                 hidePinSection();
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan PIN)');
+                console.log('📋 Aplikasi Absensi siap digunakan (dengan PIN & Total Kerja)');
                 console.log('⌨️ Pintasan: [1] Masuk  [2] Pulang  [Ctrl+E] Export (tidak aktif saat mengetik)');
                 console.log('🔑 Admin: gunakan fitur Reset PIN di layar login untuk mereset PIN pengguna lain.');
             }
