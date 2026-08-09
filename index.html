@@ -13,6 +13,91 @@
     </script>
 
     <style>
+        /* ─── CSS Variables (untuk Dark Mode) ─── */
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-header: linear-gradient(135deg, #1e3a5f, #2d6a9f);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e9edf2;
+            --bg-status: #f8fafc;
+            --bg-stat: #f8fafc;
+            --bg-admin: #f8fafc;
+            --bg-table-header: #f1f5f9;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            --input-border: #e2e8f0;
+            --bg-filter: #fff;
+            --toast-bg: #0f172a;
+            --modal-bg: #fff;
+            --modal-overlay: rgba(0,0,0,0.5);
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-header: linear-gradient(135deg, #0f172a, #1e3a5f);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --bg-status: #1e293b;
+            --bg-stat: #1e293b;
+            --bg-admin: #1e293b;
+            --bg-table-header: #334155;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --input-border: #334155;
+            --bg-filter: #1e293b;
+            --toast-bg: #f1f5f9;
+            --modal-bg: #1e293b;
+            --modal-overlay: rgba(0,0,0,0.7);
+        }
+
+        body.dark-mode .toast {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        body.dark-mode .toast.success { background: #065f46; color: #fff; }
+        body.dark-mode .toast.error { background: #991b1b; color: #fff; }
+        body.dark-mode .toast.info { background: #1e3a5f; color: #fff; }
+
+        body.dark-mode .login-box {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+        body.dark-mode .login-box input {
+            background: #0f172a;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+        body.dark-mode .login-box .user-list button {
+            background: #0f172a;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+        body.dark-mode .login-box .user-list button:hover {
+            background: #334155;
+        }
+
+        body.dark-mode .modal-box {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+        body.dark-mode .modal-box .close-btn { color: #94a3b8; }
+        body.dark-mode .modal-box .close-btn:hover { color: #f1f5f9; }
+        body.dark-mode .modal-box .report-summary { background: #0f172a; }
+        body.dark-mode .modal-box .report-table-wrap { border-color: #334155; }
+        body.dark-mode .modal-box .report-table-wrap th { background: #334155; color: #f1f5f9; }
+        body.dark-mode .modal-box .report-table-wrap td { border-color: #334155; }
+        body.dark-mode .modal-box .report-controls input,
+        body.dark-mode .modal-box .report-controls select {
+            background: #0f172a;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+
         /* ─── Reset & Base ─── */
         *,
         *::before,
@@ -23,12 +108,13 @@
         }
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f0f4f8;
-            color: #1e293b;
+            background: var(--bg-body);
+            color: var(--text-primary);
             min-height: 100vh;
             padding: 20px 16px 40px;
             display: flex;
             justify-content: center;
+            transition: background 0.3s, color 0.3s;
         }
         .app {
             max-width: 700px;
@@ -37,13 +123,14 @@
 
         /* ─── Header ─── */
         .header {
-            background: linear-gradient(135deg, #1e3a5f, #2d6a9f);
+            background: var(--bg-header);
             color: #fff;
             padding: 16px 24px 14px;
             border-radius: 20px 20px 0 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
             text-align: center;
             position: relative;
+            transition: background 0.3s;
         }
         .header h1 {
             font-size: 22px;
@@ -100,24 +187,47 @@
             margin-left: 6px;
         }
 
+        /* ─── Dark Mode Toggle ─── */
+        .theme-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1.4;
+        }
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.35);
+        }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         /* ─── Card Container ─── */
         .card {
-            background: #ffffff;
+            background: var(--bg-card);
             border-radius: 0 0 20px 20px;
             padding: 20px 18px 24px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            box-shadow: var(--shadow);
             margin-bottom: 20px;
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .card-title {
             font-size: 14px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: color 0.3s;
         }
 
         /* ─── Camera ─── */
@@ -172,12 +282,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f8fafc;
+            background: var(--bg-status);
             padding: 12px 16px;
             border-radius: 12px;
             margin-bottom: 14px;
             flex-wrap: wrap;
             gap: 6px;
+            transition: background 0.3s;
         }
         .status-label {
             font-size: 14px;
@@ -185,6 +296,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--text-primary);
         }
         .status-label .dot {
             display: inline-block;
@@ -202,14 +314,14 @@
         }
         .status-time {
             font-size: 13px;
-            color: #64748b;
-            background: #eef2f6;
+            color: var(--text-secondary);
+            background: var(--bg-card);
             padding: 2px 12px;
             border-radius: 30px;
+            transition: background 0.3s, color 0.3s;
         }
         .status-time strong {
-            color: #1e293b;
-            font-weight: 600;
+            color: var(--text-primary);
         }
 
         /* ─── Buttons ─── */
@@ -344,26 +456,27 @@
             margin-bottom: 6px;
         }
         .today-item {
-            background: #f8fafc;
+            background: var(--bg-stat);
             border-radius: 12px;
             padding: 12px 14px;
             text-align: center;
+            transition: background 0.3s;
         }
         .today-item .label {
             font-size: 12px;
             font-weight: 500;
-            color: #94a3b8;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
         .today-item .value {
             font-size: 20px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-primary);
             margin-top: 2px;
         }
         .today-item .value.empty {
-            color: #94a3b8;
+            color: var(--text-muted);
             font-weight: 400;
             font-size: 14px;
         }
@@ -374,12 +487,12 @@
             object-fit: cover;
             margin: 6px auto 0;
             display: block;
-            border: 2px solid #e2e8f0;
-            background: #f1f5f9;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
         }
         .today-item .loc-info {
             font-size: 10px;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-top: 4px;
             word-break: break-word;
             max-width: 100%;
@@ -393,20 +506,21 @@
             margin-bottom: 12px;
         }
         .stat-card {
-            background: #f8fafc;
+            background: var(--bg-stat);
             border-radius: 12px;
             padding: 10px 8px;
             text-align: center;
+            transition: background 0.3s;
         }
         .stat-card .num {
             font-size: 22px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-primary);
         }
         .stat-card .label {
             font-size: 10px;
             font-weight: 500;
-            color: #94a3b8;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -427,12 +541,19 @@
         .filter-area input,
         .filter-area select {
             padding: 8px 12px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--input-border);
             border-radius: 8px;
             font-size: 14px;
-            background: #fff;
+            background: var(--bg-filter);
+            color: var(--text-primary);
             flex: 1 1 120px;
             min-width: 100px;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .filter-area input:focus,
+        .filter-area select:focus {
+            border-color: #2d6a9f;
+            outline: none;
         }
         .filter-area .btn-sm {
             flex: 0 0 auto;
@@ -443,7 +564,8 @@
             overflow-x: auto;
             margin-top: 6px;
             border-radius: 12px;
-            border: 1px solid #e9edf2;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s;
         }
         table {
             width: 100%;
@@ -452,29 +574,32 @@
             min-width: 380px;
         }
         thead {
-            background: #f1f5f9;
+            background: var(--bg-table-header);
+            transition: background 0.3s;
         }
         th {
             padding: 10px 12px;
             text-align: left;
             font-weight: 600;
-            color: #475569;
+            color: var(--text-secondary);
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
         td {
             padding: 10px 12px;
-            border-top: 1px solid #e9edf2;
+            border-top: 1px solid var(--border-color);
             vertical-align: middle;
+            color: var(--text-primary);
+            transition: border-color 0.3s;
         }
         td .mini-photo {
             width: 32px;
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1.5px solid #e2e8f0;
-            background: #f1f5f9;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-body);
             display: inline-block;
             vertical-align: middle;
         }
@@ -482,18 +607,18 @@
             margin-left: 4px;
         }
         .text-muted {
-            color: #94a3b8;
+            color: var(--text-muted);
             font-size: 13px;
         }
         .empty-row td {
             text-align: center;
-            color: #94a3b8;
+            color: var(--text-muted);
             padding: 24px 12px;
             font-style: italic;
         }
         .loc-badge {
             font-size: 10px;
-            color: #64748b;
+            color: var(--text-secondary);
             display: block;
             max-width: 120px;
             white-space: nowrap;
@@ -505,10 +630,11 @@
         .footer {
             text-align: center;
             font-size: 12px;
-            color: #94a3b8;
+            color: var(--text-muted);
             padding: 12px 0 4px;
-            border-top: 1px solid #e9edf2;
+            border-top: 1px solid var(--border-color);
             margin-top: 18px;
+            transition: color 0.3s, border-color 0.3s;
         }
 
         /* ─── Toast ─── */
@@ -517,8 +643,8 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(80px);
-            background: #0f172a;
-            color: #fff;
+            background: var(--toast-bg);
+            color: var(--text-primary);
             padding: 12px 24px;
             border-radius: 40px;
             font-weight: 500;
@@ -537,12 +663,15 @@
         }
         .toast.success {
             background: #065f46;
+            color: #fff;
         }
         .toast.error {
             background: #991b1b;
+            color: #fff;
         }
         .toast.info {
             background: #1e3a5f;
+            color: #fff;
         }
 
         /* ─── Login Overlay ─── */
@@ -552,41 +681,45 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: var(--modal-overlay);
             backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             padding: 20px;
+            transition: background 0.3s;
         }
         .login-box {
-            background: #fff;
+            background: var(--modal-bg);
             border-radius: 24px;
             padding: 32px 28px;
             max-width: 400px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
+            transition: background 0.3s;
         }
         .login-box h2 {
             font-size: 24px;
             margin-bottom: 4px;
-            color: #1e3a5f;
+            color: var(--text-primary);
         }
         .login-box p {
             font-size: 14px;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-bottom: 20px;
         }
         .login-box input {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--input-border);
             border-radius: 12px;
             font-size: 16px;
             margin-bottom: 12px;
-            transition: 0.2s;
+            background: var(--bg-filter);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
         .login-box input:focus {
             border-color: #2d6a9f;
@@ -601,15 +734,16 @@
         }
         .login-box .user-list button {
             padding: 6px 16px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--input-border);
             border-radius: 30px;
-            background: #f8fafc;
+            background: var(--bg-filter);
+            color: var(--text-primary);
             font-size: 14px;
             cursor: pointer;
             transition: 0.2s;
         }
         .login-box .user-list button:hover {
-            background: #e2e8f0;
+            background: var(--bg-table-header);
             border-color: #2d6a9f;
         }
         .login-box .btn-login {
@@ -634,15 +768,16 @@
 
         /* ─── Admin Panel ─── */
         .admin-panel {
-            background: #f8fafc;
+            background: var(--bg-admin);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
+            transition: background 0.3s;
         }
         .admin-panel h3 {
             font-size: 16px;
             margin-bottom: 10px;
-            color: #1e293b;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -655,9 +790,12 @@
         }
         .admin-panel .admin-grid input {
             padding: 8px 12px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--input-border);
             border-radius: 8px;
             font-size: 14px;
+            background: var(--bg-filter);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
         .admin-panel .admin-grid button {
             padding: 8px 12px;
@@ -677,17 +815,19 @@
         .admin-panel .user-table {
             width: 100%;
             font-size: 13px;
+            color: var(--text-primary);
         }
         .admin-panel .user-table th {
             text-align: left;
             font-weight: 600;
-            color: #475569;
+            color: var(--text-secondary);
             padding: 6px 4px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--border-color);
         }
         .admin-panel .user-table td {
             padding: 6px 4px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
         }
         .admin-panel .user-table .btn-sm {
             padding: 2px 10px;
@@ -704,19 +844,20 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: var(--modal-overlay);
             backdrop-filter: blur(6px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 2000;
             padding: 20px;
+            transition: background 0.3s;
         }
         .modal-overlay.active {
             display: flex;
         }
         .modal-box {
-            background: #fff;
+            background: var(--modal-bg);
             border-radius: 24px;
             padding: 24px 20px;
             max-width: 700px;
@@ -724,11 +865,12 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: background 0.3s;
         }
         .modal-box h2 {
             font-size: 22px;
             margin-bottom: 16px;
-            color: #1e3a5f;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -739,11 +881,11 @@
             border: none;
             font-size: 28px;
             cursor: pointer;
-            color: #94a3b8;
+            color: var(--text-secondary);
             transition: 0.2s;
         }
         .modal-box .close-btn:hover {
-            color: #1e293b;
+            color: var(--text-primary);
         }
         .modal-box .report-controls {
             display: flex;
@@ -755,9 +897,12 @@
         .modal-box .report-controls input,
         .modal-box .report-controls select {
             padding: 8px 12px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--input-border);
             border-radius: 8px;
             font-size: 14px;
+            background: var(--bg-filter);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
         .modal-box .report-controls button {
             padding: 8px 16px;
@@ -771,9 +916,10 @@
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 10px;
             margin-bottom: 16px;
-            background: #f8fafc;
+            background: var(--bg-stat);
             padding: 12px;
             border-radius: 12px;
+            transition: background 0.3s;
         }
         .modal-box .report-summary .item {
             text-align: center;
@@ -781,19 +927,20 @@
         .modal-box .report-summary .item .num {
             font-size: 20px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-primary);
         }
         .modal-box .report-summary .item .label {
             font-size: 10px;
             font-weight: 500;
-            color: #94a3b8;
+            color: var(--text-secondary);
             text-transform: uppercase;
         }
         .modal-box .report-table-wrap {
             overflow-x: auto;
             border-radius: 12px;
-            border: 1px solid #e9edf2;
+            border: 1px solid var(--border-color);
             margin-bottom: 12px;
+            transition: border-color 0.3s;
         }
         .modal-box .report-table-wrap table {
             width: 100%;
@@ -802,17 +949,18 @@
             min-width: 300px;
         }
         .modal-box .report-table-wrap th {
-            background: #f1f5f9;
+            background: var(--bg-table-header);
             padding: 8px 10px;
             text-align: left;
             font-weight: 600;
-            color: #475569;
+            color: var(--text-secondary);
             font-size: 11px;
             text-transform: uppercase;
         }
         .modal-box .report-table-wrap td {
             padding: 8px 10px;
-            border-top: 1px solid #e9edf2;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-primary);
         }
         .modal-box .report-actions {
             display: flex;
@@ -829,69 +977,31 @@
 
         /* ─── Responsive ─── */
         @media (max-width: 480px) {
-            .header h1 {
-                font-size: 20px;
-            }
-            .btn {
-                font-size: 14px;
-                padding: 12px 8px;
-            }
-            .today-item .value {
-                font-size: 17px;
-            }
-            .card {
-                padding: 16px 12px 20px;
-            }
-            .status-bar {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-            .status-time {
-                text-align: center;
-            }
-            .btn-group {
-                gap: 8px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .filter-area input,
-            .filter-area select {
-                flex: 1 1 100%;
-            }
-            .login-box {
-                padding: 24px 16px;
-            }
-            .admin-panel .admin-grid {
-                grid-template-columns: 1fr;
-            }
-            .modal-box {
-                padding: 16px;
-            }
-            .report-summary {
-                grid-template-columns: 1fr 1fr;
-            }
+            .header h1 { font-size: 20px; }
+            .btn { font-size: 14px; padding: 12px 8px; }
+            .today-item .value { font-size: 17px; }
+            .card { padding: 16px 12px 20px; }
+            .status-bar { flex-direction: column; align-items: stretch; text-align: center; }
+            .status-time { text-align: center; }
+            .btn-group { gap: 8px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .filter-area input, .filter-area select { flex: 1 1 100%; }
+            .login-box { padding: 24px 16px; }
+            .admin-panel .admin-grid { grid-template-columns: 1fr; }
+            .modal-box { padding: 16px; }
+            .report-summary { grid-template-columns: 1fr 1fr; }
+            .header-controls { gap: 4px; }
+            .theme-toggle { font-size: 16px; padding: 2px 10px; }
         }
         @media (max-width: 380px) {
-            .today-grid {
-                grid-template-columns: 1fr;
-            }
-            .btn-group {
-                grid-template-columns: 1fr;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .report-summary {
-                grid-template-columns: 1fr;
-            }
+            .today-grid { grid-template-columns: 1fr; }
+            .btn-group { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .report-summary { grid-template-columns: 1fr; }
         }
 
         /* ─── Sembunyikan input file ─── */
-        #restoreInput {
-            display: none;
-        }
+        #restoreInput { display: none; }
         .backup-row {
             display: flex;
             gap: 10px;
@@ -929,7 +1039,10 @@
             <p>Created By Captain Famz</p>
             <div class="user-info">
                 <span>👤 <span id="displayUser">-</span></span>
-                <button class="btn-logout" id="btnLogout">🚪 Keluar</button>
+                <div class="header-controls">
+                    <button class="theme-toggle" id="themeToggle" title="Ganti tema">☀️</button>
+                    <button class="btn-logout" id="btnLogout">🚪 Keluar</button>
+                </div>
             </div>
         </header>
 
@@ -1104,7 +1217,7 @@
                         </tr>
                     </thead>
                     <tbody id="reportTableBody">
-                        <tr><td colspan="5" style="text-align:center;color:#94a3b8;">Pilih bulan dan klik Tampilkan</td></tr>
+                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Pilih bulan dan klik Tampilkan</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1121,7 +1234,7 @@
 
             // ─── KONFIGURASI ───
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqA16eZyKAPEUd3I1SlAyZbjc26fRhwjeBs1VhIwEb50_gjvwFrpfDG2bPTjfyFD2oTw/exec';
-            const ADMIN_PIN = '6455'; // Ubah sesuai keinginan
+            const ADMIN_PIN = '6455';
             const DEFAULT_USERS = [
                 { name: 'Desmon', pin: '6455' },
                 { name: 'Frizca', pin: '6455' },
@@ -1130,6 +1243,35 @@
             ];
 
             function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
+
+            // ─── Dark Mode ───
+            function loadThemePreference() {
+                const saved = localStorage.getItem('theme_preference');
+                if (saved === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    document.getElementById('themeToggle').textContent = '🌙';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    document.getElementById('themeToggle').textContent = '☀️';
+                }
+            }
+
+            function toggleTheme() {
+                const body = document.body;
+                const toggle = document.getElementById('themeToggle');
+                if (body.classList.contains('dark-mode')) {
+                    body.classList.remove('dark-mode');
+                    toggle.textContent = '☀️';
+                    localStorage.setItem('theme_preference', 'light');
+                } else {
+                    body.classList.add('dark-mode');
+                    toggle.textContent = '🌙';
+                    localStorage.setItem('theme_preference', 'dark');
+                }
+                // Refresh chart agar warna menyesuaikan
+                const data = loadData();
+                if (data) updateChart(data);
+            }
 
             // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
@@ -1325,7 +1467,7 @@
                     `;
                 });
                 if (!html) {
-                    html = `<tr><td colspan="3" style="text-align:center;color:#94a3b8;">Belum ada pengguna terdaftar</td></tr>`;
+                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar</td></tr>`;
                 }
                 userTableBody.innerHTML = html;
                 window._resetPin = function(name) {
@@ -1753,17 +1895,38 @@
 
                 const labels = dates.map(d => formatDateDisplay(d));
 
+                // Warna grafik menyesuaikan dark/light mode
+                const isDark = document.body.classList.contains('dark-mode');
+                const barColor = isDark ? '#60a5fa' : '#2d6a9f';
+                const textColor = isDark ? '#f1f5f9' : '#1e293b';
+
                 chartInstance = new Chart(ctx, {
                     type: 'bar',
-                    data: { labels: labels, datasets: [{ label: 'Hadir', data: counts, backgroundColor: '#2d6a9f',
-                            borderRadius: 4 }] },
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Hadir',
+                            data: counts,
+                            backgroundColor: barColor,
+                            borderRadius: 4,
+                        }]
+                    },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: {
+                            legend: { display: false }
+                        },
                         scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } },
-                            x: { ticks: { font: { size: 10 } } }
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, font: { size: 10, color: textColor } },
+                                grid: { color: isDark ? '#334155' : '#e2e8f0' }
+                            },
+                            x: {
+                                ticks: { font: { size: 10, color: textColor } },
+                                grid: { color: isDark ? '#334155' : '#e2e8f0' }
+                            }
                         }
                     }
                 });
@@ -1861,7 +2024,6 @@
                 }
                 const [year, month] = monthValue.split('-').map(Number);
                 const data = loadData();
-                // Filter data berdasarkan bulan & tahun
                 const filtered = data.filter(rec => {
                     const parts = rec.date.split('-');
                     if (parts.length !== 3) return false;
@@ -1870,10 +2032,8 @@
                     return y === year && m === month;
                 });
 
-                // Urutkan berdasarkan tanggal
                 filtered.sort((a, b) => a.date.localeCompare(b.date));
 
-                // Tabel
                 let html = '';
                 let totalWorkMinutes = 0;
                 let totalRecords = 0;
@@ -1911,11 +2071,10 @@
                 });
 
                 if (!html) {
-                    html = `<tr><td colspan="5" style="text-align:center;color:#94a3b8;">Tidak ada data untuk bulan ini</td></tr>`;
+                    html = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Tidak ada data untuk bulan ini</td></tr>`;
                 }
                 reportTableBody.innerHTML = html;
 
-                // Ringkasan
                 rTotalDays.textContent = hariKerja;
                 rTotalRecords.textContent = totalRecords;
                 if (totalWorkMinutes > 0) {
@@ -1933,7 +2092,6 @@
                     rAvgHours.textContent = '--:--';
                 }
 
-                // Simpan data untuk export
                 window._reportData = { filtered, year, month };
             }
 
@@ -2140,6 +2298,10 @@
 
             // ─── Init ───
             function init() {
+                // Load theme preference
+                loadThemePreference();
+                document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
                 createDefaultUsers();
 
                 btnLogin.addEventListener('click', attemptLogin);
@@ -2164,9 +2326,7 @@
                 btnSyncAll.addEventListener('click', syncAllData);
                 btnSetGoogleUrl.addEventListener('click', setGoogleScriptUrlPrompt);
 
-                // Laporan Bulanan
                 btnReport.addEventListener('click', () => {
-                    // Set default bulan ke bulan ini
                     const now = new Date();
                     const month = String(now.getMonth() + 1).padStart(2, '0');
                     const year = now.getFullYear();
@@ -2210,9 +2370,10 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan Laporan Bulanan)');
+                console.log('📋 Aplikasi Absensi siap digunakan (dengan Dark Mode & Laporan Bulanan)');
                 console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded)`);
                 console.log('👥 User default:', DEFAULT_USERS.map(u => `${u.name} (PIN: ${u.pin})`).join(', '));
+                console.log('🌙 Toggle dark mode di pojok kanan header.');
             }
 
             init();
