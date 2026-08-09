@@ -1234,14 +1234,15 @@
 
             // ─── KONFIGURASI ───
             const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/3a11c688-80c4-48fe-8abb-7e1b4dd7f95a';
-            // ⚠️ PERHATIAN: Pastikan nama sheet absensi di Google Sheet Anda bernama "Absensi" (persis).
-            // Jika namanya berbeda, ganti 'Absensi' di bawah ini dengan nama sheet Anda.
+            // ⚠️ PERHATIAN: Pastikan nama sheet absensi di Google Sheet Anda bernama "Absensi"
             const ATTENDANCE_SHEET_NAME = 'Absensi'; 
 
             const ADMIN_PIN = '6455';
 
+            // ─── PERBAIKAN URL ───
+            // Gunakan parameter ?sheet=... untuk menunjuk ke sheet kedua
             function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
-            function getAttendanceSheetUrl() { return GOOGLE_SCRIPT_URL + '/' + ATTENDANCE_SHEET_NAME; }
+            function getAttendanceSheetUrl() { return GOOGLE_SCRIPT_URL + '?sheet=' + encodeURIComponent(ATTENDANCE_SHEET_NAME); }
 
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
@@ -1945,7 +1946,7 @@
             }
 
             // ─── Sinkronisasi Absensi ke Google Sheets ───
-            // PERBAIKAN: Menggunakan URL + Nama Sheet Absensi untuk menghindari data masuk ke Data_User
+            // PERBAIKAN: Gunakan ?sheet=Absensi agar data masuk ke sheet yang benar
             async function syncToGoogleSheet(recordData) {
                 const url = getAttendanceSheetUrl();
                 if (!url) return;
