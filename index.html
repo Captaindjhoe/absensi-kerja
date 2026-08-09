@@ -1236,8 +1236,6 @@
             const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/3a11c688-80c4-48fe-8abb-7e1b4dd7f95a';
             const ADMIN_PIN = '6455';
 
-            function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
-
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
             let usersSynced = false;
@@ -1369,25 +1367,27 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                const url = getGoogleScriptUrl();
+                // PERBAIKAN PENTING: Tambahkan ?sheet=Data_User untuk mengambil sheet khusus
+                const url = getGoogleScriptUrl() + '?sheet=Data_User';
                 if (!url) return;
 
                 try {
                     const response = await fetch(url);
                     if (response.ok) {
                         const data = await response.json();
-                        // Pastikan data adalah array. Jika kosong, data = []
+                        // Debug: console.log('Data mentah dari Sheet:', data);
                         cloudUsers = (Array.isArray(data) ? data : []).map(item => ({
                             name: item.Nama ? item.Nama.toLowerCase().trim() : '',
-                            pin: String(item.PIN).trim()
-                        })).filter(u => u.name && u.pin);
+                            // Perbaikan validasi PIN: cek apakah PIN ada, jika tidak beri string kosong
+                            pin: item.PIN ? String(item.PIN).trim() : ''
+                        })).filter(u => u.name && u.pin && u.name !== 'admin'); // Filter admin keluar
                         usersSynced = true;
                         console.log('✅ Data user dari Cloud dimuat:', cloudUsers.length, 'user');
                         
                         if (isAdmin) renderAdminPanel();
                         renderUserList();
                     } else {
-                        console.warn('⚠️ Gagal fetch user dari Cloud.');
+                        console.warn('⚠️ Gagal fetch user dari Cloud.', await response.text());
                     }
                 } catch (error) {
                     console.error('❌ Error sync user cloud:', error);
@@ -1414,7 +1414,8 @@
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
-                users.forEach(u => {
+                // Filter admin agar tidak muncul di daftar user biasa
+                users.filter(u => u !== 'admin').forEach(u => {
                     const btn = document.createElement('button');
                     btn.textContent = u;
                     btn.addEventListener('click', () => {
@@ -1470,7 +1471,8 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                const url = getGoogleScriptUrl();
+                // PERBAIKAN PENTING: Tambahkan ?sheet=Data_User untuk menulis ke sheet khusus
+                const url = getGoogleScriptUrl() + '?sheet=Data_User';
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -1493,7 +1495,7 @@
                     renderUserList();
                 } catch (error) {
                     console.error('❌ Gagal tambah user cloud:', error);
-                    showToast('❌ Gagal menyimpan ke Cloud. Periksa koneksi internet.', 'error');
+                    showToast('❌ Gagal menyimpan ke Cloud. Pastikan sheet "Data_User" ada & akses Internet.', 'error');
                 }
             }
 
@@ -1940,13 +1942,11 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── Sinkronisasi ke Google Sheets ───
+            // ─── Sinkronisasi Absensi ke Google Sheets ───
+            // Catatan: Fungsi ini menggunakan URL default (tanpa ?sheet=Data_User) agar masuk ke sheet Absensi utama.
             async function syncToGoogleSheet(recordData) {
                 const url = getGoogleScriptUrl();
-                if (!url || url === 'https://script.google.com/macros/s/ABC123/exec') {
-                    console.warn('⚠️ URL Google Script belum diatur. Sinkronisasi dilewati.');
-                    return;
-                }
+                if (!url) return;
                 try {
                     const payload = [recordData];
                     const response = await fetch(url, {
@@ -1959,20 +1959,17 @@
                     if (!response.ok) {
                         const errorText = await response.text();
                         console.error('❌ Gagal mengirim ke Sheet.best:', response.status, errorText);
-                        throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    } else {
+                        console.log('✅ Response dari Sheet.best:', await response.json());
                     }
-
-                    const result = await response.json();
-                    console.log('✅ Response dari Sheet.best:', result);
                 } catch (error) {
                     console.error('❌ Gagal mengirim ke Sheet.best:', error);
-                    throw error;
                 }
             }
 
             async function syncAllData() {
                 const url = getGoogleScriptUrl();
-                if (!url || url === 'https://script.google.com/macros/s/ABC123/exec') {
+                if (!url) {
                     showToast('⚠️ URL Google Script belum diatur.', 'error');
                     return;
                 }
@@ -2320,7 +2317,7 @@
                 loadThemePreference();
                 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-                // Amby data user dari Cloud saat aplikasi dibuka (Ganti createDefaultUsers)
+                // Ambil data user dari Cloud saat aplikasi dibuka
                 syncUsersFromCloud();
 
                 btnLogin.addEventListener('click', attemptLogin);
