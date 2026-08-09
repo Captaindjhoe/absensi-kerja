@@ -1235,14 +1235,12 @@
             // ─── KONFIGURASI ───
             const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/3a11c688-80c4-48fe-8abb-7e1b4dd7f95a';
             const ADMIN_PIN = '6455';
-            const DEFAULT_USERS = [
-                { name: 'Desmon', pin: '6455' },
-                { name: 'Frizca', pin: '6455' },
-                { name: 'Abel', pin: '6455' },
-                { name: 'Opung', pin: '6455' },
-            ];
 
             function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
+
+            // ─── STATE UNTUK CLOUD USER ───
+            let cloudUsers = [];
+            let usersSynced = false;
 
             // ─── Dark Mode ───
             function loadThemePreference() {
@@ -1354,10 +1352,6 @@
                 return STORAGE_PREFIX + username.toLowerCase().trim();
             }
 
-            function getPinKey(username) {
-                return PIN_PREFIX + username.toLowerCase().trim();
-            }
-
             function loadData() {
                 if (!currentUser) return [];
                 try {
@@ -1373,66 +1367,48 @@
                 localStorage.setItem(getStorageKey(currentUser), JSON.stringify(data));
             }
 
-            // ─── User & PIN management ───
-            function getUsers() {
-                const users = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && key.startsWith(STORAGE_PREFIX)) {
-                        const name = key.substring(STORAGE_PREFIX.length);
-                        if (name !== 'admin') {
-                            users.push(name);
-                        }
+            // ─── User & PIN management via Cloud ───
+            async function syncUsersFromCloud() {
+                const url = getGoogleScriptUrl();
+                if (!url) return;
+
+                try {
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Pastikan data adalah array. Jika kosong, data = []
+                        cloudUsers = (Array.isArray(data) ? data : []).map(item => ({
+                            name: item.Nama ? item.Nama.toLowerCase().trim() : '',
+                            pin: String(item.PIN).trim()
+                        })).filter(u => u.name && u.pin);
+                        usersSynced = true;
+                        console.log('✅ Data user dari Cloud dimuat:', cloudUsers.length, 'user');
+                        
+                        if (isAdmin) renderAdminPanel();
+                        renderUserList();
+                    } else {
+                        console.warn('⚠️ Gagal fetch user dari Cloud.');
                     }
+                } catch (error) {
+                    console.error('❌ Error sync user cloud:', error);
                 }
-                return users;
+            }
+
+            function getUsers() {
+                return cloudUsers.map(u => u.name);
             }
 
             function getAllUsersWithPin() {
-                const result = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && key.startsWith(PIN_PREFIX)) {
-                        const name = key.substring(PIN_PREFIX.length);
-                        const pin = localStorage.getItem(key);
-                        if (name !== 'admin') {
-                            result.push({ name, pin });
-                        }
-                    }
-                }
-                return result;
+                return cloudUsers;
             }
 
             function getUserPin(username) {
-                return localStorage.getItem(getPinKey(username)) || null;
-            }
-
-            function getAdminPin() { return ADMIN_PIN; }
-
-            function setUserPin(username, pin) {
-                localStorage.setItem(getPinKey(username), pin);
-            }
-
-            function deletePin(username) {
-                localStorage.removeItem(getPinKey(username));
+                const found = cloudUsers.find(u => u.name === username);
+                return found ? found.pin : null;
             }
 
             function userExists(username) {
-                return getUserPin(username) !== null;
-            }
-
-            function createDefaultUsers() {
-                DEFAULT_USERS.forEach(user => {
-                    const name = user.name.trim().toLowerCase();
-                    const pin = user.pin.trim();
-                    if (!userExists(name)) {
-                        setUserPin(name, pin);
-                        if (!localStorage.getItem(getStorageKey(name))) {
-                            localStorage.setItem(getStorageKey(name), JSON.stringify([]));
-                        }
-                        console.log(`✅ User default "${name}" dibuat dengan PIN ${pin}`);
-                    }
-                });
+                return cloudUsers.some(u => u.name === username);
             }
 
             function renderUserList() {
@@ -1466,47 +1442,62 @@
                     `;
                 });
                 if (!html) {
-                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar</td></tr>`;
+                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud</td></tr>`;
                 }
                 userTableBody.innerHTML = html;
+
                 window._resetPin = function(name) {
-                    if (confirm(`Reset PIN untuk "${name}"?`)) {
-                        const newPin = prompt(`Masukkan PIN baru untuk ${name} (4 digit angka):`);
-                        if (newPin && /^\d{4}$/.test(newPin)) {
-                            setUserPin(name, newPin);
-                            renderAdminPanel();
-                            showToast(`✅ PIN untuk "${name}" telah direset.`, 'success');
-                        } else if (newPin !== null) {
-                            showToast('⚠️ PIN harus 4 digit angka.', 'error');
-                        }
-                    }
+                    showToast('ℹ️ Untuk reset PIN, silakan hapus user ini lalu tambahkan kembali dengan PIN baru.', 'info', 5000);
                 };
-                window._deleteUser = function(name) {
-                    if (confirm(`Hapus pengguna "${name}" dan semua data absensinya?`)) {
-                        deletePin(name);
-                        localStorage.removeItem(getStorageKey(name));
+
+                window._deleteUser = async function(name) {
+                    if (confirm(`Hapus pengguna "${name}" dari Cloud?\n\nCatatan: Anda harus menghapus barisnya langsung di Google Sheet (Tab Data_User) untuk penghapusan permanen.`)) {
+                        showToast('🔄 Data diperbarui. Silakan hapus baris user di Google Sheet secara manual.', 'info', 5000);
+                        await syncUsersFromCloud();
                         renderAdminPanel();
                         renderUserList();
-                        showToast(`🗑️ Pengguna "${name}" telah dihapus.`, 'info');
                     }
                 };
             }
 
-            function addUser() {
+            async function addUser() {
                 const name = newUserName.value.trim().toLowerCase();
                 const pin = newUserPin.value.trim();
                 if (!name) { showToast('⚠️ Masukkan nama pengguna.', 'error'); return; }
                 if (!/^\d{4}$/.test(pin)) { showToast('⚠️ PIN harus 4 digit angka.', 'error'); return; }
                 if (userExists(name)) { showToast(`⚠️ Pengguna "${name}" sudah ada.`, 'error'); return; }
                 if (name === 'admin') { showToast('⚠️ Tidak bisa membuat user dengan nama admin.', 'error'); return; }
-                setUserPin(name, pin);
-                localStorage.setItem(getStorageKey(name), JSON.stringify([]));
-                newUserName.value = '';
-                newUserPin.value = '';
-                renderAdminPanel();
-                renderUserList();
-                showToast(`✅ Pengguna "${name}" berhasil ditambahkan dengan PIN ${pin}.`, 'success');
+
+                showToast('⏳ Menambahkan user ke Cloud...', 'info');
+
+                const url = getGoogleScriptUrl();
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify([{ Nama: name, PIN: pin }])
+                    });
+
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errText}`);
+                    }
+
+                    newUserName.value = '';
+                    newUserPin.value = '';
+                    showToast(`✅ Pengguna "${name}" berhasil ditambahkan ke Cloud!`, 'success');
+                    
+                    await syncUsersFromCloud();
+                    renderAdminPanel();
+                    renderUserList();
+                } catch (error) {
+                    console.error('❌ Gagal tambah user cloud:', error);
+                    showToast('❌ Gagal menyimpan ke Cloud. Periksa koneksi internet.', 'error');
+                }
             }
+
+            function getAdminPin() { return ADMIN_PIN; }
 
             // ─── Login ───
             function attemptLogin() {
@@ -1527,7 +1518,7 @@
                 }
 
                 const storedPin = getUserPin(username);
-                if (!storedPin) { loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.'; return; }
+                if (!storedPin) { loginError.textContent = 'Pengguna tidak terdaftar di Cloud. Hubungi Admin.'; return; }
                 if (pin === storedPin) {
                     isAdmin = false;
                     currentUser = username;
@@ -1957,7 +1948,6 @@
                     return;
                 }
                 try {
-                    // Kirim sebagai array of objects (Sheet.best menerima batch insert)
                     const payload = [recordData];
                     const response = await fetch(url, {
                         method: 'POST',
@@ -1994,7 +1984,6 @@
                 showToast('⏳ Mengirim data ke Cloud...', 'info');
                 
                 try {
-                    // Kirim semua data dalam satu batch
                     const payload = data.map(rec => ({
                         Tanggal: rec.date || '',
                         Nama: rec.nama || currentUser || 'Tidak diketahui',
@@ -2331,7 +2320,8 @@
                 loadThemePreference();
                 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-                createDefaultUsers();
+                // Amby data user dari Cloud saat aplikasi dibuka (Ganti createDefaultUsers)
+                syncUsersFromCloud();
 
                 btnLogin.addEventListener('click', attemptLogin);
                 loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginPinInput.focus(); });
@@ -2339,8 +2329,7 @@
                 btnLogout.addEventListener('click', logout);
 
                 btnAddUser.addEventListener('click', addUser);
-                btnRefreshUsers.addEventListener('click', () => { renderAdminPanel();
-                    showToast('🔄 Daftar pengguna diperbarui.', 'info'); });
+                btnRefreshUsers.addEventListener('click', () => { syncUsersFromCloud(); showToast('🔄 Data user dari Cloud diperbarui.', 'info'); });
 
                 btnIn.addEventListener('click', handleCheckIn);
                 btnOut.addEventListener('click', handleCheckOut);
@@ -2399,11 +2388,9 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan Dark Mode & Laporan Bulanan)');
+                console.log('📋 Aplikasi Absensi siap digunakan (User terintegrasi Cloud via Sheet.best)');
                 console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded)`);
-                console.log('👥 User default:', DEFAULT_USERS.map(u => `${u.name} (PIN: ${u.pin})`).join(', '));
                 console.log('🌙 Toggle dark mode di pojok kanan header.');
-                console.log('📤 Sinkronisasi menggunakan Sheet.best.');
             }
 
             init();
