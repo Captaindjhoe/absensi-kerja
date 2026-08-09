@@ -1236,6 +1236,8 @@
             const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/3a11c688-80c4-48fe-8abb-7e1b4dd7f95a';
             const ADMIN_PIN = '6455';
 
+            function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
+
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
             let usersSynced = false;
@@ -1367,20 +1369,19 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                // PERBAIKAN PENTING: Tambahkan ?sheet=Data_User untuk mengambil sheet khusus
-                const url = getGoogleScriptUrl() + '?sheet=Data_User';
+                // PERBAIKAN: Hapus ?sheet=Data_User, Sheet.best otomatis membaca sheet PERTAMA
+                const url = getGoogleScriptUrl();
                 if (!url) return;
 
                 try {
                     const response = await fetch(url);
                     if (response.ok) {
                         const data = await response.json();
-                        // Debug: console.log('Data mentah dari Sheet:', data);
+                        // Filter: Buang user bernama 'admin' dan data yang tidak valid
                         cloudUsers = (Array.isArray(data) ? data : []).map(item => ({
                             name: item.Nama ? item.Nama.toLowerCase().trim() : '',
-                            // Perbaikan validasi PIN: cek apakah PIN ada, jika tidak beri string kosong
                             pin: item.PIN ? String(item.PIN).trim() : ''
-                        })).filter(u => u.name && u.pin && u.name !== 'admin'); // Filter admin keluar
+                        })).filter(u => u.name && u.name !== 'admin' && u.pin);
                         usersSynced = true;
                         console.log('✅ Data user dari Cloud dimuat:', cloudUsers.length, 'user');
                         
@@ -1414,8 +1415,7 @@
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
-                // Filter admin agar tidak muncul di daftar user biasa
-                users.filter(u => u !== 'admin').forEach(u => {
+                users.forEach(u => {
                     const btn = document.createElement('button');
                     btn.textContent = u;
                     btn.addEventListener('click', () => {
@@ -1471,8 +1471,8 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                // PERBAIKAN PENTING: Tambahkan ?sheet=Data_User untuk menulis ke sheet khusus
-                const url = getGoogleScriptUrl() + '?sheet=Data_User';
+                // PERBAIKAN: Hapus ?sheet=Data_User, Sheet.best otomatis POST ke sheet PERTAMA
+                const url = getGoogleScriptUrl();
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -1495,7 +1495,7 @@
                     renderUserList();
                 } catch (error) {
                     console.error('❌ Gagal tambah user cloud:', error);
-                    showToast('❌ Gagal menyimpan ke Cloud. Pastikan sheet "Data_User" ada & akses Internet.', 'error');
+                    showToast('❌ Gagal menyimpan ke Cloud. Pastikan sheet pertama bernama "Data_User" & koneksi internet.', 'error');
                 }
             }
 
@@ -1943,7 +1943,6 @@
             }
 
             // ─── Sinkronisasi Absensi ke Google Sheets ───
-            // Catatan: Fungsi ini menggunakan URL default (tanpa ?sheet=Data_User) agar masuk ke sheet Absensi utama.
             async function syncToGoogleSheet(recordData) {
                 const url = getGoogleScriptUrl();
                 if (!url) return;
