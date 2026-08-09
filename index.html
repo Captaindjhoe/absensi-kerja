@@ -1234,15 +1234,12 @@
 
             // ─── KONFIGURASI ───
             const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/3a11c688-80c4-48fe-8abb-7e1b4dd7f95a';
-            // ⚠️ PERHATIAN: Pastikan nama sheet absensi di Google Sheet Anda bernama "Absensi"
-            const ATTENDANCE_SHEET_NAME = 'Absensi'; 
-
             const ADMIN_PIN = '6455';
 
-            // ─── PERBAIKAN URL ───
-            // Gunakan parameter ?sheet=... untuk menunjuk ke sheet kedua
+            // Fungsi pengambilan URL
             function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
-            function getAttendanceSheetUrl() { return GOOGLE_SCRIPT_URL + '?sheet=' + encodeURIComponent(ATTENDANCE_SHEET_NAME); }
+            // URL khusus untuk menulis/membaca data User di sheet ke-2
+            function getUserSheetUrl() { return GOOGLE_SCRIPT_URL + '?sheet=Data_User'; }
 
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
@@ -1375,7 +1372,8 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                const url = getGoogleScriptUrl();
+                // PERBAIKAN: Ambil user dari Sheet ke-2 (Data_User)
+                const url = getUserSheetUrl();
                 if (!url) return;
 
                 try {
@@ -1475,7 +1473,8 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                const url = getGoogleScriptUrl();
+                // PERBAIKAN: Tulis ke Sheet ke-2 (Data_User)
+                const url = getUserSheetUrl();
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -1498,7 +1497,7 @@
                     renderUserList();
                 } catch (error) {
                     console.error('❌ Gagal tambah user cloud:', error);
-                    showToast('❌ Gagal menyimpan ke Cloud. Pastikan sheet pertama bernama "Data_User" & koneksi internet.', 'error');
+                    showToast('❌ Gagal menyimpan ke Cloud. Pastikan sheet kedua bernama "Data_User" & koneksi internet.', 'error');
                 }
             }
 
@@ -1946,9 +1945,9 @@
             }
 
             // ─── Sinkronisasi Absensi ke Google Sheets ───
-            // PERBAIKAN: Gunakan ?sheet=Absensi agar data masuk ke sheet yang benar
+            // PERBAIKAN: Tidak menggunakan parameter, otomatis menulis ke Sheet PERTAMA (Absensi)
             async function syncToGoogleSheet(recordData) {
-                const url = getAttendanceSheetUrl();
+                const url = getGoogleScriptUrl(); 
                 if (!url) return;
                 try {
                     const payload = [recordData];
@@ -1971,7 +1970,7 @@
             }
 
             async function syncAllData() {
-                const url = getAttendanceSheetUrl();
+                const url = getGoogleScriptUrl();
                 if (!url) {
                     showToast('⚠️ URL Google Script belum diatur.', 'error');
                     return;
@@ -2388,7 +2387,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (User terintegrasi Cloud via Sheet.best)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Strategi terbalik: Absensi di Sheet 1, User di Sheet 2)');
                 console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded)`);
                 console.log('🌙 Toggle dark mode di pojok kanan header.');
             }
