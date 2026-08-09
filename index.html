@@ -328,6 +328,13 @@
         .btn-sync:hover {
             background: #a5b4fc;
         }
+        .btn-report {
+            background: #fde68a;
+            color: #92400e;
+        }
+        .btn-report:hover {
+            background: #fcd34d;
+        }
 
         /* ─── Today's Record ─── */
         .today-grid {
@@ -690,6 +697,136 @@
             margin-left: 4px;
         }
 
+        /* ─── Laporan Bulanan Modal ─── */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 24px;
+            padding: 24px 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-box h2 {
+            font-size: 22px;
+            margin-bottom: 16px;
+            color: #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-box .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: 0.2s;
+        }
+        .modal-box .close-btn:hover {
+            color: #1e293b;
+        }
+        .modal-box .report-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .modal-box .report-controls input,
+        .modal-box .report-controls select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .modal-box .report-controls button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-box .report-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 12px;
+        }
+        .modal-box .report-summary .item {
+            text-align: center;
+        }
+        .modal-box .report-summary .item .num {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .modal-box .report-summary .item .label {
+            font-size: 10px;
+            font-weight: 500;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+        .modal-box .report-table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #e9edf2;
+            margin-bottom: 12px;
+        }
+        .modal-box .report-table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 300px;
+        }
+        .modal-box .report-table-wrap th {
+            background: #f1f5f9;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .modal-box .report-table-wrap td {
+            padding: 8px 10px;
+            border-top: 1px solid #e9edf2;
+        }
+        .modal-box .report-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .modal-box .report-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         /* ─── Responsive ─── */
         @media (max-width: 480px) {
             .header h1 {
@@ -729,6 +866,12 @@
             .admin-panel .admin-grid {
                 grid-template-columns: 1fr;
             }
+            .modal-box {
+                padding: 16px;
+            }
+            .report-summary {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         @media (max-width: 380px) {
             .today-grid {
@@ -740,6 +883,9 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            .report-summary {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ─── Sembunyikan input file ─── */
@@ -747,6 +893,12 @@
             display: none;
         }
         .backup-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .action-row {
             display: flex;
             gap: 10px;
             margin-top: 12px;
@@ -904,10 +1056,10 @@
                 <input type="file" id="restoreInput" accept=".json" />
             </div>
 
-            <!-- Sinkronisasi Google Sheets -->
-            <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <!-- Action Buttons (Sinkronisasi & Laporan) -->
+            <div class="action-row">
                 <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
-                <!-- Tombol set URL hanya muncul untuk admin -->
+                <button class="btn btn-report btn-sm" id="btnReport">📊 Laporan Bulanan</button>
                 <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0; display:none;">⚙️ Set URL Google Script</button>
             </div>
 
@@ -921,6 +1073,44 @@
         </div>
     </div>
 
+    <!-- ─── MODAL LAPORAN BULANAN ─── -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-box">
+            <button class="close-btn" id="closeReportModal">&times;</button>
+            <h2>📊 Laporan Bulanan</h2>
+
+            <div class="report-controls">
+                <input type="month" id="reportMonth" />
+                <button class="btn-sm" id="btnGenerateReport" style="background:#2d6a9f; color:#fff;">Tampilkan</button>
+                <button class="btn-sm" id="btnExportReport" style="background:#065f46; color:#fff;">📥 Export Excel</button>
+            </div>
+
+            <div class="report-summary" id="reportSummary">
+                <div class="item"><div class="num" id="rTotalDays">0</div><div class="label">Hari Kerja</div></div>
+                <div class="item"><div class="num" id="rTotalHours">--:--</div><div class="label">Total Jam Kerja</div></div>
+                <div class="item"><div class="num" id="rAvgHours">--:--</div><div class="label">Rata-rata per Hari</div></div>
+                <div class="item"><div class="num" id="rTotalRecords">0</div><div class="label">Total Absen</div></div>
+            </div>
+
+            <div class="report-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Masuk</th>
+                            <th>Pulang</th>
+                            <th>Total Kerja</th>
+                            <th>Lokasi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <tr><td colspan="5" style="text-align:center;color:#94a3b8;">Pilih bulan dan klik Tampilkan</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
@@ -930,28 +1120,16 @@
             'use strict';
 
             // ─── KONFIGURASI ───
-            // ⚠️ Ganti URL di bawah ini dengan Web App URL dari Google Apps Script
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqA16eZyKAPEUd3I1SlAyZbjc26fRhwjeBs1VhIwEb50_gjvwFrpfDG2bPTjfyFD2oTw/exec';
-
-            // 🔑 PIN ADMIN (Hardcoded) - Ganti sesuai keinginan Anda
-            // PIN ini berlaku untuk semua perangkat dan hanya bisa diubah dengan mengedit file ini.
-            const ADMIN_PIN = '6455'; // <-- Ganti dengan PIN admin baru
-
-            // ─── DAFTAR USER DEFAULT ───
-            // Tambahkan nama dan PIN untuk user yang bisa login langsung
+            const ADMIN_PIN = '6455'; // Ubah sesuai keinginan
             const DEFAULT_USERS = [
                 { name: 'Desmon', pin: '6455' },
                 { name: 'Frizca', pin: '6455' },
                 { name: 'Abel', pin: '6455' },
                 { name: 'Opung', pin: '6455' },
-                // Tambahkan user lain di sini sesuai kebutuhan
-                // Contoh: { name: 'doni', pin: '5555' },
             ];
 
-            // ─── Fungsi mendapatkan URL Google Script ───
-            function getGoogleScriptUrl() {
-                return GOOGLE_SCRIPT_URL;
-            }
+            function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
 
             // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
@@ -985,6 +1163,18 @@
             const restoreInput = document.getElementById('restoreInput');
             const btnSyncAll = document.getElementById('btnSyncAll');
             const btnSetGoogleUrl = document.getElementById('btnSetGoogleUrl');
+            const btnReport = document.getElementById('btnReport');
+            const reportModal = document.getElementById('reportModal');
+            const closeReportModal = document.getElementById('closeReportModal');
+            const btnGenerateReport = document.getElementById('btnGenerateReport');
+            const btnExportReport = document.getElementById('btnExportReport');
+            const reportMonth = document.getElementById('reportMonth');
+            const reportTableBody = document.getElementById('reportTableBody');
+            const rTotalDays = document.getElementById('rTotalDays');
+            const rTotalHours = document.getElementById('rTotalHours');
+            const rAvgHours = document.getElementById('rAvgHours');
+            const rTotalRecords = document.getElementById('rTotalRecords');
+
             const todayIn = document.getElementById('todayIn');
             const todayOut = document.getElementById('todayOut');
             const todayInPhoto = document.getElementById('todayInPhoto');
@@ -1072,17 +1262,12 @@
                 return result;
             }
 
-            // ─── PIN untuk user biasa (dari localStorage) ───
             function getUserPin(username) {
                 return localStorage.getItem(getPinKey(username)) || null;
             }
 
-            // ─── PIN untuk admin (HARDCORED, dari konstanta) ───
-            function getAdminPin() {
-                return ADMIN_PIN;
-            }
+            function getAdminPin() { return ADMIN_PIN; }
 
-            // ─── Set PIN untuk user biasa ───
             function setUserPin(username, pin) {
                 localStorage.setItem(getPinKey(username), pin);
             }
@@ -1095,7 +1280,6 @@
                 return getUserPin(username) !== null;
             }
 
-            // ─── Buat user default ───
             function createDefaultUsers() {
                 DEFAULT_USERS.forEach(user => {
                     const name = user.name.trim().toLowerCase();
@@ -1110,7 +1294,6 @@
                 });
             }
 
-            // ─── Render user list di login ───
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
@@ -1125,7 +1308,6 @@
                 });
             }
 
-            // ─── Render admin panel ───
             function renderAdminPanel() {
                 if (!isAdmin) return;
                 const users = getAllUsersWithPin();
@@ -1169,26 +1351,13 @@
                 };
             }
 
-            // ─── Tambah pengguna baru ───
             function addUser() {
                 const name = newUserName.value.trim().toLowerCase();
                 const pin = newUserPin.value.trim();
-                if (!name) {
-                    showToast('⚠️ Masukkan nama pengguna.', 'error');
-                    return;
-                }
-                if (!/^\d{4}$/.test(pin)) {
-                    showToast('⚠️ PIN harus 4 digit angka.', 'error');
-                    return;
-                }
-                if (userExists(name)) {
-                    showToast(`⚠️ Pengguna "${name}" sudah ada.`, 'error');
-                    return;
-                }
-                if (name === 'admin') {
-                    showToast('⚠️ Tidak bisa membuat user dengan nama admin.', 'error');
-                    return;
-                }
+                if (!name) { showToast('⚠️ Masukkan nama pengguna.', 'error'); return; }
+                if (!/^\d{4}$/.test(pin)) { showToast('⚠️ PIN harus 4 digit angka.', 'error'); return; }
+                if (userExists(name)) { showToast(`⚠️ Pengguna "${name}" sudah ada.`, 'error'); return; }
+                if (name === 'admin') { showToast('⚠️ Tidak bisa membuat user dengan nama admin.', 'error'); return; }
                 setUserPin(name, pin);
                 localStorage.setItem(getStorageKey(name), JSON.stringify([]));
                 newUserName.value = '';
@@ -1204,34 +1373,20 @@
                 const pin = loginPinInput.value.trim();
                 loginError.textContent = '';
 
-                if (!username) {
-                    loginError.textContent = 'Masukkan nama pengguna.';
-                    return;
-                }
-                if (!pin) {
-                    loginError.textContent = 'Masukkan PIN.';
-                    return;
-                }
+                if (!username) { loginError.textContent = 'Masukkan nama pengguna.'; return; }
+                if (!pin) { loginError.textContent = 'Masukkan PIN.'; return; }
 
-                // ─── Cek Admin (PIN dari konstanta, bukan localStorage) ───
                 if (username === 'admin') {
                     if (pin === getAdminPin()) {
                         isAdmin = true;
                         currentUser = 'admin';
                         doLogin();
                         return;
-                    } else {
-                        loginError.textContent = 'PIN admin salah.';
-                        return;
-                    }
+                    } else { loginError.textContent = 'PIN admin salah.'; return; }
                 }
 
-                // ─── Cek user biasa (PIN dari localStorage) ───
                 const storedPin = getUserPin(username);
-                if (!storedPin) {
-                    loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.';
-                    return;
-                }
+                if (!storedPin) { loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.'; return; }
                 if (pin === storedPin) {
                     isAdmin = false;
                     currentUser = username;
@@ -1317,17 +1472,9 @@
             // ─── GPS ───
             function getLocation() {
                 return new Promise((resolve) => {
-                    if (!navigator.geolocation) {
-                        resolve(null);
-                        return;
-                    }
+                    if (!navigator.geolocation) { resolve(null); return; }
                     navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            resolve({
-                                lat: pos.coords.latitude,
-                                lng: pos.coords.longitude,
-                            });
-                        },
+                        (pos) => { resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
                         () => { resolve(null); },
                         { enableHighAccuracy: true, timeout: 8000 }
                     );
@@ -1349,10 +1496,7 @@
             // ─── Camera ───
             async function initCamera() {
                 try {
-                    if (stream) {
-                        stream.getTracks().forEach(t => t.stop());
-                        stream = null;
-                    }
+                    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
                     stream = await navigator.mediaDevices.getUserMedia({
                         video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
                         audio: false,
@@ -1367,10 +1511,10 @@
                 } catch (err) {
                     console.warn('Kamera error:', err);
                     placeholder.innerHTML = `
-                <span class="icon">⚠️</span>
-                Kamera tidak dapat diakses.<br />
-                <span style="font-size:12px;opacity:0.7;">Pastikan izin kamera diberikan.</span>
-              `;
+                        <span class="icon">⚠️</span>
+                        Kamera tidak dapat diakses.<br />
+                        <span style="font-size:12px;opacity:0.7;">Pastikan izin kamera diberikan.</span>
+                    `;
                     overlay.style.display = 'none';
                     cameraReady = false;
                     updateButtons();
@@ -1436,14 +1580,10 @@
                         if (todayRecord.checkIn.photo) {
                             todayInPhoto.src = todayRecord.checkIn.photo;
                             todayInPhoto.style.display = 'block';
-                        } else {
-                            todayInPhoto.style.display = 'none';
-                        }
+                        } else { todayInPhoto.style.display = 'none'; }
                         if (todayRecord.checkIn.location) {
                             todayInLoc.textContent = '📍 ' + (todayRecord.checkIn.location.address || 'Lokasi terekam');
-                        } else {
-                            todayInLoc.textContent = '';
-                        }
+                        } else { todayInLoc.textContent = ''; }
                     } else {
                         todayIn.textContent = '--:--:--';
                         todayInPhoto.style.display = 'none';
@@ -1454,14 +1594,10 @@
                         if (todayRecord.checkOut.photo) {
                             todayOutPhoto.src = todayRecord.checkOut.photo;
                             todayOutPhoto.style.display = 'block';
-                        } else {
-                            todayOutPhoto.style.display = 'none';
-                        }
+                        } else { todayOutPhoto.style.display = 'none'; }
                         if (todayRecord.checkOut.location) {
                             todayOutLoc.textContent = '📍 ' + (todayRecord.checkOut.location.address || 'Lokasi terekam');
-                        } else {
-                            todayOutLoc.textContent = '';
-                        }
+                        } else { todayOutLoc.textContent = ''; }
                     } else {
                         todayOut.textContent = '--:--:--';
                         todayOutPhoto.style.display = 'none';
@@ -1508,7 +1644,6 @@
                     const nama = rec.nama || currentUser || 'Tidak diketahui';
                     const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
                     const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
-
                     let workHours = '-';
                     if (rec.checkIn && rec.checkOut) {
                         const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
@@ -1520,13 +1655,10 @@
                             workHours = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
                         }
                     }
-
                     let photosHtml = '';
                     if (rec.checkIn && rec.checkIn.photo) {
                         photosHtml += `<img class="mini-photo" src="${rec.checkIn.photo}" alt="masuk" title="Foto masuk" />`;
-                    } else {
-                        photosHtml += `<span class="text-muted" style="font-size:12px;">-</span>`;
-                    }
+                    } else { photosHtml += `<span class="text-muted" style="font-size:12px;">-</span>`; }
                     if (rec.checkOut && rec.checkOut.photo) {
                         photosHtml += `<img class="mini-photo" src="${rec.checkOut.photo}" alt="pulang" title="Foto pulang" />`;
                     } else {
@@ -1534,7 +1666,6 @@
                             photosHtml += `<span class="text-muted" style="font-size:12px;margin-left:4px;">-</span>`;
                         }
                     }
-
                     let locHtml = '';
                     if (rec.checkIn && rec.checkIn.location) {
                         locHtml += `<span class="loc-badge" title="${rec.checkIn.location.address || ''}">📍${rec.checkIn.location.address ? rec.checkIn.location.address.substring(0,15)+'…' : '📍'}</span>`;
@@ -1573,9 +1704,7 @@
                     const hh = String(Math.floor(avg / 60)).padStart(2, '0');
                     const mm = String(Math.round(avg % 60)).padStart(2, '0');
                     statAvgIn.textContent = `${hh}:${mm}`;
-                } else {
-                    statAvgIn.textContent = '--:--';
-                }
+                } else { statAvgIn.textContent = '--:--'; }
 
                 const outTimes = data.filter(r => r.checkOut).map(r => {
                     const [h, m] = r.checkOut.time.split(':').map(Number);
@@ -1586,9 +1715,7 @@
                     const hh = String(Math.floor(avg / 60)).padStart(2, '0');
                     const mm = String(Math.round(avg % 60)).padStart(2, '0');
                     statAvgOut.textContent = `${hh}:${mm}`;
-                } else {
-                    statAvgOut.textContent = '--:--';
-                }
+                } else { statAvgOut.textContent = '--:--'; }
 
                 const workMinutes = data.filter(r => r.checkIn && r.checkOut).map(r => {
                     const [hIn, mIn] = r.checkIn.time.split(':').map(Number);
@@ -1599,11 +1726,8 @@
                     const totalMinutes = workMinutes.reduce((a, b) => a + b, 0);
                     const hours = Math.floor(totalMinutes / 60);
                     const mins = Math.round(totalMinutes % 60);
-                    statTotalWork.textContent =
-                        `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-                } else {
-                    statTotalWork.textContent = '--:--';
-                }
+                    statTotalWork.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                } else { statTotalWork.textContent = '--:--'; }
 
                 updateChart(data);
             }
@@ -1631,29 +1755,15 @@
 
                 chartInstance = new Chart(ctx, {
                     type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Hadir',
-                            data: counts,
-                            backgroundColor: '#2d6a9f',
-                            borderRadius: 4,
-                        }]
-                    },
+                    data: { labels: labels, datasets: [{ label: 'Hadir', data: counts, backgroundColor: '#2d6a9f',
+                            borderRadius: 4 }] },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
+                        plugins: { legend: { display: false } },
                         scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1, font: { size: 10 } }
-                            },
-                            x: {
-                                ticks: { font: { size: 10 } }
-                            }
+                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } },
+                            x: { ticks: { font: { size: 10 } } }
                         }
                     }
                 });
@@ -1661,32 +1771,20 @@
 
             // ─── Buttons update ───
             function updateButtons() {
-                if (!currentUser) {
-                    btnIn.disabled = true;
-                    btnOut.disabled = true;
-                    return;
-                }
+                if (!currentUser) { btnIn.disabled = true;
+                    btnOut.disabled = true; return; }
                 const data = loadData();
                 const todayRecord = getTodayRecord(data);
                 const hasCheckIn = todayRecord && todayRecord.checkIn ? true : false;
                 const hasCheckOut = todayRecord && todayRecord.checkOut ? true : false;
 
-                if (!cameraReady) {
-                    btnIn.disabled = true;
-                    btnOut.disabled = true;
-                    return;
-                }
+                if (!cameraReady) { btnIn.disabled = true;
+                    btnOut.disabled = true; return; }
 
-                if (!hasCheckIn) {
-                    btnIn.disabled = false;
-                    btnOut.disabled = true;
-                } else if (hasCheckIn && !hasCheckOut) {
-                    btnIn.disabled = true;
-                    btnOut.disabled = false;
-                } else {
-                    btnIn.disabled = true;
-                    btnOut.disabled = true;
-                }
+                if (!hasCheckIn) { btnIn.disabled = false;
+                    btnOut.disabled = true; } else if (hasCheckIn && !hasCheckOut) { btnIn.disabled = true;
+                    btnOut.disabled = false; } else { btnIn.disabled = true;
+                    btnOut.disabled = true; }
             }
 
             // ─── Sinkronisasi ke Google Sheets ───
@@ -1700,9 +1798,7 @@
                     await fetch(url, {
                         method: 'POST',
                         mode: 'no-cors',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(recordData),
                     });
                     console.log('✅ Data terkirim ke Google Sheet:', recordData);
@@ -1712,21 +1808,17 @@
                 }
             }
 
-            // ─── Sinkronkan semua data ke Google Sheets ───
             async function syncAllData() {
                 const url = getGoogleScriptUrl();
                 if (!url || url === 'https://script.google.com/macros/s/ABC123/exec') {
-                    showToast('⚠️ URL Google Script belum diatur. Admin harus mengatur URL terlebih dahulu di file index.html.', 'error');
+                    showToast('⚠️ URL Google Script belum diatur.', 'error');
                     return;
                 }
                 const data = loadData();
-                if (data.length === 0) {
-                    showToast('📭 Tidak ada data untuk disinkronkan.', 'info');
-                    return;
-                }
+                if (data.length === 0) { showToast('📭 Tidak ada data untuk disinkronkan.', 'info'); return; }
                 showToast('⏳ Mengirim data ke Cloud...', 'info');
-                let successCount = 0;
-                let failCount = 0;
+                let successCount = 0,
+                    failCount = 0;
                 for (const rec of data) {
                     const recordData = {
                         Tanggal: rec.date || '',
@@ -1748,146 +1840,207 @@
                         })(),
                         Lokasi: rec.checkIn?.location?.address || rec.checkOut?.location?.address || 'Tidak terdeteksi'
                     };
-                    try {
-                        await syncToGoogleSheet(recordData);
-                        successCount++;
-                    } catch (e) {
-                        failCount++;
-                    }
+                    try { await syncToGoogleSheet(recordData);
+                        successCount++; } catch (e) { failCount++; }
                 }
-                if (failCount === 0) {
-                    showToast(`✅ ${successCount} data berhasil disinkronkan!`, 'success');
-                } else {
-                    showToast(`⚠️ ${successCount} berhasil, ${failCount} gagal.`, 'error');
-                }
+                if (failCount === 0) { showToast(`✅ ${successCount} data berhasil disinkronkan!`, 'success'); } else { showToast(
+                        `⚠️ ${successCount} berhasil, ${failCount} gagal.`, 'error'); }
             }
 
-            // ─── Set URL Google Script (hanya admin) ───
             function setGoogleScriptUrlPrompt() {
-                if (!isAdmin) {
-                    showToast('⚠️ Hanya admin yang bisa mengubah URL Google Script.', 'error');
+                if (!isAdmin) { showToast('⚠️ Hanya admin yang bisa mengubah URL Google Script.', 'error'); return; }
+                showToast('ℹ️ URL Google Script sudah disematkan di kode.', 'info');
+            }
+
+            // ─── Laporan Bulanan ───
+            function generateMonthlyReport() {
+                const monthValue = reportMonth.value;
+                if (!monthValue) {
+                    showToast('⚠️ Pilih bulan dan tahun terlebih dahulu.', 'error');
                     return;
                 }
-                showToast('ℹ️ URL Google Script sudah disematkan di kode. Untuk mengubah, edit file index.html dan ganti GOOGLE_SCRIPT_URL.', 'info');
+                const [year, month] = monthValue.split('-').map(Number);
+                const data = loadData();
+                // Filter data berdasarkan bulan & tahun
+                const filtered = data.filter(rec => {
+                    const parts = rec.date.split('-');
+                    if (parts.length !== 3) return false;
+                    const y = parseInt(parts[0]);
+                    const m = parseInt(parts[1]);
+                    return y === year && m === month;
+                });
+
+                // Urutkan berdasarkan tanggal
+                filtered.sort((a, b) => a.date.localeCompare(b.date));
+
+                // Tabel
+                let html = '';
+                let totalWorkMinutes = 0;
+                let totalRecords = 0;
+                let hariKerja = 0;
+
+                filtered.forEach(rec => {
+                    const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
+                    const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
+                    let workHours = '-';
+                    let workMinutes = 0;
+                    if (rec.checkIn && rec.checkOut) {
+                        const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                        const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                        const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                        if (diff >= 0) {
+                            workMinutes = diff;
+                            const hrs = Math.floor(diff / 60);
+                            const mins = diff % 60;
+                            workHours = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                            totalWorkMinutes += diff;
+                            hariKerja++;
+                        }
+                    }
+                    const lokasi = rec.checkIn?.location?.address || rec.checkOut?.location?.address || '-';
+                    html += `
+                        <tr>
+                            <td>${formatDateDisplay(rec.date)}</td>
+                            <td>${inTime}</td>
+                            <td>${outTime}</td>
+                            <td>${workHours}</td>
+                            <td style="font-size:11px;">${lokasi.length > 20 ? lokasi.substring(0,20)+'…' : lokasi}</td>
+                        </tr>
+                    `;
+                    totalRecords++;
+                });
+
+                if (!html) {
+                    html = `<tr><td colspan="5" style="text-align:center;color:#94a3b8;">Tidak ada data untuk bulan ini</td></tr>`;
+                }
+                reportTableBody.innerHTML = html;
+
+                // Ringkasan
+                rTotalDays.textContent = hariKerja;
+                rTotalRecords.textContent = totalRecords;
+                if (totalWorkMinutes > 0) {
+                    const hrs = Math.floor(totalWorkMinutes / 60);
+                    const mins = totalWorkMinutes % 60;
+                    rTotalHours.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                    if (hariKerja > 0) {
+                        const avg = Math.round(totalWorkMinutes / hariKerja);
+                        const avgHrs = Math.floor(avg / 60);
+                        const avgMins = avg % 60;
+                        rAvgHours.textContent = `${String(avgHrs).padStart(2, '0')}:${String(avgMins).padStart(2, '0')}`;
+                    } else { rAvgHours.textContent = '--:--'; }
+                } else {
+                    rTotalHours.textContent = '--:--';
+                    rAvgHours.textContent = '--:--';
+                }
+
+                // Simpan data untuk export
+                window._reportData = { filtered, year, month };
+            }
+
+            function exportReportExcel() {
+                const data = window._reportData;
+                if (!data || data.filtered.length === 0) {
+                    showToast('📭 Tidak ada data untuk diexport.', 'info');
+                    return;
+                }
+                try {
+                    const rows = [
+                        ['Tanggal', 'Nama', 'Masuk', 'Pulang', 'Total Kerja (jam:menit)', 'Lokasi']
+                    ];
+                    for (const rec of data.filtered) {
+                        const inTime = rec.checkIn ? rec.checkIn.time : '';
+                        const outTime = rec.checkOut ? rec.checkOut.time : '';
+                        let workStr = '';
+                        if (rec.checkIn && rec.checkOut) {
+                            const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                            const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                            const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                            if (diff >= 0) {
+                                const hrs = Math.floor(diff / 60);
+                                const mins = diff % 60;
+                                workStr = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                            }
+                        }
+                        const lokasi = rec.checkIn?.location?.address || rec.checkOut?.location?.address || '';
+                        rows.push([rec.date, rec.nama || currentUser || 'Tidak diketahui', inTime, outTime, workStr, lokasi]);
+                    }
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+                    ws['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 40 }];
+                    XLSX.utils.book_append_sheet(wb, ws, `Laporan_${data.year}_${data.month}`);
+                    XLSX.writeFile(wb, `Laporan_${data.year}-${String(data.month).padStart(2,'0')}.xlsx`);
+                    showToast(`📊 Laporan berhasil diexport!`, 'success', 3000);
+                } catch (err) {
+                    console.error('Export error:', err);
+                    showToast('❌ Gagal export laporan: ' + err.message, 'error');
+                }
             }
 
             // ─── Actions ───
             async function handleCheckIn() {
-                if (!currentUser) {
-                    showToast('⚠️ Silakan login terlebih dahulu.', 'error');
-                    return;
-                }
-                if (!cameraReady) {
-                    showToast('📷 Kamera belum siap.', 'error');
-                    return;
-                }
+                if (!currentUser) { showToast('⚠️ Silakan login terlebih dahulu.', 'error'); return; }
+                if (!cameraReady) { showToast('📷 Kamera belum siap.', 'error'); return; }
                 const data = loadData();
                 const today = todayStr();
                 const existing = getTodayRecord(data);
-
-                if (existing && existing.checkIn) {
-                    showToast('⏳ Anda sudah melakukan absen masuk hari ini.', 'info');
-                    return;
-                }
+                if (existing && existing.checkIn) { showToast('⏳ Anda sudah melakukan absen masuk hari ini.', 'info'); return; }
 
                 const photo = capturePhoto();
-                if (!photo) {
-                    showToast('❌ Gagal mengambil foto. Coba lagi.', 'error');
-                    return;
-                }
+                if (!photo) { showToast('❌ Gagal mengambil foto. Coba lagi.', 'error'); return; }
 
                 let location = null;
                 const loc = await getLocation();
                 if (loc) {
                     const address = await getAddress(loc.lat, loc.lng);
                     location = { lat: loc.lat, lng: loc.lng, address };
-                } else {
-                    showToast('📍 GPS tidak tersedia, absen tetap dicatat tanpa lokasi.', 'info', 2500);
-                }
+                } else { showToast('📍 GPS tidak tersedia, absen tetap dicatat tanpa lokasi.', 'info', 2500); }
 
                 const now = new Date();
                 const time = timeStr(now);
 
                 let record;
-                if (existing) {
-                    record = existing;
-                    record.nama = currentUser;
-                } else {
-                    record = { date: today, nama: currentUser, checkIn: null, checkOut: null };
-                    data.push(record);
-                }
+                if (existing) { record = existing;
+                    record.nama = currentUser; } else { record = { date: today, nama: currentUser, checkIn: null,
+                        checkOut: null };
+                    data.push(record); }
 
-                record.checkIn = {
-                    time: time,
-                    timestamp: now.getTime(),
-                    photo: photo,
-                    location: location,
-                };
+                record.checkIn = { time: time, timestamp: now.getTime(), photo: photo, location: location };
 
                 saveData(data);
                 renderUI();
 
-                const recordData = {
-                    Tanggal: today,
-                    Nama: currentUser,
-                    Masuk: time,
-                    Pulang: '',
-                    TotalKerja: '',
-                    Lokasi: location ? location.address : 'Tidak terdeteksi'
-                };
+                const recordData = { Tanggal: today, Nama: currentUser, Masuk: time, Pulang: '', TotalKerja: '',
+                    Lokasi: location ? location.address : 'Tidak terdeteksi' };
                 syncToGoogleSheet(recordData).catch(() => {});
 
                 showToast(`✅ Absen masuk berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
             }
 
             async function handleCheckOut() {
-                if (!currentUser) {
-                    showToast('⚠️ Silakan login terlebih dahulu.', 'error');
-                    return;
-                }
-                if (!cameraReady) {
-                    showToast('📷 Kamera belum siap.', 'error');
-                    return;
-                }
+                if (!currentUser) { showToast('⚠️ Silakan login terlebih dahulu.', 'error'); return; }
+                if (!cameraReady) { showToast('📷 Kamera belum siap.', 'error'); return; }
                 const data = loadData();
                 const today = todayStr();
                 const record = getTodayRecord(data);
-
-                if (!record || !record.checkIn) {
-                    showToast('⚠️ Anda belum absen masuk hari ini.', 'error');
-                    return;
-                }
-                if (record.checkOut) {
-                    showToast('⏳ Anda sudah absen pulang hari ini.', 'info');
-                    return;
-                }
+                if (!record || !record.checkIn) { showToast('⚠️ Anda belum absen masuk hari ini.', 'error'); return; }
+                if (record.checkOut) { showToast('⏳ Anda sudah absen pulang hari ini.', 'info'); return; }
 
                 if (!record.nama) record.nama = currentUser;
 
                 const photo = capturePhoto();
-                if (!photo) {
-                    showToast('❌ Gagal mengambil foto. Coba lagi.', 'error');
-                    return;
-                }
+                if (!photo) { showToast('❌ Gagal mengambil foto. Coba lagi.', 'error'); return; }
 
                 let location = null;
                 const loc = await getLocation();
                 if (loc) {
                     const address = await getAddress(loc.lat, loc.lng);
                     location = { lat: loc.lat, lng: loc.lng, address };
-                } else {
-                    showToast('📍 GPS tidak tersedia, absen tetap dicatat tanpa lokasi.', 'info', 2500);
-                }
+                } else { showToast('📍 GPS tidak tersedia, absen tetap dicatat tanpa lokasi.', 'info', 2500); }
 
                 const now = new Date();
                 const time = timeStr(now);
 
-                record.checkOut = {
-                    time: time,
-                    timestamp: now.getTime(),
-                    photo: photo,
-                    location: location,
-                };
+                record.checkOut = { time: time, timestamp: now.getTime(), photo: photo, location: location };
 
                 let totalKerja = '';
                 if (record.checkIn) {
@@ -1904,14 +2057,8 @@
                 saveData(data);
                 renderUI();
 
-                const recordData = {
-                    Tanggal: today,
-                    Nama: currentUser,
-                    Masuk: record.checkIn ? record.checkIn.time : '',
-                    Pulang: time,
-                    TotalKerja: totalKerja,
-                    Lokasi: location ? location.address : 'Tidak terdeteksi'
-                };
+                const recordData = { Tanggal: today, Nama: currentUser, Masuk: record.checkIn ? record.checkIn.time : '',
+                    Pulang: time, TotalKerja: totalKerja, Lokasi: location ? location.address : 'Tidak terdeteksi' };
                 syncToGoogleSheet(recordData).catch(() => {});
 
                 showToast(`✅ Absen pulang berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
@@ -1920,10 +2067,7 @@
             // ─── Export Excel ───
             function exportExcel() {
                 const data = loadData();
-                if (data.length === 0) {
-                    showToast('📭 Tidak ada data untuk diexport.', 'info');
-                    return;
-                }
+                if (data.length === 0) { showToast('📭 Tidak ada data untuk diexport.', 'info'); return; }
                 try {
                     const rows = [
                         ['Tanggal', 'Nama', 'Masuk', 'Pulang', 'Total Kerja (jam:menit)', 'Latitude', 'Longitude', 'Alamat Masuk', 'Alamat Pulang']
@@ -1951,9 +2095,8 @@
                     }
                     const wb = XLSX.utils.book_new();
                     const ws = XLSX.utils.aoa_to_sheet(rows);
-                    ws['!cols'] = [
-                        { wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 14 },
-                        { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 30 }, { wch: 30 }
+                    ws['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 16 }, { wch: 16 },
+                        { wch: 30 }, { wch: 30 }
                     ];
                     XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
                     XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
@@ -1967,10 +2110,7 @@
             // ─── Backup & Restore ───
             function backupData() {
                 const data = loadData();
-                if (data.length === 0) {
-                    showToast('📭 Tidak ada data untuk dibackup.', 'info');
-                    return;
-                }
+                if (data.length === 0) { showToast('📭 Tidak ada data untuk dibackup.', 'info'); return; }
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1989,59 +2129,58 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         if (!Array.isArray(data)) throw new Error('Format tidak valid');
-                        data.forEach(rec => {
-                            if (!rec.nama) rec.nama = currentUser || 'Tidak diketahui';
-                        });
+                        data.forEach(rec => { if (!rec.nama) rec.nama = currentUser || 'Tidak diketahui'; });
                         saveData(data);
                         renderUI();
                         showToast(`📂 Restore berhasil! ${data.length} catatan dimuat.`, 'success');
-                    } catch (err) {
-                        showToast('❌ File tidak valid: ' + err.message, 'error');
-                    }
+                    } catch (err) { showToast('❌ File tidak valid: ' + err.message, 'error'); }
                 };
                 reader.readAsText(file);
             }
 
             // ─── Init ───
             function init() {
-                // Buat user default (tidak termasuk admin, karena admin hardcoded)
                 createDefaultUsers();
 
-                // Login handlers
                 btnLogin.addEventListener('click', attemptLogin);
-                loginInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') loginPinInput.focus();
-                });
-                loginPinInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') attemptLogin();
-                });
+                loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginPinInput.focus(); });
+                loginPinInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
                 btnLogout.addEventListener('click', logout);
 
-                // Admin panel
                 btnAddUser.addEventListener('click', addUser);
-                btnRefreshUsers.addEventListener('click', () => {
-                    renderAdminPanel();
-                    showToast('🔄 Daftar pengguna diperbarui.', 'info');
-                });
+                btnRefreshUsers.addEventListener('click', () => { renderAdminPanel();
+                    showToast('🔄 Daftar pengguna diperbarui.', 'info'); });
 
-                // Main app listeners
                 btnIn.addEventListener('click', handleCheckIn);
                 btnOut.addEventListener('click', handleCheckOut);
                 btnExport.addEventListener('click', exportExcel);
                 btnBackup.addEventListener('click', backupData);
                 btnRestore.addEventListener('click', () => restoreInput.click());
                 restoreInput.addEventListener('change', function(e) {
-                    if (this.files && this.files[0]) {
-                        restoreData(this.files[0]);
-                        this.value = '';
-                    }
+                    if (this.files && this.files[0]) { restoreData(this.files[0]);
+                        this.value = ''; }
                 });
 
-                // Sinkronisasi
                 btnSyncAll.addEventListener('click', syncAllData);
                 btnSetGoogleUrl.addEventListener('click', setGoogleScriptUrlPrompt);
 
-                // Filter
+                // Laporan Bulanan
+                btnReport.addEventListener('click', () => {
+                    // Set default bulan ke bulan ini
+                    const now = new Date();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const year = now.getFullYear();
+                    reportMonth.value = `${year}-${month}`;
+                    reportModal.classList.add('active');
+                    generateMonthlyReport();
+                });
+                closeReportModal.addEventListener('click', () => reportModal.classList.remove('active'));
+                reportModal.addEventListener('click', (e) => {
+                    if (e.target === reportModal) reportModal.classList.remove('active');
+                });
+                btnGenerateReport.addEventListener('click', generateMonthlyReport);
+                btnExportReport.addEventListener('click', exportReportExcel);
+
                 btnFilter.addEventListener('click', () => {
                     currentFilters.startDate = filterStart.value;
                     currentFilters.endDate = filterEnd.value;
@@ -2056,34 +2195,24 @@
                     renderUI();
                 });
 
-                // Keyboard shortcuts
                 document.addEventListener('keydown', (e) => {
                     const target = e.target;
-                    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-                        return;
-                    }
-                    if (e.key === '1' && !e.ctrlKey && !e.metaKey) {
-                        e.preventDefault();
-                        if (!btnIn.disabled) btnIn.click();
-                    }
-                    if (e.key === '2' && !e.ctrlKey && !e.metaKey) {
-                        e.preventDefault();
-                        if (!btnOut.disabled) btnOut.click();
-                    }
-                    if (e.key === 'e' && (e.ctrlKey || e.metaKey)) {
-                        e.preventDefault();
-                        btnExport.click();
-                    }
+                    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+                    if (e.key === '1' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnIn.disabled) btnIn
+                        .click(); }
+                    if (e.key === '2' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnOut.disabled) btnOut
+                        .click(); }
+                    if (e.key === 'e' && (e.ctrlKey || e.metaKey)) { e.preventDefault();
+                        btnExport.click(); }
                 });
 
                 renderUserList();
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan');
-                console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded - ubah di konstanta ADMIN_PIN)`);
+                console.log('📋 Aplikasi Absensi siap digunakan (dengan Laporan Bulanan)');
+                console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded)`);
                 console.log('👥 User default:', DEFAULT_USERS.map(u => `${u.name} (PIN: ${u.pin})`).join(', '));
-                console.log('☁️ URL Google Script sudah disematkan di kode.');
             }
 
             init();
