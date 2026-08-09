@@ -1369,7 +1369,8 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                const url = getGoogleScriptUrl() + '?sheet=Data_User';
+                // 🛠️ PERBAIKAN: Gunakan ?sheet=2 (Indeks sheet kedua) agar membaca Data_User dengan tepat
+                const url = getGoogleScriptUrl() + '?sheet=2';
                 console.log('🔄 Mencoba mengambil data user dari:', url);
                 if (!url) return;
 
@@ -1513,7 +1514,8 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                const url = getGoogleScriptUrl() + '?sheet=Data_User';
+                // 🛠️ PERBAIKAN: Gunakan ?sheet=2 untuk POST ke sheet kedua
+                const url = getGoogleScriptUrl() + '?sheet=2';
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -2425,7 +2427,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Otomatis mendeteksi header Nama & PIN)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Indeks Sheet ke-2)');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
