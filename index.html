@@ -1380,24 +1380,35 @@
                     if (response.ok) {
                         const data = await response.json();
                         
-                        // 🚨 PERBAIKAN DEBUG: Cetak data mentah yang diterima dari API!
+                        // 📄 Debug: Cetak data mentah dan kunci kolomnya
                         console.log('📄 Data mentah dari Sheet.best:', data);
+                        if (Array.isArray(data) && data.length > 0) {
+                            console.log('🔑 Kunci dari baris pertama:', Object.keys(data[0]));
+                        }
+
+                        // Fungsi pembantu untuk mencari nama kolom secara fleksibel (abaikan spasi dan huruf kapital)
+                        const getKey = (obj, possibleKeys) => {
+                            if (!obj || typeof obj !== 'object') return null;
+                            // Cari nama key yang persis
+                            for (let key of possibleKeys) {
+                                if (obj.hasOwnProperty(key)) return key;
+                            }
+                            // Jika tidak ketemu, cari case-insensitive dan trim spasi
+                            const lowerKeys = possibleKeys.map(k => k.toLowerCase().trim());
+                            for (let key of Object.keys(obj)) {
+                                if (lowerKeys.includes(key.toLowerCase().trim())) return key;
+                            }
+                            return null;
+                        };
 
                         cloudUsers = (Array.isArray(data) ? data : []).map(item => {
-                            // Cegah error jika ada baris kosong di Sheet
                             if (!item || typeof item !== 'object') return null;
 
-                            // Coba ambil header Nama dengan berbagai kemungkinan (termasuk spasi)
-                            let nama = item['Nama'];
-                            if (nama === undefined) nama = item['Nama '];
-                            if (nama === undefined) nama = item['nama'];
-                            if (nama === undefined) nama = item['nama '];
+                            const namaKey = getKey(item, ['Nama', 'nama', 'Nama ', 'nama ']);
+                            const pinKey = getKey(item, ['PIN', 'pin', 'PIN ', 'pin ']);
 
-                            // Coba ambil header PIN dengan berbagai kemungkinan
-                            let pin = item['PIN'];
-                            if (pin === undefined) pin = item['PIN '];
-                            if (pin === undefined) pin = item['pin'];
-                            if (pin === undefined) pin = item['pin '];
+                            let nama = namaKey ? item[namaKey] : undefined;
+                            let pin = pinKey ? item[pinKey] : undefined;
 
                             // Jika data kolom kosong, lewati baris ini
                             if (!nama || String(nama).trim() === '' || pin === undefined || String(pin).trim() === '') {
@@ -2414,7 +2425,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Debug Mode Aktif)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Otomatis mendeteksi header Nama & PIN)');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
