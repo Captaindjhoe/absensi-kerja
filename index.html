@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📋 Absensi Kerja Captain Famz</title>
+    <title>📋 Absensi Kerja - Admin</title>
 
     <!-- SheetJS untuk export Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
@@ -774,7 +774,7 @@
         <!-- HEADER -->
         <header class="header">
             <h1><span>📋</span> Absensi Kerja <span id="roleBadge"></span></h1>
-            <p>Created By Captain Famz</p>
+            <p>Pelacak Absensi Pribadi</p>
             <div class="user-info">
                 <span>👤 <span id="displayUser">-</span></span>
                 <button class="btn-logout" id="btnLogout">🚪 Keluar</button>
@@ -784,7 +784,7 @@
         <!-- MAIN CARD -->
         <div class="card">
 
-            <!-- Admin Panel (hanya untuk admin) -->
+            <!-- Admin Panel -->
             <div id="adminPanel" style="display:none;">
                 <div class="admin-panel">
                     <h3>🛠️ Panel Admin</h3>
@@ -929,11 +929,12 @@
             'use strict';
 
             // ─── Konfigurasi Google Sheets ───
-            // Ganti URL ini dengan Web App URL dari Google Apps Script
-            const GOOGLE_SCRIPT_URL_KEY = 'https://script.google.com/macros/s/AKfycbzqA16eZyKAPEUd3I1SlAyZbjc26fRhwjeBs1VhIwEb50_gjvwFrpfDG2bPTjfyFD2oTw/exec';
+            const GOOGLE_SCRIPT_URL_KEY = 'google_script_url';
+
             function getGoogleScriptUrl() {
                 return localStorage.getItem(GOOGLE_SCRIPT_URL_KEY) || '';
             }
+
             function setGoogleScriptUrl(url) {
                 localStorage.setItem(GOOGLE_SCRIPT_URL_KEY, url);
             }
@@ -1003,8 +1004,6 @@
             // ─── Data ───
             const STORAGE_PREFIX = 'attendance_data_';
             const PIN_PREFIX = 'pin_';
-
-            // Admin default
             const ADMIN_NAME = 'admin';
             const ADMIN_DEFAULT_PIN = '1234';
 
@@ -1031,7 +1030,7 @@
                 localStorage.setItem(getStorageKey(currentUser), JSON.stringify(data));
             }
 
-            // ─── User & PIN management ───
+            // ─── User & PIN ───
             function getUsers() {
                 const users = [];
                 for (let i = 0; i < localStorage.length; i++) {
@@ -1077,7 +1076,7 @@
                 return getPin(username) !== null;
             }
 
-            // ─── Render user list di login ───
+            // ─── Render user list ───
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
@@ -1136,7 +1135,7 @@
                 };
             }
 
-            // ─── Tambah pengguna baru ───
+            // ─── Tambah pengguna ───
             function addUser() {
                 const name = newUserName.value.trim();
                 const pin = newUserPin.value.trim();
@@ -1165,11 +1164,11 @@
                 showToast(`✅ Pengguna "${name}" berhasil ditambahkan dengan PIN ${pin}.`, 'success');
             }
 
-            // ─── Inisialisasi admin ───
+            // ─── Admin init ───
             function ensureAdmin() {
                 if (!getPin('admin')) {
                     setPin('admin', ADMIN_DEFAULT_PIN);
-                    console.log(`👑 Admin default dibuat: nama="${ADMIN_NAME}", PIN="${ADMIN_DEFAULT_PIN}"`);
+                    console.log(`👑 Admin default: nama="${ADMIN_NAME}", PIN="${ADMIN_DEFAULT_PIN}"`);
                     if (!localStorage.getItem(getStorageKey('admin'))) {
                         localStorage.setItem(getStorageKey('admin'), JSON.stringify([]));
                     }
@@ -1191,6 +1190,7 @@
                     return;
                 }
 
+                // Admin
                 if (username.toLowerCase() === 'admin') {
                     const adminPin = getPin('admin');
                     if (pin === adminPin) {
@@ -1204,6 +1204,7 @@
                     }
                 }
 
+                // User biasa
                 const storedPin = getPin(username);
                 if (!storedPin) {
                     loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.';
@@ -1672,7 +1673,6 @@
                     return;
                 }
                 try {
-                    // Kirim data dengan mode no-cors untuk menghindari CORS
                     await fetch(url, {
                         method: 'POST',
                         mode: 'no-cors',
@@ -1681,7 +1681,6 @@
                         },
                         body: JSON.stringify(recordData),
                     });
-                    // Karena mode no-cors, kita tidak bisa membaca response, tapi anggap berhasil
                     console.log('✅ Data terkirim ke Google Sheet:', recordData);
                 } catch (error) {
                     console.error('❌ Gagal mengirim ke Google Sheet:', error);
@@ -1689,7 +1688,6 @@
                 }
             }
 
-            // ─── Sinkronkan semua data ke Google Sheets ───
             async function syncAllData() {
                 const url = getGoogleScriptUrl();
                 if (!url) {
@@ -1795,7 +1793,6 @@
                 saveData(data);
                 renderUI();
 
-                // Kirim ke Google Sheets
                 const recordData = {
                     Tanggal: today,
                     Nama: currentUser,
@@ -1858,7 +1855,6 @@
                     location: location,
                 };
 
-                // Hitung total kerja
                 let totalKerja = '';
                 if (record.checkIn) {
                     const [hIn, mIn] = record.checkIn.time.split(':').map(Number);
@@ -1874,7 +1870,6 @@
                 saveData(data);
                 renderUI();
 
-                // Kirim ke Google Sheets
                 const recordData = {
                     Tanggal: today,
                     Nama: currentUser,
@@ -1992,7 +1987,7 @@
             function init() {
                 ensureAdmin();
 
-                // Login handlers
+                // Login
                 btnLogin.addEventListener('click', attemptLogin);
                 loginInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') loginPinInput.focus();
@@ -2009,7 +2004,7 @@
                     showToast('🔄 Daftar pengguna diperbarui.', 'info');
                 });
 
-                // Main app listeners
+                // Main actions
                 btnIn.addEventListener('click', handleCheckIn);
                 btnOut.addEventListener('click', handleCheckOut);
                 btnExport.addEventListener('click', exportExcel);
@@ -2067,7 +2062,6 @@
 
                 console.log('📋 Aplikasi Absensi siap digunakan (dengan Google Sheets)');
                 console.log('👑 Admin default: nama="admin", PIN="1234"');
-                console.log('☁️ Untuk sinkronisasi, atur URL Google Script melalui tombol ⚙️');
             }
 
             init();
