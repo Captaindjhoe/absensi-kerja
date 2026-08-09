@@ -907,7 +907,7 @@
             <!-- Sinkronisasi Google Sheets -->
             <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
                 <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
-                <!-- Tombol set URL hanya muncul untuk admin (akan diatur di JS) -->
+                <!-- Tombol set URL hanya muncul untuk admin -->
                 <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0; display:none;">⚙️ Set URL Google Script</button>
             </div>
 
@@ -931,10 +931,10 @@
 
             // ─── Konfigurasi Google Sheets ───
             // ⚠️ GANTI URL DI BAWAH INI DENGAN WEB APP URL DARI GOOGLE APPS SCRIPT
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxpuReGdOt58u5YnGdVkjoSoFZOSne8Z5nZOBl1eU3xqtQn_zO9f1K5N7mT0EQsl2ZyYA/exec'; // <-- Ganti dengan URL-mu
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqA16eZyKAPEUd3I1SlAyZbjc26fRhwjeBs1VhIwEb50_gjvwFrpfDG2bPTjfyFD2oTw/exec';
 
             function getGoogleScriptUrl() {
-                return GOOGLE_SCRIPT_URL; // Langsung return URL yang sudah diset di kode
+                return GOOGLE_SCRIPT_URL;
             }
 
             // ─── DOM refs ───
@@ -1007,6 +1007,17 @@
             const ADMIN_NAME = 'admin';
             const ADMIN_DEFAULT_PIN = '1234';
 
+            // ─── DAFTAR USER DEFAULT (OPSI 1) ───
+            // Tambahkan nama dan PIN untuk user yang ingin bisa login langsung
+            const DEFAULT_USERS = [
+                { name: 'Desmon', pin: '6455' },
+                { name: 'Frizca', pin: '6455' },
+                { name: 'Abel', pin: '6455' },
+                { name: 'Opung', pin: '6455' },
+                // Tambahkan user lain di sini sesuai kebutuhan
+                // Contoh: { name: 'doni', pin: '5555' },
+            ];
+
             function getStorageKey(username) {
                 return STORAGE_PREFIX + username.toLowerCase().trim();
             }
@@ -1076,6 +1087,21 @@
                 return getPin(username) !== null;
             }
 
+            // ─── Buat user default (OPSI 1) ───
+            function createDefaultUsers() {
+                DEFAULT_USERS.forEach(user => {
+                    const name = user.name.trim().toLowerCase();
+                    const pin = user.pin.trim();
+                    if (!userExists(name)) {
+                        setPin(name, pin);
+                        if (!localStorage.getItem(getStorageKey(name))) {
+                            localStorage.setItem(getStorageKey(name), JSON.stringify([]));
+                        }
+                        console.log(`✅ User default "${name}" dibuat dengan PIN ${pin}`);
+                    }
+                });
+            }
+
             // ─── Render user list di login ───
             function renderUserList() {
                 const users = getUsers();
@@ -1137,7 +1163,7 @@
 
             // ─── Tambah pengguna baru ───
             function addUser() {
-                const name = newUserName.value.trim();
+                const name = newUserName.value.trim().toLowerCase();
                 const pin = newUserPin.value.trim();
                 if (!name) {
                     showToast('⚠️ Masukkan nama pengguna.', 'error');
@@ -1151,7 +1177,7 @@
                     showToast(`⚠️ Pengguna "${name}" sudah ada.`, 'error');
                     return;
                 }
-                if (name.toLowerCase() === 'admin') {
+                if (name === 'admin') {
                     showToast('⚠️ Tidak bisa membuat user dengan nama admin.', 'error');
                     return;
                 }
@@ -1177,7 +1203,7 @@
 
             // ─── Login ───
             function attemptLogin() {
-                const username = loginInput.value.trim();
+                const username = loginInput.value.trim().toLowerCase();
                 const pin = loginPinInput.value.trim();
                 loginError.textContent = '';
 
@@ -1190,7 +1216,8 @@
                     return;
                 }
 
-                if (username.toLowerCase() === 'admin') {
+                // Cek admin
+                if (username === 'admin') {
                     const adminPin = getPin('admin');
                     if (pin === adminPin) {
                         isAdmin = true;
@@ -1203,6 +1230,7 @@
                     }
                 }
 
+                // Cek user biasa
                 const storedPin = getPin(username);
                 if (!storedPin) {
                     loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.';
@@ -1223,7 +1251,6 @@
                     roleBadge.textContent = '👑 Admin';
                     adminPanel.style.display = 'block';
                     renderAdminPanel();
-                    // Tampilkan tombol set URL hanya untuk admin
                     btnSetGoogleUrl.style.display = 'inline-block';
                 } else {
                     roleBadge.textContent = '';
@@ -1669,7 +1696,7 @@
             // ─── Sinkronisasi ke Google Sheets ───
             async function syncToGoogleSheet(recordData) {
                 const url = getGoogleScriptUrl();
-                if (!url) {
+                if (!url || url === 'https://script.google.com/macros/s/ABC123/exec') {
                     console.warn('⚠️ URL Google Script belum diatur. Sinkronisasi dilewati.');
                     return;
                 }
@@ -1745,8 +1772,6 @@
                     showToast('⚠️ Hanya admin yang bisa mengubah URL Google Script.', 'error');
                     return;
                 }
-                // Karena URL sudah disematkan di kode, kita tidak bisa mengubahnya tanpa edit file.
-                // Tapi kita bisa memberi informasi ke admin.
                 showToast('ℹ️ URL Google Script sudah disematkan di kode. Untuk mengubah, edit file index.html dan ganti GOOGLE_SCRIPT_URL.', 'info');
             }
 
@@ -1984,6 +2009,7 @@
             // ─── Init ───
             function init() {
                 ensureAdmin();
+                createDefaultUsers(); // <-- Buat user default dari daftar
 
                 // Login handlers
                 btnLogin.addEventListener('click', attemptLogin);
@@ -2058,10 +2084,10 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan Google Sheets)');
+                console.log('📋 Aplikasi Absensi siap digunakan (dengan User Default & Google Sheets)');
                 console.log('👑 Admin default: nama="admin", PIN="1234"');
-                console.log('☁️ URL Google Script sudah disematkan di kode. Pengguna tidak perlu setting manual.');
-                console.log('🔧 Untuk mengganti URL, edit file index.html dan ubah GOOGLE_SCRIPT_URL.');
+                console.log('👥 User default:', DEFAULT_USERS.map(u => `${u.name} (PIN: ${u.pin})`).join(', '));
+                console.log('☁️ URL Google Script sudah disematkan di kode.');
             }
 
             init();
