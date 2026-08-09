@@ -1234,9 +1234,14 @@
 
             // ─── KONFIGURASI ───
             const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/3a11c688-80c4-48fe-8abb-7e1b4dd7f95a';
+            // ⚠️ PERHATIAN: Pastikan nama sheet absensi di Google Sheet Anda bernama "Absensi" (persis).
+            // Jika namanya berbeda, ganti 'Absensi' di bawah ini dengan nama sheet Anda.
+            const ATTENDANCE_SHEET_NAME = 'Absensi'; 
+
             const ADMIN_PIN = '6455';
 
             function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
+            function getAttendanceSheetUrl() { return GOOGLE_SCRIPT_URL + '/' + ATTENDANCE_SHEET_NAME; }
 
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
@@ -1369,7 +1374,6 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                // PERBAIKAN: Hapus ?sheet=Data_User, Sheet.best otomatis membaca sheet PERTAMA
                 const url = getGoogleScriptUrl();
                 if (!url) return;
 
@@ -1377,7 +1381,6 @@
                     const response = await fetch(url);
                     if (response.ok) {
                         const data = await response.json();
-                        // Filter: Buang user bernama 'admin' dan data yang tidak valid
                         cloudUsers = (Array.isArray(data) ? data : []).map(item => ({
                             name: item.Nama ? item.Nama.toLowerCase().trim() : '',
                             pin: item.PIN ? String(item.PIN).trim() : ''
@@ -1471,7 +1474,6 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                // PERBAIKAN: Hapus ?sheet=Data_User, Sheet.best otomatis POST ke sheet PERTAMA
                 const url = getGoogleScriptUrl();
                 try {
                     const response = await fetch(url, {
@@ -1943,8 +1945,9 @@
             }
 
             // ─── Sinkronisasi Absensi ke Google Sheets ───
+            // PERBAIKAN: Menggunakan URL + Nama Sheet Absensi untuk menghindari data masuk ke Data_User
             async function syncToGoogleSheet(recordData) {
-                const url = getGoogleScriptUrl();
+                const url = getAttendanceSheetUrl();
                 if (!url) return;
                 try {
                     const payload = [recordData];
@@ -1967,7 +1970,7 @@
             }
 
             async function syncAllData() {
-                const url = getGoogleScriptUrl();
+                const url = getAttendanceSheetUrl();
                 if (!url) {
                     showToast('⚠️ URL Google Script belum diatur.', 'error');
                     return;
