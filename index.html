@@ -31,7 +31,7 @@
             justify-content: center;
         }
         .app {
-            max-width: 640px;
+            max-width: 700px;
             width: 100%;
         }
 
@@ -89,6 +89,15 @@
         }
         .btn-logout:hover {
             background: rgba(255,255,255,0.35);
+        }
+        .badge-admin {
+            background: #f59e0b;
+            color: #1e293b;
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 6px;
         }
 
         /* ─── Card Container ─── */
@@ -297,6 +306,20 @@
         }
         .btn-sm:active {
             transform: scale(0.95);
+        }
+        .btn-danger {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        .btn-danger:hover {
+            background: #fca5a5;
+        }
+        .btn-success {
+            background: #a7f3d0;
+            color: #065f46;
+        }
+        .btn-success:hover {
+            background: #6ee7b7;
         }
 
         /* ─── Today's Record ─── */
@@ -527,7 +550,7 @@
             background: #fff;
             border-radius: 24px;
             padding: 32px 28px;
-            max-width: 380px;
+            max-width: 400px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
@@ -595,7 +618,7 @@
             cursor: not-allowed;
         }
 
-        /* ─── PIN Modal (di dalam login) ─── */
+        /* ─── PIN Modal ─── */
         .pin-section {
             margin-top: 12px;
             border-top: 1px solid #e9edf2;
@@ -641,6 +664,71 @@
             margin-bottom: 8px;
         }
 
+        /* ─── Admin Panel ─── */
+        .admin-panel {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .admin-panel h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-panel .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .admin-panel .admin-grid input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .admin-panel .admin-grid button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .admin-panel .admin-grid .btn-success:hover {
+            background: #6ee7b7;
+        }
+        .admin-panel .admin-grid .btn-danger:hover {
+            background: #fca5a5;
+        }
+        .admin-panel .user-table {
+            width: 100%;
+            font-size: 13px;
+        }
+        .admin-panel .user-table th {
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            padding: 6px 4px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .admin-panel .user-table td {
+            padding: 6px 4px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .admin-panel .user-table .btn-sm {
+            padding: 2px 10px;
+            font-size: 11px;
+        }
+        .admin-panel .user-table .btn-sm + .btn-sm {
+            margin-left: 4px;
+        }
+
         /* ─── Responsive ─── */
         @media (max-width: 480px) {
             .header h1 {
@@ -677,6 +765,9 @@
             .login-box {
                 padding: 24px 16px;
             }
+            .admin-panel .admin-grid {
+                grid-template-columns: 1fr;
+            }
         }
         @media (max-width: 380px) {
             .today-grid {
@@ -700,29 +791,6 @@
             margin-top: 12px;
             flex-wrap: wrap;
         }
-
-        /* ─── Admin reset PIN ─── */
-        .admin-reset {
-            margin-top: 12px;
-            font-size: 12px;
-            color: #64748b;
-        }
-        .admin-reset input {
-            width: 80px;
-            padding: 4px 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 12px;
-            margin: 0 4px;
-        }
-        .admin-reset button {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 4px 12px;
-            font-size: 12px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -731,25 +799,12 @@
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
             <h2>🔐 Absensi</h2>
-            <p>Masukkan nama Anda atau pilih dari daftar</p>
+            <p>Masukkan nama dan PIN Anda</p>
             <input type="text" id="loginInput" placeholder="Nama pengguna" autocomplete="off" />
+            <input type="password" id="loginPinInput" maxlength="4" placeholder="PIN 4 digit" inputmode="numeric" />
             <div class="user-list" id="userList"></div>
             <button class="btn-login" id="btnLogin">Login</button>
-
-            <!-- PIN Section (muncul setelah nama dipilih) -->
-            <div class="pin-section" id="pinSection" style="display:none;">
-                <div id="pinStatus" class="pin-info"></div>
-                <input type="password" id="pinInput" maxlength="4" placeholder="PIN 4 digit" inputmode="numeric" />
-                <input type="password" id="pinConfirm" maxlength="4" placeholder="Konfirmasi PIN" inputmode="numeric" style="display:none;" />
-                <button class="btn-pin" id="btnPin">Verifikasi</button>
-                <div id="pinError" class="pin-error"></div>
-                <!-- Admin reset -->
-                <div class="admin-reset" id="adminReset" style="display:none;">
-                    <span>🔑 Reset PIN untuk: </span>
-                    <input type="text" id="resetUserInput" placeholder="nama" />
-                    <button id="btnResetPin">Reset PIN</button>
-                </div>
-            </div>
+            <div id="loginError" style="color:#dc2626;font-size:13px;margin-top:8px;"></div>
         </div>
     </div>
 
@@ -757,8 +812,8 @@
 
         <!-- HEADER -->
         <header class="header">
-            <h1><span>📋</span> Absensi Kerja</h1>
-            <p>Created By Captain Famz</p>
+            <h1><span>📋</span> Absensi Kerja <span id="roleBadge"></span></h1>
+            <p>Created BY : Captain Famz</p>
             <div class="user-info">
                 <span>👤 <span id="displayUser">-</span></span>
                 <button class="btn-logout" id="btnLogout">🚪 Keluar</button>
@@ -767,6 +822,25 @@
 
         <!-- MAIN CARD -->
         <div class="card">
+
+            <!-- Admin Panel (hanya untuk admin) -->
+            <div id="adminPanel" style="display:none;">
+                <div class="admin-panel">
+                    <h3>🛠️ Panel Admin</h3>
+                    <div class="admin-grid">
+                        <input type="text" id="newUserName" placeholder="Nama baru" />
+                        <input type="password" id="newUserPin" maxlength="4" placeholder="PIN 4 digit" inputmode="numeric" />
+                        <button class="btn-success" id="btnAddUser">➕ Tambah Pengguna</button>
+                        <button class="btn-sm" id="btnRefreshUsers" style="background:#e2e8f0;">🔄 Refresh</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="user-table" id="userTable">
+                            <thead><tr><th>Nama</th><th>PIN</th><th>Aksi</th></tr></thead>
+                            <tbody id="userTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
             <!-- Camera -->
             <div class="camera-wrapper" id="cameraWrapper">
@@ -890,22 +964,20 @@
             // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
             const loginInput = document.getElementById('loginInput');
+            const loginPinInput = document.getElementById('loginPinInput');
             const userList = document.getElementById('userList');
             const btnLogin = document.getElementById('btnLogin');
             const btnLogout = document.getElementById('btnLogout');
             const displayUser = document.getElementById('displayUser');
             const appContainer = document.getElementById('appContainer');
-
-            // PIN elements
-            const pinSection = document.getElementById('pinSection');
-            const pinInput = document.getElementById('pinInput');
-            const pinConfirm = document.getElementById('pinConfirm');
-            const btnPin = document.getElementById('btnPin');
-            const pinError = document.getElementById('pinError');
-            const pinStatus = document.getElementById('pinStatus');
-            const adminReset = document.getElementById('adminReset');
-            const resetUserInput = document.getElementById('resetUserInput');
-            const btnResetPin = document.getElementById('btnResetPin');
+            const loginError = document.getElementById('loginError');
+            const roleBadge = document.getElementById('roleBadge');
+            const adminPanel = document.getElementById('adminPanel');
+            const newUserName = document.getElementById('newUserName');
+            const newUserPin = document.getElementById('newUserPin');
+            const btnAddUser = document.getElementById('btnAddUser');
+            const btnRefreshUsers = document.getElementById('btnRefreshUsers');
+            const userTableBody = document.getElementById('userTableBody');
 
             const video = document.getElementById('video');
             const placeholder = document.getElementById('cameraPlaceholder');
@@ -947,11 +1019,15 @@
             let toastTimer = null;
             let currentFilters = { startDate: '', endDate: '', status: 'all' };
             let currentUser = null;
-            let pendingUsername = null;
+            let isAdmin = false;
 
             // ─── Data ───
             const STORAGE_PREFIX = 'attendance_data_';
             const PIN_PREFIX = 'pin_';
+
+            // Admin default (buat pertama kali jika belum ada)
+            const ADMIN_NAME = 'admin';
+            const ADMIN_DEFAULT_PIN = '1234';
 
             function getStorageKey(username) {
                 return STORAGE_PREFIX + username.toLowerCase().trim();
@@ -983,10 +1059,27 @@
                     const key = localStorage.key(i);
                     if (key && key.startsWith(STORAGE_PREFIX)) {
                         const name = key.substring(STORAGE_PREFIX.length);
-                        users.push(name);
+                        if (name !== 'admin') { // admin tidak muncul di daftar user biasa
+                            users.push(name);
+                        }
                     }
                 }
                 return users;
+            }
+
+            function getAllUsersWithPin() {
+                const result = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith(PIN_PREFIX)) {
+                        const name = key.substring(PIN_PREFIX.length);
+                        const pin = localStorage.getItem(key);
+                        if (name !== 'admin') { // admin tidak muncul di daftar
+                            result.push({ name, pin });
+                        }
+                    }
+                }
+                return result;
             }
 
             function getPin(username) {
@@ -1001,6 +1094,11 @@
                 localStorage.removeItem(getPinKey(username));
             }
 
+            function userExists(username) {
+                return getPin(username) !== null;
+            }
+
+            // ─── Render user list di login ───
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
@@ -1009,99 +1107,173 @@
                     btn.textContent = u;
                     btn.addEventListener('click', () => {
                         loginInput.value = u;
-                        setTimeout(() => attemptLogin(u), 100);
+                        loginPinInput.focus();
                     });
                     userList.appendChild(btn);
                 });
-            }
-
-            // ─── PIN flow ───
-            function showPinSection(mode, username) {
-                pendingUsername = username;
-                pinSection.style.display = 'block';
-                pinInput.value = '';
-                pinConfirm.value = '';
-                pinError.textContent = '';
-                pinInput.style.display = 'block';
-                pinConfirm.style.display = 'none';
-                btnPin.textContent = 'Verifikasi';
-
-                if (mode === 'verify') {
-                    pinStatus.textContent = `🔑 Masukkan PIN untuk ${username}`;
-                    pinConfirm.style.display = 'none';
-                    btnPin.textContent = 'Verifikasi';
-                    adminReset.style.display = 'block';
-                } else if (mode === 'register') {
-                    pinStatus.textContent = `🔑 Buat PIN 4 digit untuk ${username}`;
-                    pinConfirm.style.display = 'block';
-                    btnPin.textContent = 'Daftarkan PIN';
-                    adminReset.style.display = 'none';
+                // Tambahkan admin di daftar jika ada (hanya untuk admin login)
+                if (getPin('admin')) {
+                    const btnAdmin = document.createElement('button');
+                    btnAdmin.textContent = '👑 admin';
+                    btnAdmin.style.borderColor = '#f59e0b';
+                    btnAdmin.addEventListener('click', () => {
+                        loginInput.value = 'admin';
+                        loginPinInput.focus();
+                    });
+                    userList.appendChild(btnAdmin);
                 }
-                setTimeout(() => pinInput.focus(), 100);
             }
 
-            function hidePinSection() {
-                pinSection.style.display = 'none';
-                pendingUsername = null;
+            // ─── Render admin panel ───
+            function renderAdminPanel() {
+                if (!isAdmin) return;
+                const users = getAllUsersWithPin();
+                let html = '';
+                users.forEach(u => {
+                    html += `
+                        <tr>
+                            <td>${u.name}</td>
+                            <td>${u.pin}</td>
+                            <td>
+                                <button class="btn-sm btn-danger" onclick="window._resetPin('${u.name}')">Reset PIN</button>
+                                <button class="btn-sm btn-danger" onclick="window._deleteUser('${u.name}')" style="background:#fecaca;color:#991b1b;">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                if (!html) {
+                    html = `<tr><td colspan="3" style="text-align:center;color:#94a3b8;">Belum ada pengguna terdaftar</td></tr>`;
+                }
+                userTableBody.innerHTML = html;
+                // Expose fungsi ke window agar bisa dipanggil dari onclick
+                window._resetPin = function(name) {
+                    if (confirm(`Reset PIN untuk "${name}"?`)) {
+                        const newPin = prompt(`Masukkan PIN baru untuk ${name} (4 digit angka):`);
+                        if (newPin && /^\d{4}$/.test(newPin)) {
+                            setPin(name, newPin);
+                            renderAdminPanel();
+                            showToast(`✅ PIN untuk "${name}" telah direset.`, 'success');
+                        } else if (newPin !== null) {
+                            showToast('⚠️ PIN harus 4 digit angka.', 'error');
+                        }
+                    }
+                };
+                window._deleteUser = function(name) {
+                    if (confirm(`Hapus pengguna "${name}" dan semua data absensinya?`)) {
+                        // Hapus PIN
+                        deletePin(name);
+                        // Hapus data absensi
+                        localStorage.removeItem(getStorageKey(name));
+                        renderAdminPanel();
+                        renderUserList();
+                        showToast(`🗑️ Pengguna "${name}" telah dihapus.`, 'info');
+                    }
+                };
             }
 
-            function handlePinAction() {
-                const username = pendingUsername;
-                if (!username) return;
-                const pin = pinInput.value.trim();
-                const existingPin = getPin(username);
+            // ─── Tambah pengguna baru ───
+            function addUser() {
+                const name = newUserName.value.trim();
+                const pin = newUserPin.value.trim();
+                if (!name) {
+                    showToast('⚠️ Masukkan nama pengguna.', 'error');
+                    return;
+                }
+                if (!/^\d{4}$/.test(pin)) {
+                    showToast('⚠️ PIN harus 4 digit angka.', 'error');
+                    return;
+                }
+                if (userExists(name)) {
+                    showToast(`⚠️ Pengguna "${name}" sudah ada.`, 'error');
+                    return;
+                }
+                if (name.toLowerCase() === 'admin') {
+                    showToast('⚠️ Tidak bisa membuat user dengan nama admin.', 'error');
+                    return;
+                }
+                setPin(name, pin);
+                // Buat data kosong
+                localStorage.setItem(getStorageKey(name), JSON.stringify([]));
+                newUserName.value = '';
+                newUserPin.value = '';
+                renderAdminPanel();
+                renderUserList();
+                showToast(`✅ Pengguna "${name}" berhasil ditambahkan dengan PIN ${pin}.`, 'success');
+            }
 
-                if (!existingPin) {
-                    const confirm = pinConfirm.value.trim();
-                    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                        pinError.textContent = 'PIN harus 4 digit angka.';
-                        return;
+            // ─── Inisialisasi admin (jika belum ada) ───
+            function ensureAdmin() {
+                if (!getPin('admin')) {
+                    setPin('admin', ADMIN_DEFAULT_PIN);
+                    console.log(`👑 Admin default dibuat: nama="${ADMIN_NAME}", PIN="${ADMIN_DEFAULT_PIN}"`);
+                    // Buat data admin kosong
+                    if (!localStorage.getItem(getStorageKey('admin'))) {
+                        localStorage.setItem(getStorageKey('admin'), JSON.stringify([]));
                     }
-                    if (pin !== confirm) {
-                        pinError.textContent = 'PIN dan konfirmasi tidak cocok.';
-                        return;
-                    }
-                    setPin(username, pin);
-                    pinError.textContent = '';
-                    showToast(`✅ PIN untuk ${username} berhasil didaftarkan.`, 'success');
-                    doLogin(username);
-                } else {
-                    if (pin !== existingPin) {
-                        pinError.textContent = 'PIN salah. Coba lagi.';
-                        pinInput.value = '';
-                        setTimeout(() => pinInput.focus(), 100);
-                        return;
-                    }
-                    pinError.textContent = '';
-                    doLogin(username);
                 }
             }
 
             // ─── Login ───
-            function attemptLogin(username) {
-                const trimmed = username.trim();
-                if (!trimmed) {
-                    showToast('⚠️ Masukkan nama pengguna.', 'error');
+            function attemptLogin() {
+                const username = loginInput.value.trim();
+                const pin = loginPinInput.value.trim();
+                loginError.textContent = '';
+
+                if (!username) {
+                    loginError.textContent = 'Masukkan nama pengguna.';
                     return;
                 }
-                const pin = getPin(trimmed);
-                if (pin) {
-                    showPinSection('verify', trimmed);
+                if (!pin) {
+                    loginError.textContent = 'Masukkan PIN.';
+                    return;
+                }
+
+                // Cek admin
+                if (username.toLowerCase() === 'admin') {
+                    const adminPin = getPin('admin');
+                    if (pin === adminPin) {
+                        isAdmin = true;
+                        currentUser = 'admin';
+                        doLogin();
+                        return;
+                    } else {
+                        loginError.textContent = 'PIN admin salah.';
+                        return;
+                    }
+                }
+
+                // Cek user biasa
+                const storedPin = getPin(username);
+                if (!storedPin) {
+                    loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.';
+                    return;
+                }
+                if (pin === storedPin) {
+                    isAdmin = false;
+                    currentUser = username;
+                    doLogin();
                 } else {
-                    showPinSection('register', trimmed);
+                    loginError.textContent = 'PIN salah.';
                 }
             }
 
-            function doLogin(username) {
-                currentUser = username;
+            function doLogin() {
                 displayUser.textContent = currentUser;
+                if (isAdmin) {
+                    roleBadge.textContent = '👑 Admin';
+                    adminPanel.style.display = 'block';
+                    renderAdminPanel();
+                } else {
+                    roleBadge.textContent = '';
+                    adminPanel.style.display = 'none';
+                }
                 loginOverlay.style.display = 'none';
                 appContainer.style.display = 'block';
-                hidePinSection();
+                loginPinInput.value = '';
+                loginInput.value = '';
                 renderUI();
                 initCamera().then(() => renderUI());
-                showToast(`👋 Selamat datang, ${currentUser}!`, 'success');
-                loginInput.value = '';
+                showToast(`👋 Selamat datang, ${currentUser}!${isAdmin ? ' (Admin)' : ''}`, 'success');
             }
 
             function logout() {
@@ -1111,30 +1283,14 @@
                     cameraReady = false;
                 }
                 currentUser = null;
+                isAdmin = false;
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
+                loginPinInput.value = '';
                 loginInput.value = '';
-                hidePinSection();
+                loginError.textContent = '';
                 renderUserList();
                 showToast('🚪 Anda telah keluar.', 'info');
-            }
-
-            // ─── Admin reset PIN ───
-            function resetPinForUser(targetUser) {
-                const trimmed = targetUser.trim();
-                if (!trimmed) {
-                    showToast('⚠️ Masukkan nama pengguna yang akan direset PIN-nya.', 'error');
-                    return;
-                }
-                const users = getUsers();
-                if (!users.includes(trimmed)) {
-                    showToast(`❌ Pengguna "${trimmed}" tidak ditemukan.`, 'error');
-                    return;
-                }
-                deletePin(trimmed);
-                showToast(`🔑 PIN untuk "${trimmed}" telah direset. Pengguna bisa membuat PIN baru saat login.`, 'success');
-                resetUserInput.value = '';
-                renderUserList();
             }
 
             // ─── Helpers ───
@@ -1363,11 +1519,10 @@
                 const sorted = [...filteredData].sort((a, b) => b.date.localeCompare(a.date));
                 let html = '';
                 for (const rec of sorted) {
-                    const nama = rec.nama || 'Tidak diketahui';
+                    const nama = rec.nama || currentUser || 'Tidak diketahui';
                     const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
                     const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
 
-                    // Total Kerja per hari
                     let workHours = '-';
                     if (rec.checkIn && rec.checkOut) {
                         const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
@@ -1449,7 +1604,6 @@
                     statAvgOut.textContent = '--:--';
                 }
 
-                // Total Jam Kerja
                 const workMinutes = data.filter(r => r.checkIn && r.checkOut).map(r => {
                     const [hIn, mIn] = r.checkIn.time.split(':').map(Number);
                     const [hOut, mOut] = r.checkOut.time.split(':').map(Number);
@@ -1589,6 +1743,7 @@
                 let record;
                 if (existing) {
                     record = existing;
+                    record.nama = currentUser;
                 } else {
                     record = { date: today, nama: currentUser, checkIn: null, checkOut: null };
                     data.push(record);
@@ -1628,6 +1783,8 @@
                     return;
                 }
 
+                if (!record.nama) record.nama = currentUser;
+
                 const photo = capturePhoto();
                 if (!photo) {
                     showToast('❌ Gagal mengambil foto. Coba lagi.', 'error');
@@ -1658,7 +1815,7 @@
                 showToast(`✅ Absen pulang berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
             }
 
-            // ─── Export Excel (TANPA FOTO base64 agar tidak error) ───
+            // ─── Export Excel ───
             function exportExcel() {
                 const data = loadData();
                 if (data.length === 0) {
@@ -1670,7 +1827,7 @@
                         ['Tanggal', 'Nama', 'Masuk', 'Pulang', 'Total Kerja (jam:menit)', 'Latitude', 'Longitude', 'Alamat Masuk', 'Alamat Pulang']
                     ];
                     for (const rec of data) {
-                        const nama = rec.nama || 'Tidak diketahui';
+                        const nama = rec.nama || currentUser || 'Tidak diketahui';
                         const inTime = rec.checkIn ? rec.checkIn.time : '';
                         const outTime = rec.checkOut ? rec.checkOut.time : '';
                         let workStr = '';
@@ -1693,15 +1850,8 @@
                     const wb = XLSX.utils.book_new();
                     const ws = XLSX.utils.aoa_to_sheet(rows);
                     ws['!cols'] = [
-                        { wch: 14 }, // Tanggal
-                        { wch: 18 }, // Nama
-                        { wch: 14 }, // Masuk
-                        { wch: 14 }, // Pulang
-                        { wch: 18 }, // Total Kerja
-                        { wch: 16 }, // Latitude
-                        { wch: 16 }, // Longitude
-                        { wch: 30 }, // Alamat Masuk
-                        { wch: 30 }  // Alamat Pulang
+                        { wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 14 },
+                        { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 30 }, { wch: 30 }
                     ];
                     XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
                     XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
@@ -1737,7 +1887,6 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         if (!Array.isArray(data)) throw new Error('Format tidak valid');
-                        // Pastikan setiap record punya field 'nama'
                         data.forEach(rec => {
                             if (!rec.nama) rec.nama = currentUser || 'Tidak diketahui';
                         });
@@ -1753,41 +1902,24 @@
 
             // ─── Init ───
             function init() {
+                // Pastikan admin ada
+                ensureAdmin();
+
                 // Login handlers
-                btnLogin.addEventListener('click', () => {
-                    const name = loginInput.value.trim();
-                    if (name) attemptLogin(name);
-                    else showToast('⚠️ Masukkan nama pengguna.', 'error');
-                });
+                btnLogin.addEventListener('click', attemptLogin);
                 loginInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        const name = loginInput.value.trim();
-                        if (name) attemptLogin(name);
-                        else showToast('⚠️ Masukkan nama pengguna.', 'error');
-                    }
+                    if (e.key === 'Enter') loginPinInput.focus();
+                });
+                loginPinInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') attemptLogin();
                 });
                 btnLogout.addEventListener('click', logout);
 
-                // PIN handlers
-                btnPin.addEventListener('click', handlePinAction);
-                pinInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') handlePinAction();
-                });
-                pinConfirm.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') handlePinAction();
-                });
-
-                // Admin reset PIN
-                btnResetPin.addEventListener('click', () => {
-                    const target = resetUserInput.value.trim();
-                    if (target) resetPinForUser(target);
-                    else showToast('⚠️ Masukkan nama pengguna.', 'error');
-                });
-                resetUserInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        const target = resetUserInput.value.trim();
-                        if (target) resetPinForUser(target);
-                    }
+                // Admin panel
+                btnAddUser.addEventListener('click', addUser);
+                btnRefreshUsers.addEventListener('click', () => {
+                    renderAdminPanel();
+                    showToast('🔄 Daftar pengguna diperbarui.', 'info');
                 });
 
                 // Main app listeners
@@ -1842,11 +1974,10 @@
                 renderUserList();
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
-                hidePinSection();
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan Nama & Export tanpa foto)');
+                console.log('📋 Aplikasi Absensi siap digunakan (dengan Admin)');
+                console.log('👑 Admin default: nama="admin", PIN="1234" (ubah PIN di localStorage)');
                 console.log('⌨️ Pintasan: [1] Masuk  [2] Pulang  [Ctrl+E] Export (tidak aktif saat mengetik)');
-                console.log('🔑 Admin: gunakan fitur Reset PIN di layar login untuk mereset PIN pengguna lain.');
             }
 
             init();
