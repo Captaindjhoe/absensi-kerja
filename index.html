@@ -1369,7 +1369,6 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                // PERBAIKAN: Kembali ke ?sheet=Data_User (Metode paling stabil)
                 const url = getGoogleScriptUrl() + '?sheet=Data_User';
                 console.log('🔄 Mencoba mengambil data user dari:', url);
                 if (!url) return;
@@ -1380,11 +1379,36 @@
                     
                     if (response.ok) {
                         const data = await response.json();
-                        // Pastikan mengambil data yang benar dari JSON
-                        cloudUsers = (Array.isArray(data) ? data : []).map(item => ({
-                            name: item['Nama'] ? item['Nama'].toLowerCase().trim() : '',
-                            pin: item['PIN'] ? String(item['PIN']).trim() : ''
-                        })).filter(u => u.name && u.name !== 'admin' && u.pin);
+                        
+                        // 🚨 PERBAIKAN DEBUG: Cetak data mentah yang diterima dari API!
+                        console.log('📄 Data mentah dari Sheet.best:', data);
+
+                        cloudUsers = (Array.isArray(data) ? data : []).map(item => {
+                            // Cegah error jika ada baris kosong di Sheet
+                            if (!item || typeof item !== 'object') return null;
+
+                            // Coba ambil header Nama dengan berbagai kemungkinan (termasuk spasi)
+                            let nama = item['Nama'];
+                            if (nama === undefined) nama = item['Nama '];
+                            if (nama === undefined) nama = item['nama'];
+                            if (nama === undefined) nama = item['nama '];
+
+                            // Coba ambil header PIN dengan berbagai kemungkinan
+                            let pin = item['PIN'];
+                            if (pin === undefined) pin = item['PIN '];
+                            if (pin === undefined) pin = item['pin'];
+                            if (pin === undefined) pin = item['pin '];
+
+                            // Jika data kolom kosong, lewati baris ini
+                            if (!nama || String(nama).trim() === '' || pin === undefined || String(pin).trim() === '') {
+                                return null;
+                            }
+
+                            return {
+                                name: String(nama).toLowerCase().trim(),
+                                pin: String(pin).trim()
+                            };
+                        }).filter(u => u && u.name && u.name !== 'admin' && u.pin);
                         
                         usersSynced = true;
                         console.log('✅ Data user akhir (cloudUsers) dimuat:', cloudUsers.length, 'user');
@@ -1450,7 +1474,7 @@
                     `;
                 });
                 if (!html) {
-                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud (cek koneksi & Console F12)</td></tr>`;
+                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud (cek Console F12 untuk debug)</td></tr>`;
                 }
                 userTableBody.innerHTML = html;
 
@@ -1478,7 +1502,6 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                // PERBAIKAN: Kembali ke ?sheet=Data_User
                 const url = getGoogleScriptUrl() + '?sheet=Data_User';
                 try {
                     const response = await fetch(url, {
@@ -2391,7 +2414,8 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Perbaikan URL dengan ?sheet=)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Debug Mode Aktif)');
+                console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
             init();
