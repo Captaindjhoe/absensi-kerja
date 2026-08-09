@@ -321,6 +321,7 @@
         .btn-success:hover {
             background: #6ee7b7;
         }
+        <button class="btn-export" id="btnSyncAll" style="background:#fef3c7; color:#b45309;">☁️ Sinkronkan Semua ke Cloud</button>
 
         /* ─── Today's Record ─── */
         .today-grid {
@@ -1799,7 +1800,77 @@
                 renderUI();
                 showToast(`✅ Absen pulang berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
             }
+// Ganti dengan URL Web App yang sudah kamu dapatkan
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqA16eZyKAPEUd3I1SlAyZbjc26fRhwjeBs1VhIwEb50_gjvwFrpfDG2bPTjfyFD2oTw/exec';
 
+async function syncToGoogleSheet(recordData) {
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Mode ini mencegah error CORS
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(recordData),
+    });
+
+    // Karena mode 'no-cors', kita tidak bisa membaca response-nya.
+    // Tapi kita bisa asumsikan berhasil jika tidak ada error.
+    console.log('✅ Data berhasil dikirim ke Google Sheet!', recordData);
+    // Kamu bisa tambahkan logika untuk memberi tahu user bahwa sync berhasil.
+    // showToast('📤 Data berhasil disinkronkan ke Cloud.', 'success');
+  } catch (error) {
+    console.error('❌ Gagal mengirim data ke Google Sheet:', error);
+    // showToast('⚠️ Gagal sinkronisasi ke Cloud. Periksa koneksi.', 'error');
+  }
+}
+            // Di dalam fungsi handleCheckIn, setelah saveData(data) dan renderUI()
+const recordData = {
+    Tanggal: today,
+    Nama: currentUser,
+    Masuk: time,
+    Pulang: '', // Kosongkan dulu, akan diisi saat check-out
+    TotalKerja: '',
+    Lokasi: location ? location.address : 'Tidak terdeteksi'
+};
+await syncToGoogleSheet(recordData);
+
+// Di dalam fungsi handleCheckOut, setelah saveData(data) dan renderUI()
+// Ambil data yang sudah ada di localStorage
+const existingData = loadData();
+const todayRecord = getTodayRecord(existingData);
+
+const recordData = {
+    Tanggal: today,
+    Nama: currentUser,
+    Masuk: todayRecord.checkIn ? todayRecord.checkIn.time : '',
+    Pulang: time,
+    TotalKerja: '...', // Kamu bisa hitung selisihnya di sini
+    Lokasi: location ? location.address : 'Tidak terdeteksi'
+};
+await syncToGoogleSheet(recordData);
+            document.getElementById('btnSyncAll').addEventListener('click', async function() {
+    const allData = loadData();
+    if (allData.length === 0) {
+        showToast('📭 Tidak ada data untuk disinkronkan.', 'info');
+        return;
+    }
+    showToast('⏳ Mengirim data ke Cloud...', 'info');
+    for (const record of allData) {
+        // Format ulang data sesuai dengan header di Google Sheet
+        const recordData = {
+            Tanggal: record.date,
+            Nama: record.nama || currentUser,
+            Masuk: record.checkIn ? record.checkIn.time : '',
+            Pulang: record.checkOut ? record.checkOut.time : '',
+            TotalKerja: '...', // Hitung jika perlu
+            Lokasi: record.checkIn?.location?.address || 'Tidak terdeteksi'
+        };
+        await syncToGoogleSheet(recordData);
+    }
+    showToast(`✅ ${allData.length} data berhasil disinkronkan!`, 'success');
+});
+            
             // ─── Export Excel ───
             function exportExcel() {
                 const data = loadData();
