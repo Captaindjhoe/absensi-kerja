@@ -929,10 +929,26 @@
         (function() {
             'use strict';
 
-            // ─── Konfigurasi Google Sheets ───
-            // ⚠️ GANTI URL DI BAWAH INI DENGAN WEB APP URL DARI GOOGLE APPS SCRIPT
+            // ─── KONFIGURASI ───
+            // ⚠️ Ganti URL di bawah ini dengan Web App URL dari Google Apps Script
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqA16eZyKAPEUd3I1SlAyZbjc26fRhwjeBs1VhIwEb50_gjvwFrpfDG2bPTjfyFD2oTw/exec';
 
+            // 🔑 PIN ADMIN (Hardcoded) - Ganti sesuai keinginan Anda
+            // PIN ini berlaku untuk semua perangkat dan hanya bisa diubah dengan mengedit file ini.
+            const ADMIN_PIN = '6455'; // <-- Ganti dengan PIN admin baru
+
+            // ─── DAFTAR USER DEFAULT ───
+            // Tambahkan nama dan PIN untuk user yang bisa login langsung
+            const DEFAULT_USERS = [
+                { name: 'Desmon', pin: '6455' },
+                { name: 'Frizca', pin: '6455' },
+                { name: 'Abel', pin: '6455' },
+                { name: 'Opung', pin: '6455' },
+                // Tambahkan user lain di sini sesuai kebutuhan
+                // Contoh: { name: 'doni', pin: '5555' },
+            ];
+
+            // ─── Fungsi mendapatkan URL Google Script ───
             function getGoogleScriptUrl() {
                 return GOOGLE_SCRIPT_URL;
             }
@@ -1003,21 +1019,6 @@
             const STORAGE_PREFIX = 'attendance_data_';
             const PIN_PREFIX = 'pin_';
 
-            // Admin default
-            const ADMIN_NAME = 'admin';
-            const ADMIN_DEFAULT_PIN = '1234';
-
-            // ─── DAFTAR USER DEFAULT (OPSI 1) ───
-            // Tambahkan nama dan PIN untuk user yang ingin bisa login langsung
-            const DEFAULT_USERS = [
-                { name: 'Desmon', pin: '6455' },
-                { name: 'Frizca', pin: '6455' },
-                { name: 'Abel', pin: '6455' },
-                { name: 'Opung', pin: '6455' },
-                // Tambahkan user lain di sini sesuai kebutuhan
-                // Contoh: { name: 'doni', pin: '5555' },
-            ];
-
             function getStorageKey(username) {
                 return STORAGE_PREFIX + username.toLowerCase().trim();
             }
@@ -1071,11 +1072,18 @@
                 return result;
             }
 
-            function getPin(username) {
+            // ─── PIN untuk user biasa (dari localStorage) ───
+            function getUserPin(username) {
                 return localStorage.getItem(getPinKey(username)) || null;
             }
 
-            function setPin(username, pin) {
+            // ─── PIN untuk admin (HARDCORED, dari konstanta) ───
+            function getAdminPin() {
+                return ADMIN_PIN;
+            }
+
+            // ─── Set PIN untuk user biasa ───
+            function setUserPin(username, pin) {
                 localStorage.setItem(getPinKey(username), pin);
             }
 
@@ -1084,16 +1092,16 @@
             }
 
             function userExists(username) {
-                return getPin(username) !== null;
+                return getUserPin(username) !== null;
             }
 
-            // ─── Buat user default (OPSI 1) ───
+            // ─── Buat user default ───
             function createDefaultUsers() {
                 DEFAULT_USERS.forEach(user => {
                     const name = user.name.trim().toLowerCase();
                     const pin = user.pin.trim();
                     if (!userExists(name)) {
-                        setPin(name, pin);
+                        setUserPin(name, pin);
                         if (!localStorage.getItem(getStorageKey(name))) {
                             localStorage.setItem(getStorageKey(name), JSON.stringify([]));
                         }
@@ -1142,7 +1150,7 @@
                     if (confirm(`Reset PIN untuk "${name}"?`)) {
                         const newPin = prompt(`Masukkan PIN baru untuk ${name} (4 digit angka):`);
                         if (newPin && /^\d{4}$/.test(newPin)) {
-                            setPin(name, newPin);
+                            setUserPin(name, newPin);
                             renderAdminPanel();
                             showToast(`✅ PIN untuk "${name}" telah direset.`, 'success');
                         } else if (newPin !== null) {
@@ -1181,24 +1189,13 @@
                     showToast('⚠️ Tidak bisa membuat user dengan nama admin.', 'error');
                     return;
                 }
-                setPin(name, pin);
+                setUserPin(name, pin);
                 localStorage.setItem(getStorageKey(name), JSON.stringify([]));
                 newUserName.value = '';
                 newUserPin.value = '';
                 renderAdminPanel();
                 renderUserList();
                 showToast(`✅ Pengguna "${name}" berhasil ditambahkan dengan PIN ${pin}.`, 'success');
-            }
-
-            // ─── Inisialisasi admin ───
-            function ensureAdmin() {
-                if (!getPin('admin')) {
-                    setPin('admin', ADMIN_DEFAULT_PIN);
-                    console.log(`👑 Admin default dibuat: nama="${ADMIN_NAME}", PIN="${ADMIN_DEFAULT_PIN}"`);
-                    if (!localStorage.getItem(getStorageKey('admin'))) {
-                        localStorage.setItem(getStorageKey('admin'), JSON.stringify([]));
-                    }
-                }
             }
 
             // ─── Login ───
@@ -1216,10 +1213,9 @@
                     return;
                 }
 
-                // Cek admin
+                // ─── Cek Admin (PIN dari konstanta, bukan localStorage) ───
                 if (username === 'admin') {
-                    const adminPin = getPin('admin');
-                    if (pin === adminPin) {
+                    if (pin === getAdminPin()) {
                         isAdmin = true;
                         currentUser = 'admin';
                         doLogin();
@@ -1230,8 +1226,8 @@
                     }
                 }
 
-                // Cek user biasa
-                const storedPin = getPin(username);
+                // ─── Cek user biasa (PIN dari localStorage) ───
+                const storedPin = getUserPin(username);
                 if (!storedPin) {
                     loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.';
                     return;
@@ -2008,8 +2004,8 @@
 
             // ─── Init ───
             function init() {
-                ensureAdmin();
-                createDefaultUsers(); // <-- Buat user default dari daftar
+                // Buat user default (tidak termasuk admin, karena admin hardcoded)
+                createDefaultUsers();
 
                 // Login handlers
                 btnLogin.addEventListener('click', attemptLogin);
@@ -2084,8 +2080,8 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan User Default & Google Sheets)');
-                console.log('👑 Admin default: nama="admin", PIN="1234"');
+                console.log('📋 Aplikasi Absensi siap digunakan');
+                console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded - ubah di konstanta ADMIN_PIN)`);
                 console.log('👥 User default:', DEFAULT_USERS.map(u => `${u.name} (PIN: ${u.pin})`).join(', '));
                 console.log('☁️ URL Google Script sudah disematkan di kode.');
             }
