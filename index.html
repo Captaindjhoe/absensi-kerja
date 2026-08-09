@@ -1268,7 +1268,6 @@
                     toggle.textContent = '🌙';
                     localStorage.setItem('theme_preference', 'dark');
                 }
-                // Refresh chart agar warna menyesuaikan
                 const data = loadData();
                 if (data) updateChart(data);
             }
@@ -1958,15 +1957,25 @@
                     return;
                 }
                 try {
-                    await fetch(url, {
+                    // Kirim sebagai array of objects (Sheet.best menerima batch insert)
+                    const payload = [recordData];
+                    const response = await fetch(url, {
                         method: 'POST',
-                        mode: 'no-cors',
+                        mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(recordData),
+                        body: JSON.stringify(payload),
                     });
-                    console.log('✅ Data terkirim ke Google Sheet:', recordData);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Gagal mengirim ke Sheet.best:', response.status, errorText);
+                        throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('✅ Response dari Sheet.best:', result);
                 } catch (error) {
-                    console.error('❌ Gagal mengirim ke Google Sheet:', error);
+                    console.error('❌ Gagal mengirim ke Sheet.best:', error);
                     throw error;
                 }
             }
@@ -1978,12 +1987,15 @@
                     return;
                 }
                 const data = loadData();
-                if (data.length === 0) { showToast('📭 Tidak ada data untuk disinkronkan.', 'info'); return; }
+                if (data.length === 0) {
+                    showToast('📭 Tidak ada data untuk disinkronkan.', 'info');
+                    return;
+                }
                 showToast('⏳ Mengirim data ke Cloud...', 'info');
-                let successCount = 0,
-                    failCount = 0;
-                for (const rec of data) {
-                    const recordData = {
+                
+                try {
+                    // Kirim semua data dalam satu batch
+                    const payload = data.map(rec => ({
                         Tanggal: rec.date || '',
                         Nama: rec.nama || currentUser || 'Tidak diketahui',
                         Masuk: rec.checkIn ? rec.checkIn.time : '',
@@ -2002,12 +2014,29 @@
                             return '';
                         })(),
                         Lokasi: rec.checkIn?.location?.address || rec.checkOut?.location?.address || 'Tidak terdeteksi'
-                    };
-                    try { await syncToGoogleSheet(recordData);
-                        successCount++; } catch (e) { failCount++; }
+                    }));
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Gagal sync batch:', response.status, errorText);
+                        showToast(`❌ Gagal sync: ${response.status} - ${errorText}`, 'error');
+                        return;
+                    }
+
+                    const result = await response.json();
+                    console.log('✅ Sync batch berhasil:', result);
+                    showToast(`✅ ${data.length} data berhasil disinkronkan!`, 'success');
+                } catch (error) {
+                    console.error('❌ Gagal sync batch:', error);
+                    showToast('❌ Gagal sinkronisasi. Periksa koneksi.', 'error');
                 }
-                if (failCount === 0) { showToast(`✅ ${successCount} data berhasil disinkronkan!`, 'success'); } else { showToast(
-                        `⚠️ ${successCount} berhasil, ${failCount} gagal.`, 'error'); }
             }
 
             function setGoogleScriptUrlPrompt() {
@@ -2374,6 +2403,7 @@
                 console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded)`);
                 console.log('👥 User default:', DEFAULT_USERS.map(u => `${u.name} (PIN: ${u.pin})`).join(', '));
                 console.log('🌙 Toggle dark mode di pojok kanan header.');
+                console.log('📤 Sinkronisasi menggunakan Sheet.best.');
             }
 
             init();
