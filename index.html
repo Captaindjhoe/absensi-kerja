@@ -813,7 +813,7 @@
         <!-- HEADER -->
         <header class="header">
             <h1><span>📋</span> Absensi Kerja <span id="roleBadge"></span></h1>
-            <p>Created BY : Captain Famz</p>
+            <p>Created By Captain Famz</p>
             <div class="user-info">
                 <span>👤 <span id="displayUser">-</span></span>
                 <button class="btn-logout" id="btnLogout">🚪 Keluar</button>
@@ -1025,7 +1025,7 @@
             const STORAGE_PREFIX = 'attendance_data_';
             const PIN_PREFIX = 'pin_';
 
-            // Admin default (buat pertama kali jika belum ada)
+            // Admin default
             const ADMIN_NAME = 'admin';
             const ADMIN_DEFAULT_PIN = '1234';
 
@@ -1074,7 +1074,7 @@
                     if (key && key.startsWith(PIN_PREFIX)) {
                         const name = key.substring(PIN_PREFIX.length);
                         const pin = localStorage.getItem(key);
-                        if (name !== 'admin') { // admin tidak muncul di daftar
+                        if (name !== 'admin') {
                             result.push({ name, pin });
                         }
                     }
@@ -1098,7 +1098,7 @@
                 return getPin(username) !== null;
             }
 
-            // ─── Render user list di login ───
+            // ─── Render user list di login (TANPA admin) ───
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
@@ -1111,17 +1111,7 @@
                     });
                     userList.appendChild(btn);
                 });
-                // Tambahkan admin di daftar jika ada (hanya untuk admin login)
-                if (getPin('admin')) {
-                    const btnAdmin = document.createElement('button');
-                    btnAdmin.textContent = '👑 admin';
-                    btnAdmin.style.borderColor = '#f59e0b';
-                    btnAdmin.addEventListener('click', () => {
-                        loginInput.value = 'admin';
-                        loginPinInput.focus();
-                    });
-                    userList.appendChild(btnAdmin);
-                }
+                // Admin TIDAK ditampilkan di daftar
             }
 
             // ─── Render admin panel ───
@@ -1145,7 +1135,6 @@
                     html = `<tr><td colspan="3" style="text-align:center;color:#94a3b8;">Belum ada pengguna terdaftar</td></tr>`;
                 }
                 userTableBody.innerHTML = html;
-                // Expose fungsi ke window agar bisa dipanggil dari onclick
                 window._resetPin = function(name) {
                     if (confirm(`Reset PIN untuk "${name}"?`)) {
                         const newPin = prompt(`Masukkan PIN baru untuk ${name} (4 digit angka):`);
@@ -1160,9 +1149,7 @@
                 };
                 window._deleteUser = function(name) {
                     if (confirm(`Hapus pengguna "${name}" dan semua data absensinya?`)) {
-                        // Hapus PIN
                         deletePin(name);
-                        // Hapus data absensi
                         localStorage.removeItem(getStorageKey(name));
                         renderAdminPanel();
                         renderUserList();
@@ -1192,7 +1179,6 @@
                     return;
                 }
                 setPin(name, pin);
-                // Buat data kosong
                 localStorage.setItem(getStorageKey(name), JSON.stringify([]));
                 newUserName.value = '';
                 newUserPin.value = '';
@@ -1201,12 +1187,11 @@
                 showToast(`✅ Pengguna "${name}" berhasil ditambahkan dengan PIN ${pin}.`, 'success');
             }
 
-            // ─── Inisialisasi admin (jika belum ada) ───
+            // ─── Inisialisasi admin ───
             function ensureAdmin() {
                 if (!getPin('admin')) {
                     setPin('admin', ADMIN_DEFAULT_PIN);
                     console.log(`👑 Admin default dibuat: nama="${ADMIN_NAME}", PIN="${ADMIN_DEFAULT_PIN}"`);
-                    // Buat data admin kosong
                     if (!localStorage.getItem(getStorageKey('admin'))) {
                         localStorage.setItem(getStorageKey('admin'), JSON.stringify([]));
                     }
@@ -1228,7 +1213,7 @@
                     return;
                 }
 
-                // Cek admin
+                // Cek admin (bisa diketik manual)
                 if (username.toLowerCase() === 'admin') {
                     const adminPin = getPin('admin');
                     if (pin === adminPin) {
@@ -1902,7 +1887,6 @@
 
             // ─── Init ───
             function init() {
-                // Pastikan admin ada
                 ensureAdmin();
 
                 // Login handlers
@@ -1950,7 +1934,7 @@
                     renderUI();
                 });
 
-                // Keyboard shortcuts (tidak aktif saat di input)
+                // Keyboard shortcuts
                 document.addEventListener('keydown', (e) => {
                     const target = e.target;
                     if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
@@ -1970,14 +1954,12 @@
                     }
                 });
 
-                // Show login
                 renderUserList();
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (dengan Admin)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Admin tidak muncul di daftar)');
                 console.log('👑 Admin default: nama="admin", PIN="1234" (ubah PIN di localStorage)');
-                console.log('⌨️ Pintasan: [1] Masuk  [2] Pulang  [Ctrl+E] Export (tidak aktif saat mengetik)');
             }
 
             init();
