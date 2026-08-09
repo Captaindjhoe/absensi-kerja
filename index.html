@@ -321,7 +321,13 @@
         .btn-success:hover {
             background: #6ee7b7;
         }
-        <button class="btn-export" id="btnSyncAll" style="background:#fef3c7; color:#b45309;">☁️ Sinkronkan Semua ke Cloud</button>
+        .btn-sync {
+            background: #c7d2fe;
+            color: #3730a3;
+        }
+        .btn-sync:hover {
+            background: #a5b4fc;
+        }
 
         /* ─── Today's Record ─── */
         .today-grid {
@@ -619,52 +625,6 @@
             cursor: not-allowed;
         }
 
-        /* ─── PIN Modal ─── */
-        .pin-section {
-            margin-top: 12px;
-            border-top: 1px solid #e9edf2;
-            padding-top: 16px;
-        }
-        .pin-section input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 20px;
-            text-align: center;
-            letter-spacing: 8px;
-            margin-bottom: 8px;
-        }
-        .pin-section input:focus {
-            border-color: #2d6a9f;
-            outline: none;
-        }
-        .pin-section .btn-pin {
-            padding: 10px 20px;
-            background: #2d6a9f;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.2s;
-        }
-        .pin-section .btn-pin:hover {
-            background: #1e3a5f;
-        }
-        .pin-section .pin-error {
-            color: #dc2626;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-        .pin-section .pin-info {
-            color: #64748b;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
         /* ─── Admin Panel ─── */
         .admin-panel {
             background: #f8fafc;
@@ -944,6 +904,12 @@
                 <input type="file" id="restoreInput" accept=".json" />
             </div>
 
+            <!-- Sinkronisasi Google Sheets -->
+            <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
+                <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0;">⚙️ Set URL Google Script</button>
+            </div>
+
             <!-- Export Excel -->
             <button class="btn-export" id="btnExport">📊 Export ke Excel</button>
 
@@ -961,6 +927,16 @@
     <script>
         (function() {
             'use strict';
+
+            // ─── Konfigurasi Google Sheets ───
+            // Ganti URL ini dengan Web App URL dari Google Apps Script
+            const GOOGLE_SCRIPT_URL_KEY = 'google_script_url';
+            function getGoogleScriptUrl() {
+                return localStorage.getItem(GOOGLE_SCRIPT_URL_KEY) || '';
+            }
+            function setGoogleScriptUrl(url) {
+                localStorage.setItem(GOOGLE_SCRIPT_URL_KEY, url);
+            }
 
             // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
@@ -992,6 +968,8 @@
             const btnBackup = document.getElementById('btnBackup');
             const btnRestore = document.getElementById('btnRestore');
             const restoreInput = document.getElementById('restoreInput');
+            const btnSyncAll = document.getElementById('btnSyncAll');
+            const btnSetGoogleUrl = document.getElementById('btnSetGoogleUrl');
             const todayIn = document.getElementById('todayIn');
             const todayOut = document.getElementById('todayOut');
             const todayInPhoto = document.getElementById('todayInPhoto');
@@ -1060,7 +1038,7 @@
                     const key = localStorage.key(i);
                     if (key && key.startsWith(STORAGE_PREFIX)) {
                         const name = key.substring(STORAGE_PREFIX.length);
-                        if (name !== 'admin') { // admin tidak muncul di daftar user biasa
+                        if (name !== 'admin') {
                             users.push(name);
                         }
                     }
@@ -1099,7 +1077,7 @@
                 return getPin(username) !== null;
             }
 
-            // ─── Render user list di login (TANPA admin) ───
+            // ─── Render user list di login ───
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
@@ -1112,7 +1090,6 @@
                     });
                     userList.appendChild(btn);
                 });
-                // Admin TIDAK ditampilkan di daftar
             }
 
             // ─── Render admin panel ───
@@ -1214,7 +1191,6 @@
                     return;
                 }
 
-                // Cek admin (bisa diketik manual)
                 if (username.toLowerCase() === 'admin') {
                     const adminPin = getPin('admin');
                     if (pin === adminPin) {
@@ -1228,7 +1204,6 @@
                     }
                 }
 
-                // Cek user biasa
                 const storedPin = getPin(username);
                 if (!storedPin) {
                     loginError.textContent = 'Pengguna tidak terdaftar. Hubungi admin.';
@@ -1689,6 +1664,81 @@
                 }
             }
 
+            // ─── Sinkronisasi ke Google Sheets ───
+            async function syncToGoogleSheet(recordData) {
+                const url = getGoogleScriptUrl();
+                if (!url) {
+                    console.warn('⚠️ URL Google Script belum diatur. Sinkronisasi dilewati.');
+                    return;
+                }
+                try {
+                    // Kirim data dengan mode no-cors untuk menghindari CORS
+                    await fetch(url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(recordData),
+                    });
+                    // Karena mode no-cors, kita tidak bisa membaca response, tapi anggap berhasil
+                    console.log('✅ Data terkirim ke Google Sheet:', recordData);
+                } catch (error) {
+                    console.error('❌ Gagal mengirim ke Google Sheet:', error);
+                    throw error;
+                }
+            }
+
+            // ─── Sinkronkan semua data ke Google Sheets ───
+            async function syncAllData() {
+                const url = getGoogleScriptUrl();
+                if (!url) {
+                    showToast('⚠️ URL Google Script belum diatur. Klik tombol "Set URL Google Script".', 'error');
+                    return;
+                }
+                const data = loadData();
+                if (data.length === 0) {
+                    showToast('📭 Tidak ada data untuk disinkronkan.', 'info');
+                    return;
+                }
+                showToast('⏳ Mengirim data ke Cloud...', 'info');
+                let successCount = 0;
+                let failCount = 0;
+                for (const rec of data) {
+                    const recordData = {
+                        Tanggal: rec.date || '',
+                        Nama: rec.nama || currentUser || 'Tidak diketahui',
+                        Masuk: rec.checkIn ? rec.checkIn.time : '',
+                        Pulang: rec.checkOut ? rec.checkOut.time : '',
+                        TotalKerja: (() => {
+                            if (rec.checkIn && rec.checkOut) {
+                                const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                                const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                                const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                                if (diff >= 0) {
+                                    const hrs = Math.floor(diff / 60);
+                                    const mins = diff % 60;
+                                    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                                }
+                            }
+                            return '';
+                        })(),
+                        Lokasi: rec.checkIn?.location?.address || rec.checkOut?.location?.address || 'Tidak terdeteksi'
+                    };
+                    try {
+                        await syncToGoogleSheet(recordData);
+                        successCount++;
+                    } catch (e) {
+                        failCount++;
+                    }
+                }
+                if (failCount === 0) {
+                    showToast(`✅ ${successCount} data berhasil disinkronkan!`, 'success');
+                } else {
+                    showToast(`⚠️ ${successCount} berhasil, ${failCount} gagal.`, 'error');
+                }
+            }
+
             // ─── Actions ───
             async function handleCheckIn() {
                 if (!currentUser) {
@@ -1744,6 +1794,18 @@
 
                 saveData(data);
                 renderUI();
+
+                // Kirim ke Google Sheets
+                const recordData = {
+                    Tanggal: today,
+                    Nama: currentUser,
+                    Masuk: time,
+                    Pulang: '',
+                    TotalKerja: '',
+                    Lokasi: location ? location.address : 'Tidak terdeteksi'
+                };
+                syncToGoogleSheet(recordData).catch(() => {});
+
                 showToast(`✅ Absen masuk berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
             }
 
@@ -1796,81 +1858,36 @@
                     location: location,
                 };
 
+                // Hitung total kerja
+                let totalKerja = '';
+                if (record.checkIn) {
+                    const [hIn, mIn] = record.checkIn.time.split(':').map(Number);
+                    const [hOut, mOut] = record.checkOut.time.split(':').map(Number);
+                    const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                    if (diff >= 0) {
+                        const hrs = Math.floor(diff / 60);
+                        const mins = diff % 60;
+                        totalKerja = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                    }
+                }
+
                 saveData(data);
                 renderUI();
+
+                // Kirim ke Google Sheets
+                const recordData = {
+                    Tanggal: today,
+                    Nama: currentUser,
+                    Masuk: record.checkIn ? record.checkIn.time : '',
+                    Pulang: time,
+                    TotalKerja: totalKerja,
+                    Lokasi: location ? location.address : 'Tidak terdeteksi'
+                };
+                syncToGoogleSheet(recordData).catch(() => {});
+
                 showToast(`✅ Absen pulang berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
             }
-// Ganti dengan URL Web App yang sudah kamu dapatkan
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqA16eZyKAPEUd3I1SlAyZbjc26fRhwjeBs1VhIwEb50_gjvwFrpfDG2bPTjfyFD2oTw/exec';
 
-async function syncToGoogleSheet(recordData) {
-  try {
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Mode ini mencegah error CORS
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(recordData),
-    });
-
-    // Karena mode 'no-cors', kita tidak bisa membaca response-nya.
-    // Tapi kita bisa asumsikan berhasil jika tidak ada error.
-    console.log('✅ Data berhasil dikirim ke Google Sheet!', recordData);
-    // Kamu bisa tambahkan logika untuk memberi tahu user bahwa sync berhasil.
-    // showToast('📤 Data berhasil disinkronkan ke Cloud.', 'success');
-  } catch (error) {
-    console.error('❌ Gagal mengirim data ke Google Sheet:', error);
-    // showToast('⚠️ Gagal sinkronisasi ke Cloud. Periksa koneksi.', 'error');
-  }
-}
-            // Di dalam fungsi handleCheckIn, setelah saveData(data) dan renderUI()
-const recordData = {
-    Tanggal: today,
-    Nama: currentUser,
-    Masuk: time,
-    Pulang: '', // Kosongkan dulu, akan diisi saat check-out
-    TotalKerja: '',
-    Lokasi: location ? location.address : 'Tidak terdeteksi'
-};
-await syncToGoogleSheet(recordData);
-
-// Di dalam fungsi handleCheckOut, setelah saveData(data) dan renderUI()
-// Ambil data yang sudah ada di localStorage
-const existingData = loadData();
-const todayRecord = getTodayRecord(existingData);
-
-const recordData = {
-    Tanggal: today,
-    Nama: currentUser,
-    Masuk: todayRecord.checkIn ? todayRecord.checkIn.time : '',
-    Pulang: time,
-    TotalKerja: '...', // Kamu bisa hitung selisihnya di sini
-    Lokasi: location ? location.address : 'Tidak terdeteksi'
-};
-await syncToGoogleSheet(recordData);
-            document.getElementById('btnSyncAll').addEventListener('click', async function() {
-    const allData = loadData();
-    if (allData.length === 0) {
-        showToast('📭 Tidak ada data untuk disinkronkan.', 'info');
-        return;
-    }
-    showToast('⏳ Mengirim data ke Cloud...', 'info');
-    for (const record of allData) {
-        // Format ulang data sesuai dengan header di Google Sheet
-        const recordData = {
-            Tanggal: record.date,
-            Nama: record.nama || currentUser,
-            Masuk: record.checkIn ? record.checkIn.time : '',
-            Pulang: record.checkOut ? record.checkOut.time : '',
-            TotalKerja: '...', // Hitung jika perlu
-            Lokasi: record.checkIn?.location?.address || 'Tidak terdeteksi'
-        };
-        await syncToGoogleSheet(recordData);
-    }
-    showToast(`✅ ${allData.length} data berhasil disinkronkan!`, 'success');
-});
-            
             // ─── Export Excel ───
             function exportExcel() {
                 const data = loadData();
@@ -1956,6 +1973,21 @@ await syncToGoogleSheet(recordData);
                 reader.readAsText(file);
             }
 
+            // ─── Set URL Google Script ───
+            function setGoogleScriptUrlPrompt() {
+                const current = getGoogleScriptUrl();
+                const newUrl = prompt('Masukkan URL Web App Google Apps Script:', current);
+                if (newUrl !== null) {
+                    if (newUrl.trim() === '') {
+                        localStorage.removeItem(GOOGLE_SCRIPT_URL_KEY);
+                        showToast('🗑️ URL Google Script dihapus.', 'info');
+                    } else {
+                        setGoogleScriptUrl(newUrl.trim());
+                        showToast('✅ URL Google Script disimpan.', 'success');
+                    }
+                }
+            }
+
             // ─── Init ───
             function init() {
                 ensureAdmin();
@@ -1989,6 +2021,10 @@ await syncToGoogleSheet(recordData);
                         this.value = '';
                     }
                 });
+
+                // Sinkronisasi
+                btnSyncAll.addEventListener('click', syncAllData);
+                btnSetGoogleUrl.addEventListener('click', setGoogleScriptUrlPrompt);
 
                 // Filter
                 btnFilter.addEventListener('click', () => {
@@ -2029,8 +2065,9 @@ await syncToGoogleSheet(recordData);
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Admin tidak muncul di daftar)');
-                console.log('👑 Admin default: nama="admin", PIN="1234" (ubah PIN di localStorage)');
+                console.log('📋 Aplikasi Absensi siap digunakan (dengan Google Sheets)');
+                console.log('👑 Admin default: nama="admin", PIN="1234"');
+                console.log('☁️ Untuk sinkronisasi, atur URL Google Script melalui tombol ⚙️');
             }
 
             init();
