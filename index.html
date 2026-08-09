@@ -966,9 +966,6 @@
             <div class="user-list" id="userList"></div>
             <button class="btn-login" id="btnLogin">Login</button>
             <div id="loginError" style="color:#dc2626;font-size:13px;margin-top:8px;"></div>
-            <div style="margin-top:12px;font-size:12px;color:var(--text-muted);">
-                ⚠️ User & PIN disimpan di Google Sheets (1 sheet dengan kolom PIN)
-            </div>
         </div>
     </div>
 
@@ -1006,7 +1003,6 @@
                             <tbody id="userTableBody"></tbody>
                         </table>
                     </div>
-                    
                 </div>
             </div>
 
@@ -1288,11 +1284,9 @@
                         console.log('📄 Total data dari Cloud:', allData.length, 'baris');
                         
                         if (Array.isArray(allData) && allData.length > 0) {
-                            // Cari header yang tersedia
                             const headers = Object.keys(allData[0]);
                             console.log('🔑 Header yang ditemukan:', headers);
                             
-                            // Cari kolom Nama dan PIN
                             const namaKey = headers.find(h => 
                                 h.toLowerCase().includes('nama') || 
                                 h === 'Nama'
@@ -1306,11 +1300,10 @@
                             console.log('📌 Menggunakan key Nama:', namaKey, 'PIN:', pinKey);
                             
                             if (namaKey && pinKey) {
-                                // Filter data yang memiliki PIN (ini adalah data user)
                                 cloudUsers = allData
                                     .filter(item => {
                                         const pin = String(item[pinKey] || '').trim();
-                                        return pin.length > 0; // Hanya yang punya PIN
+                                        return pin.length > 0;
                                     })
                                     .map(item => ({
                                         name: String(item[namaKey] || '').toLowerCase().trim(),
@@ -1319,36 +1312,20 @@
                                     .filter(u => u.name && u.name !== 'admin');
                                 
                                 console.log('✅ Data user ditemukan:', cloudUsers.length, 'user');
-                                
-                                if (cloudUsers.length > 0) {
-                                    console.log('📋 User list:', cloudUsers.map(u => u.name).join(', '));
-                                } else {
-                                    console.warn('⚠️ Tidak ada user ditemukan.');
-                                    console.log('💡 Pastikan ada baris dengan PIN di Google Sheet Anda.');
-                                }
                             } else {
                                 console.warn('⚠️ Kolom Nama atau PIN tidak ditemukan.');
-                                console.log('💡 Kolom yang tersedia:', headers.join(', '));
                                 cloudUsers = [];
                             }
                         } else {
-                            console.warn('⚠️ Data dari Cloud kosong atau format tidak sesuai');
                             cloudUsers = [];
                         }
                     } else {
-                        const errText = await response.text();
                         console.error('❌ Gagal fetch data. Status:', response.status);
                         cloudUsers = [];
-                        if (isAdmin) {
-                            showToast(`❌ Gagal memuat data. Status ${response.status}`, 'error', 5000);
-                        }
                     }
                 } catch (error) {
                     console.error('❌ Error koneksi ke Cloud:', error);
                     cloudUsers = [];
-                    if (isAdmin) {
-                        showToast('❌ Error koneksi internet ke Cloud.', 'error', 5000);
-                    }
                 }
                 
                 if (isAdmin) renderAdminPanel();
@@ -1378,7 +1355,7 @@
                 if (users.length === 0) {
                     const msg = document.createElement('div');
                     msg.style.cssText = 'color:var(--text-muted);font-size:13px;padding:8px 0;';
-                    msg.textContent = '⚠️ Belum ada user terdaftar. Login sebagai admin untuk menambah user di Google Sheets.';
+                    msg.textContent = '⚠️ Belum ada user terdaftar. Login sebagai admin untuk menambah user.';
                     userList.appendChild(msg);
                 } else {
                     users.forEach(u => {
@@ -1415,14 +1392,11 @@
                 userTableBody.innerHTML = html;
 
                 window._deleteUser = async function(name) {
-                    if (confirm(`Hapus pengguna "${name}" dari Cloud?\n\n⚠️ Data akan dihapus dari Google Sheets.`)) {
+                    if (confirm(`Hapus pengguna "${name}" dari Cloud?`)) {
                         try {
-                            // Ambil semua data dari Cloud
                             const response = await fetch(GOOGLE_SCRIPT_URL);
                             if (response.ok) {
                                 const allData = await response.json();
-                                
-                                // Cari header
                                 const headers = Object.keys(allData[0] || {});
                                 const namaKey = headers.find(h => 
                                     h.toLowerCase().includes('nama') || 
@@ -1430,13 +1404,11 @@
                                 );
                                 
                                 if (namaKey) {
-                                    // Filter data: hapus baris dengan nama yang sama
                                     const filteredData = allData.filter(item => {
                                         const nama = String(item[namaKey] || '').toLowerCase().trim();
                                         return nama !== name;
                                     });
                                     
-                                    // Kirim data yang sudah difilter kembali ke Cloud
                                     const updateResponse = await fetch(GOOGLE_SCRIPT_URL, {
                                         method: 'POST',
                                         mode: 'cors',
@@ -1445,18 +1417,15 @@
                                     });
                                     
                                     if (updateResponse.ok) {
-                                        showToast(`✅ Pengguna "${name}" dihapus dari Cloud!`, 'success');
+                                        showToast(`✅ Pengguna "${name}" dihapus!`, 'success');
                                         await syncUsersFromCloud();
                                         renderAdminPanel();
                                         renderUserList();
-                                    } else {
-                                        showToast('❌ Gagal menghapus user. Coba manual di Google Sheets.', 'error');
                                     }
                                 }
                             }
                         } catch (error) {
-                            console.error('❌ Gagal hapus user:', error);
-                            showToast('❌ Gagal menghapus user. Coba manual di Google Sheets.', 'error');
+                            showToast('❌ Gagal menghapus user.', 'error');
                         }
                     }
                 };
@@ -1473,18 +1442,15 @@
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
                 try {
-                    // Ambil data yang sudah ada
                     const getResponse = await fetch(GOOGLE_SCRIPT_URL);
                     let existingData = [];
                     if (getResponse.ok) {
                         existingData = await getResponse.json();
                     }
                     
-                    // Tambahkan user baru (hanya Nama dan PIN)
                     const newUser = { Nama: name, PIN: pin };
                     const updatedData = [...existingData, newUser];
                     
-                    // Kirim kembali ke Cloud
                     const postResponse = await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
                         mode: 'cors',
@@ -1493,20 +1459,19 @@
                     });
 
                     if (!postResponse.ok) {
-                        const errText = await postResponse.text();
-                        throw new Error(`HTTP ${postResponse.status}: ${errText}`);
+                        throw new Error(`HTTP ${postResponse.status}`);
                     }
 
                     newUserName.value = '';
                     newUserPin.value = '';
-                    showToast(`✅ Pengguna "${name}" berhasil ditambahkan ke Cloud!`, 'success');
+                    showToast(`✅ Pengguna "${name}" berhasil ditambahkan!`, 'success');
                     
                     await syncUsersFromCloud();
                     renderAdminPanel();
                     renderUserList();
                 } catch (error) {
-                    console.error('❌ Gagal tambah user cloud:', error);
-                    showToast('❌ Gagal menyimpan ke Cloud: ' + error.message, 'error');
+                    console.error('❌ Gagal tambah user:', error);
+                    showToast('❌ Gagal menyimpan ke Cloud.', 'error');
                 }
             }
 
@@ -1532,7 +1497,7 @@
 
                 const storedPin = getUserPin(username);
                 if (!storedPin) { 
-                    loginError.textContent = 'Pengguna tidak terdaftar di Cloud. Hubungi Admin.';
+                    loginError.textContent = 'Pengguna tidak terdaftar. Hubungi Admin.';
                     syncUsersFromCloud();
                     return; 
                 }
@@ -1665,7 +1630,7 @@
                     overlay.style.display = 'none';
                     cameraReady = false;
                     updateButtons();
-                    showToast('⚠️ Akses kamera ditolak. Periksa izin browser.', 'error', 4000);
+                    showToast('⚠️ Akses kamera ditolak.', 'error', 4000);
                     return false;
                 }
             }
@@ -1954,16 +1919,31 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── SYNC TO GOOGLE SHEETS ───
+            // ─── SYNC TO GOOGLE SHEETS (DENGAN CEK DUPLIKAT) ───
             async function syncToGoogleSheet(recordData) {
                 const url = GOOGLE_SCRIPT_URL;
                 if (!url) return;
+                
                 try {
-                    // Ambil data yang sudah ada
+                    // Ambil data yang sudah ada di Cloud
                     const getResponse = await fetch(url);
                     let existingData = [];
                     if (getResponse.ok) {
                         existingData = await getResponse.json();
+                    }
+                    
+                    // Cek apakah data sudah ada (berdasarkan Tanggal dan Nama)
+                    const isDuplicate = existingData.some(item => {
+                        const tanggal = String(item.Tanggal || '').trim();
+                        const nama = String(item.Nama || '').toLowerCase().trim();
+                        const recordTanggal = String(recordData.Tanggal || '').trim();
+                        const recordNama = String(recordData.Nama || '').toLowerCase().trim();
+                        return tanggal === recordTanggal && nama === recordNama;
+                    });
+                    
+                    if (isDuplicate) {
+                        console.log('⏭️ Data sudah ada, dilewati:', recordData.Tanggal, recordData.Nama);
+                        return;
                     }
                     
                     // Tambahkan data baru
@@ -1980,7 +1960,7 @@
                         const errorText = await response.text();
                         console.error('❌ Gagal mengirim ke Cloud:', response.status, errorText);
                     } else {
-                        console.log('✅ Response dari Cloud:', await response.json());
+                        console.log('✅ Data berhasil dikirim ke Cloud');
                     }
                 } catch (error) {
                     console.error('❌ Gagal mengirim ke Cloud:', error);
@@ -1993,36 +1973,16 @@
                     showToast('⚠️ URL Google Script belum diatur.', 'error');
                     return;
                 }
+                
                 const data = loadData();
                 if (data.length === 0) {
                     showToast('📭 Tidak ada data untuk disinkronkan.', 'info');
                     return;
                 }
+                
                 showToast('⏳ Mengirim data ke Cloud...', 'info');
                 
                 try {
-                    // Format data untuk dikirim ke Cloud
-                    const payload = data.map(rec => ({
-                        Tanggal: rec.date || '',
-                        Nama: rec.nama || currentUser || 'Tidak diketahui',
-                        Masuk: rec.checkIn ? rec.checkIn.time : '',
-                        Pulang: rec.checkOut ? rec.checkOut.time : '',
-                        TotalKerja: (() => {
-                            if (rec.checkIn && rec.checkOut) {
-                                const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
-                                const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
-                                const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
-                                if (diff >= 0) {
-                                    const hrs = Math.floor(diff / 60);
-                                    const mins = diff % 60;
-                                    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-                                }
-                            }
-                            return '';
-                        })(),
-                        Lokasi: rec.checkIn?.location?.address || rec.checkOut?.location?.address || 'Tidak terdeteksi'
-                    }));
-
                     // Ambil data yang sudah ada di Cloud
                     const getResponse = await fetch(url);
                     let existingData = [];
@@ -2030,17 +1990,50 @@
                         existingData = await getResponse.json();
                     }
                     
-                    // Gabungkan data baru dengan data yang sudah ada
-                    const existingKeys = new Set(existingData.map(item => 
-                        `${item.Tanggal || ''}|${item.Nama || ''}`
-                    ));
-                    
-                    const newData = payload.filter(item => {
-                        const key = `${item.Tanggal}|${item.Nama}`;
-                        return !existingKeys.has(key);
+                    // Buat set untuk pengecekan cepat
+                    const existingKeys = new Set();
+                    existingData.forEach(item => {
+                        const tanggal = String(item.Tanggal || '').trim();
+                        const nama = String(item.Nama || '').toLowerCase().trim();
+                        if (tanggal && nama) {
+                            existingKeys.add(`${tanggal}|${nama}`);
+                        }
                     });
                     
-                    const updatedData = [...existingData, ...newData];
+                    // Format data dan filter yang sudah ada
+                    const payload = data
+                        .map(rec => ({
+                            Tanggal: rec.date || '',
+                            Nama: rec.nama || currentUser || 'Tidak diketahui',
+                            Masuk: rec.checkIn ? rec.checkIn.time : '',
+                            Pulang: rec.checkOut ? rec.checkOut.time : '',
+                            TotalKerja: (() => {
+                                if (rec.checkIn && rec.checkOut) {
+                                    const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                                    const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                                    const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                                    if (diff >= 0) {
+                                        const hrs = Math.floor(diff / 60);
+                                        const mins = diff % 60;
+                                        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                                    }
+                                }
+                                return '';
+                            })(),
+                            Lokasi: rec.checkIn?.location?.address || rec.checkOut?.location?.address || 'Tidak terdeteksi'
+                        }))
+                        .filter(item => {
+                            const key = `${item.Tanggal}|${item.Nama}`;
+                            return !existingKeys.has(key);
+                        });
+                    
+                    if (payload.length === 0) {
+                        showToast('✅ Semua data sudah tersinkron!', 'success');
+                        return;
+                    }
+                    
+                    // Gabungkan data baru dengan data yang sudah ada
+                    const updatedData = [...existingData, ...payload];
 
                     const response = await fetch(url, {
                         method: 'POST',
@@ -2052,13 +2045,13 @@
                     if (!response.ok) {
                         const errorText = await response.text();
                         console.error('❌ Gagal sync batch:', response.status, errorText);
-                        showToast(`❌ Gagal sync: ${response.status} - ${errorText}`, 'error');
+                        showToast(`❌ Gagal sync: ${response.status}`, 'error');
                         return;
                     }
 
-                    const result = await response.json();
-                    console.log('✅ Sync batch berhasil:', result);
-                    showToast(`✅ ${newData.length} data baru berhasil disinkronkan!`, 'success');
+                    console.log('✅ Sync batch berhasil:', payload.length, 'data baru');
+                    showToast(`✅ ${payload.length} data baru berhasil disinkronkan!`, 'success');
+                    
                 } catch (error) {
                     console.error('❌ Gagal sync batch:', error);
                     showToast('❌ Gagal sinkronisasi. Periksa koneksi.', 'error');
@@ -2308,7 +2301,7 @@
                     ];
                     XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
                     XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
-                    showToast(`📊 Excel berhasil diexport (tanpa foto).`, 'success', 3000);
+                    showToast(`📊 Excel berhasil diexport!`, 'success', 3000);
                 } catch (err) {
                     console.error('Export error:', err);
                     showToast('❌ Gagal export Excel: ' + err.message, 'error');
@@ -2376,11 +2369,9 @@
 
             // ─── INIT ───
             function init() {
-                // Load theme preference
                 loadThemePreference();
                 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-                // Ambil data user dari Cloud saat aplikasi dibuka
                 syncUsersFromCloud();
 
                 btnLogin.addEventListener('click', attemptLogin);
@@ -2391,7 +2382,7 @@
                 btnAddUser.addEventListener('click', addUser);
                 btnRefreshUsers.addEventListener('click', () => { 
                     syncUsersFromCloud(); 
-                    showToast('🔄 Data user dari Cloud diperbarui.', 'info'); 
+                    showToast('🔄 Data user diperbarui.', 'info'); 
                 });
 
                 btnIn.addEventListener('click', handleCheckIn);
@@ -2450,10 +2441,9 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (1 Sheet)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Dengan Cek Duplikat)');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
                 console.log('📊 URL Cloud:', GOOGLE_SCRIPT_URL);
-                console.log('💡 Tips: Isi baris dengan Nama dan PIN untuk menambah user');
             }
 
             init();
