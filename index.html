@@ -1238,8 +1238,6 @@
 
             // Fungsi pengambilan URL
             function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
-            // URL khusus untuk menulis/membaca data User di sheet ke-2
-            function getUserSheetUrl() { return GOOGLE_SCRIPT_URL + '?sheet=Data_User'; }
 
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
@@ -1372,8 +1370,8 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                // PERBAIKAN: Ambil user dari Sheet ke-2 (Data_User)
-                const url = getUserSheetUrl();
+                // PERBAIKAN: Menggunakan URL + '/Data_User' (Metode Standar Sheet.best)
+                const url = getGoogleScriptUrl() + '/Data_User';
                 if (!url) return;
 
                 try {
@@ -1390,10 +1388,14 @@
                         if (isAdmin) renderAdminPanel();
                         renderUserList();
                     } else {
-                        console.warn('⚠️ Gagal fetch user dari Cloud.', await response.text());
+                        const errText = await response.text();
+                        console.warn('⚠️ Gagal fetch user dari Cloud. Status:', response.status, errText);
+                        // Beri tahu admin jika terjadi error saat memuat user
+                        if (isAdmin) showToast(`⚠️ Gagal memuat Data User. Status ${response.status}. Pastikan sheet "Data_User" ada di urutan ke-2.`, 'error', 5000);
                     }
                 } catch (error) {
                     console.error('❌ Error sync user cloud:', error);
+                    if (isAdmin) showToast('❌ Error koneksi ke Cloud. Periksa internet.', 'error');
                 }
             }
 
@@ -1445,7 +1447,7 @@
                     `;
                 });
                 if (!html) {
-                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud</td></tr>`;
+                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud (cek koneksi)</td></tr>`;
                 }
                 userTableBody.innerHTML = html;
 
@@ -1473,8 +1475,8 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                // PERBAIKAN: Tulis ke Sheet ke-2 (Data_User)
-                const url = getUserSheetUrl();
+                // PERBAIKAN: Menggunakan URL + '/Data_User'
+                const url = getGoogleScriptUrl() + '/Data_User';
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -1945,7 +1947,6 @@
             }
 
             // ─── Sinkronisasi Absensi ke Google Sheets ───
-            // PERBAIKAN: Tidak menggunakan parameter, otomatis menulis ke Sheet PERTAMA (Absensi)
             async function syncToGoogleSheet(recordData) {
                 const url = getGoogleScriptUrl(); 
                 if (!url) return;
@@ -2387,7 +2388,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Strategi terbalik: Absensi di Sheet 1, User di Sheet 2)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Perbaikan URL Data User stabil)');
                 console.log(`👑 Admin PIN: ${ADMIN_PIN} (Hardcoded)`);
                 console.log('🌙 Toggle dark mode di pojok kanan header.');
             }
