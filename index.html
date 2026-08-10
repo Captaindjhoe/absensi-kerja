@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📋 Absensi Kerja Captain Famz</title>
+    <title>📋 Absensi & Inspeksi Kerja</title>
 
     <!-- SheetJS untuk export Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
@@ -701,7 +701,6 @@
             transition: background 0.3s;
         }
         
-        /* ─── CSS KHUSUS UNTUK LOGO ─── */
         .login-logo {
             width: 100px;
             height: 100px;
@@ -1025,6 +1024,102 @@
             margin-top: 12px;
             flex-wrap: wrap;
         }
+
+        /* ─── CSS KHUSUS UNTUK MODAL INSPEKSI ─── */
+        .modal-overlay-insp {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+        .modal-overlay-insp.active {
+            display: flex;
+        }
+        .modal-box-insp {
+            background: var(--modal-bg);
+            border-radius: 24px;
+            padding: 24px 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: background 0.3s;
+        }
+        .modal-box-insp h2 {
+            font-size: 22px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-box-insp .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: 0.2s;
+        }
+        .modal-box-insp .close-btn:hover {
+            color: var(--text-primary);
+        }
+        .modal-box-insp .form-group {
+            margin-bottom: 16px;
+        }
+        .modal-box-insp .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        .modal-box-insp .form-group input,
+        .modal-box-insp .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-filter);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .modal-box-insp .form-group input:focus,
+        .modal-box-insp .form-group select:focus {
+            border-color: #2d6a9f;
+            outline: none;
+        }
+        .modal-box-insp .btn-submit-insp {
+            width: 100%;
+            padding: 12px;
+            background: #15803d;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-box-insp .btn-submit-insp:hover {
+            background: #065f46;
+        }
+        .modal-box-insp .btn-submit-insp:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -1033,8 +1128,8 @@
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
             
-            <!-- 🚀 GANTI LINK DI BAGIAN SRC="" DI BAWAH INI DENGAN LINK GAMBAR ANDA -->
-            <img class="login-logo" src="https://i.ibb.co.com/fYrmWpYj/Whats-App-Image-2026-08-10-at-3-30-27-PM.jpg" alt="Logo Absensi" />
+            <!-- Logo Aplikasi -->
+            <img class="login-logo" src="https://i.ibb.co/5G1Fk2Y/logo-D.png" alt="Logo Absensi" />
             
             <h2>🔐 Absensi</h2>
             <p>Masukkan nama dan PIN Anda</p>
@@ -1110,6 +1205,11 @@
             <div class="btn-group">
                 <button class="btn btn-in" id="btnIn">📸 Masuk</button>
                 <button class="btn btn-out" id="btnOut">🚪 Pulang</button>
+            </div>
+            
+            <!-- TOMBOL INSPEKSI KENDARAAN -->
+            <div style="margin-top: 8px;">
+                <button class="btn" id="btnInspeksi" style="background:#c7d2fe; color:#3730a3; width:100%;" disabled>🚗 Inspeksi Kendaraan</button>
             </div>
 
             <!-- Today's Record -->
@@ -1203,6 +1303,60 @@
         </div>
     </div>
 
+    <!-- ─── MODAL INSPEKSI KENDARAAN ─── -->
+    <div class="modal-overlay-insp" id="inspModal">
+        <div class="modal-box-insp">
+            <button class="close-btn" id="closeInspModal">&times;</button>
+            <h2>🚗 Form Inspeksi Kendaraan</h2>
+            
+            <!-- Pilihan Merk Mobil -->
+            <div class="form-group">
+                <label>Merk Mobil</label>
+                <select id="inspMerk">
+                    <option value="">-- Pilih Merk --</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Daihatsu">Daihatsu</option>
+                    <option value="Suzuki">Suzuki</option>
+                    <option value="Mitsubishi">Mitsubishi</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Isuzu">Isuzu</option>
+                    <option value="Lainnya">Lainnya...</option>
+                </select>
+            </div>
+
+            <!-- Pilihan Tipe Mobil -->
+            <div class="form-group">
+                <label>Tipe Mobil</label>
+                <select id="inspTipe">
+                    <option value="">-- Pilih Tipe --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tahun Kendaraan</label>
+                <input type="number" id="inspTahun" placeholder="Contoh: 2020" min="1980" max="2025" />
+            </div>
+
+            <div class="form-group">
+                <label>Nomor Polisi</label>
+                <input type="text" id="inspNoPol" placeholder="Contoh: B 1234 CD" />
+            </div>
+
+            <div class="form-group">
+                <label>KM Servis Terakhir</label>
+                <input type="number" id="inspKMServis" placeholder="Masukkan KM Servis terakhir" />
+            </div>
+
+            <div class="form-group">
+                <label>KM Aktual Hari Ini (Saat Masuk)</label>
+                <input type="number" id="inspKMAktual" placeholder="Masukkan KM saat ini" />
+            </div>
+
+            <button class="btn-submit-insp" id="btnSubmitInsp">💾 Simpan Data Inspeksi</button>
+        </div>
+    </div>
+
     <!-- ─── MODAL LAPORAN BULANAN ─── -->
     <div class="modal-overlay" id="reportModal">
         <div class="modal-box">
@@ -1259,34 +1413,6 @@
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
 
-            // ─── Dark Mode ───
-            function loadThemePreference() {
-                const saved = localStorage.getItem('theme_preference');
-                if (saved === 'dark') {
-                    document.body.classList.add('dark-mode');
-                    document.getElementById('themeToggle').textContent = '🌙';
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    document.getElementById('themeToggle').textContent = '☀️';
-                }
-            }
-
-            function toggleTheme() {
-                const body = document.body;
-                const toggle = document.getElementById('themeToggle');
-                if (body.classList.contains('dark-mode')) {
-                    body.classList.remove('dark-mode');
-                    toggle.textContent = '☀️';
-                    localStorage.setItem('theme_preference', 'light');
-                } else {
-                    body.classList.add('dark-mode');
-                    toggle.textContent = '🌙';
-                    localStorage.setItem('theme_preference', 'dark');
-                }
-                const data = loadData();
-                if (data) updateChart(data);
-            }
-
             // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
             const loginInput = document.getElementById('loginInput');
@@ -1314,6 +1440,19 @@
             const clockDisplay = document.getElementById('clockDisplay');
             const btnIn = document.getElementById('btnIn');
             const btnOut = document.getElementById('btnOut');
+            const btnInspeksi = document.getElementById('btnInspeksi');
+            
+            // Inspeksi Modal Elements
+            const inspModal = document.getElementById('inspModal');
+            const closeInspModal = document.getElementById('closeInspModal');
+            const inspMerk = document.getElementById('inspMerk');
+            const inspTipe = document.getElementById('inspTipe');
+            const inspTahun = document.getElementById('inspTahun');
+            const inspNoPol = document.getElementById('inspNoPol');
+            const inspKMServis = document.getElementById('inspKMServis');
+            const inspKMAktual = document.getElementById('inspKMAktual');
+            const btnSubmitInsp = document.getElementById('btnSubmitInsp');
+
             const btnExport = document.getElementById('btnExport');
             const btnBackup = document.getElementById('btnBackup');
             const btnRestore = document.getElementById('btnRestore');
@@ -1384,20 +1523,55 @@
                 localStorage.setItem(getStorageKey(currentUser), JSON.stringify(data));
             }
 
+            // ─── Database Mobil (Hardcoded) ───
+            const vehicleDB = {
+                'Toyota': ['Avanza', 'Rush', 'Innova', 'Fortuner', 'Hilux', 'Agya', 'Calya', 'Camry', 'Corolla'],
+                'Honda': ['Brio', 'Mobilio', 'HR-V', 'CR-V', 'Civic', 'Accord', 'Jazz', 'BR-V'],
+                'Daihatsu': ['Terios', 'Xenia', 'Ayla', 'Sirion', 'Gran Max'],
+                'Suzuki': ['Ertiga', 'XL7', 'Carry', 'Ignis', 'Swift', 'Jimny'],
+                'Mitsubishi': ['Xpander', 'Pajero Sport', 'L300', 'Mirage'],
+                'Nissan': ['X-Trail', 'Livina', 'Serena', 'Navara'],
+                'Isuzu': ['Panther', 'MU-X', 'D-Max', 'Elf'],
+                'Lainnya': ['Lainnya']
+            };
+
+            // ─── Dark Mode ───
+            function loadThemePreference() {
+                const saved = localStorage.getItem('theme_preference');
+                if (saved === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    document.getElementById('themeToggle').textContent = '🌙';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    document.getElementById('themeToggle').textContent = '☀️';
+                }
+            }
+
+            function toggleTheme() {
+                const body = document.body;
+                const toggle = document.getElementById('themeToggle');
+                if (body.classList.contains('dark-mode')) {
+                    body.classList.remove('dark-mode');
+                    toggle.textContent = '☀️';
+                    localStorage.setItem('theme_preference', 'light');
+                } else {
+                    body.classList.add('dark-mode');
+                    toggle.textContent = '🌙';
+                    localStorage.setItem('theme_preference', 'dark');
+                }
+                const data = loadData();
+                if (data) updateChart(data);
+            }
+
             // ─── User & PIN management via Cloud (Single Sheet) ───
             async function syncUsersFromCloud() {
                 const url = getGoogleScriptUrl(); 
-                console.log('🔄 Mencoba mengambil data user dari:', url);
                 if (!url) return;
 
                 try {
                     const response = await fetch(url);
-                    console.log('📡 Status respons dari Sheet.best:', response.status);
-                    
                     if (response.ok) {
                         const data = await response.json();
-                        console.log('📄 Data mentah dari Sheet.best:', data);
-                        
                         const getKey = (obj, possibleKeys) => {
                             if (!obj || typeof obj !== 'object') return null;
                             for (let key of possibleKeys) {
@@ -1430,17 +1604,12 @@
                             };
                         }).filter(u => u && u.id && u.pin);
                         
-                        console.log('✅ Data user akhir dimuat:', cloudUsers.length, 'user');
-                        
                         if (isAdmin) renderAdminPanel();
                         renderUserList();
                     } else {
-                        const errText = await response.text();
-                        console.error('❌ Gagal fetch user dari Cloud. Status:', response.status, 'Detail:', errText);
-                        if (isAdmin) showToast(`❌ Gagal memuat User. Status ${response.status}. Cek Console (F12).`, 'error', 6000);
+                        if (isAdmin) showToast(`❌ Gagal memuat User. Cek Console (F12).`, 'error', 6000);
                     }
                 } catch (error) {
-                    console.error('❌ Error koneksi ke Cloud:', error);
                     if (isAdmin) showToast('❌ Error koneksi internet ke Cloud.', 'error', 6000);
                 }
             }
@@ -1467,13 +1636,11 @@
                 userList.innerHTML = '';
                 users.forEach(u => {
                     const btn = document.createElement('button');
-                    // 🛠️ PERBAIKAN: Jika nama kosong/null, hanya tampilkan ID
                     let displayText = u.id;
                     if (u.nama && u.nama !== '' && u.nama !== 'null' && u.nama !== 'undefined') {
                         displayText = u.nama + ' (' + u.id + ')';
                     }
                     btn.textContent = displayText;
-                    
                     btn.addEventListener('click', () => {
                         loginInput.value = u.id;
                         loginPinInput.focus();
@@ -1487,7 +1654,6 @@
                 const users = cloudUsers;
                 let html = '';
                 users.forEach(u => {
-                    // 🛠️ PERBAIKAN: Jika nama kosong di panel admin, tampilkan strip (-)
                     let displayNama = u.nama && u.nama !== '' && u.nama !== 'null' && u.nama !== 'undefined' ? u.nama : '-';
                     html += `
                         <tr>
@@ -1511,7 +1677,7 @@
                 };
 
                 window._deleteUser = async function(id) {
-                    if (confirm(`Hapus user "${id}" dari Cloud?\n\nCatatan: Anda harus menghapus barisnya langsung di Google Sheet (baris ID tersebut) untuk penghapusan permanen.`)) {
+                    if (confirm(`Hapus user "${id}" dari Cloud?\n\nCatatan: Anda harus menghapus barisnya langsung di Google Sheet untuk penghapusan permanen.`)) {
                         showToast('🔄 Data diperbarui. Silakan hapus baris user di Google Sheet secara manual.', 'info', 5000);
                         await syncUsersFromCloud();
                         renderAdminPanel();
@@ -1535,28 +1701,21 @@
 
                 const url = getGoogleScriptUrl();
                 try {
-                    const response = await fetch(url, {
+                    await fetch(url, {
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify([{ ID: id, PIN: pin, Nama: nama }])
                     });
 
-                    if (!response.ok) {
-                        const errText = await response.text();
-                        throw new Error(`HTTP ${response.status}: ${errText}`);
-                    }
-
                     newUserName.value = '';
                     newUserPin.value = '';
                     newUserFullName.value = '';
                     showToast(`✅ User "${id}" berhasil ditambahkan ke Cloud!`, 'success');
-                    
                     await syncUsersFromCloud();
                     renderAdminPanel();
                     renderUserList();
                 } catch (error) {
-                    console.error('❌ Gagal tambah user cloud:', error);
                     showToast('❌ Gagal menyimpan ke Cloud.', 'error');
                 }
             }
@@ -1608,7 +1767,6 @@
                 appContainer.style.display = 'block';
                 loginPinInput.value = '';
                 loginInput.value = '';
-                
                 renderUI(); 
                 initCamera().then(() => renderUI());
                 showToast(`👋 Selamat datang, ${currentUser}!${isAdmin ? ' (Admin)' : ''}`, 'success');
@@ -1672,11 +1830,9 @@
                     if (!navigator.geolocation) { resolve(null); return; }
                     navigator.geolocation.getCurrentPosition(
                         (pos) => { 
-                            console.log('📍 Lokasi ditemukan:', pos.coords);
                             resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); 
                         },
-                        (err) => { 
-                            console.warn('⚠️ Gagal mengambil lokasi:', err.message);
+                        () => { 
                             resolve(null); 
                         },
                         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -1712,7 +1868,6 @@
                     updateButtons();
                     return true;
                 } catch (err) {
-                    console.warn('Kamera error:', err);
                     placeholder.innerHTML = `
                         <span class="icon">⚠️</span>
                         Kamera tidak dapat diakses.<br />
@@ -1817,6 +1972,9 @@
                         statusDot.className = 'dot';
                         statusText.textContent = 'Belum absen';
                     }
+                    
+                    // 🛠 Update tombol Inspeksi: Hanya aktif jika sudah Absen Masuk dan BELUM Pulang
+                    btnInspeksi.disabled = !(todayRecord && todayRecord.checkIn && !todayRecord.checkOut);
                 } else {
                     todayIn.textContent = '--:--:--';
                     todayOut.textContent = '--:--:--';
@@ -1826,6 +1984,7 @@
                     todayOutLoc.textContent = '';
                     statusDot.className = 'dot';
                     statusText.textContent = 'Belum absen';
+                    btnInspeksi.disabled = true;
                 }
 
                 const filtered = getFilteredData(data, currentFilters);
@@ -1957,7 +2116,6 @@
 
                 const labels = dates.map(d => formatDateDisplay(d));
 
-                // Warna grafik menyesuaikan dark/light mode
                 const isDark = document.body.classList.contains('dark-mode');
                 const barColor = isDark ? '#60a5fa' : '#2d6a9f';
                 const textColor = isDark ? '#f1f5f9' : '#1e293b';
@@ -2012,25 +2170,118 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── Sinkronisasi Absensi ke Google Sheets (Single Sheet) ───
+            // ─── LOGIKA INSPEKSI KENDARAAN ───
+            // Update Tipe Mobil saat Merk berubah
+            inspMerk.addEventListener('change', function() {
+                const merk = this.value;
+                const tipeSelect = inspTipe;
+                tipeSelect.innerHTML = '<option value="">-- Pilih Tipe --</option>';
+                
+                if (merk && vehicleDB[merk]) {
+                    vehicleDB[merk].forEach(function(tipe) {
+                        const option = document.createElement('option');
+                        option.value = tipe;
+                        option.textContent = tipe;
+                        tipeSelect.appendChild(option);
+                    });
+                }
+            });
+
+            // Buka Modal
+            btnInspeksi.addEventListener('click', function() {
+                inspModal.classList.add('active');
+            });
+
+            // Tutup Modal
+            closeInspModal.addEventListener('click', function() {
+                inspModal.classList.remove('active');
+            });
+            inspModal.addEventListener('click', function(e) {
+                if (e.target === inspModal) inspModal.classList.remove('active');
+            });
+
+            // Simpan Data Inspeksi ke Sheet
+            btnSubmitInsp.addEventListener('click', async function() {
+                if (!currentUser) {
+                    showToast('⚠️ Anda belum login.', 'error');
+                    return;
+                }
+
+                const merk = inspMerk.value;
+                const tipe = inspTipe.value;
+                const tahun = inspTahun.value.trim();
+                const nopol = inspNoPol.value.trim();
+                const kmServis = inspKMServis.value.trim();
+                const kmAktual = inspKMAktual.value.trim();
+
+                if (!merk || !tipe || !tahun || !nopol || !kmServis || !kmAktual) {
+                    showToast('⚠️ Harap isi semua kolom data kendaraan!', 'error');
+                    return;
+                }
+
+                const userData = cloudUsers.find(u => u.id === currentUser);
+                const nama = userData ? userData.nama : currentUser;
+                const today = todayStr();
+
+                btnSubmitInsp.disabled = true;
+                btnSubmitInsp.textContent = '⏳ Menyimpan...';
+
+                const url = getGoogleScriptUrl() + '?sheet=Inspeksi';
+                try {
+                    const payload = [{
+                        Tanggal: today,
+                        ID: currentUser,
+                        Merk: merk,
+                        Tipe: tipe,
+                        Tahun: tahun,
+                        NoPol: nopol,
+                        KMServis: kmServis,
+                        KMAktual: kmAktual
+                    }];
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    showToast('✅ Data inspeksi kendaraan berhasil disimpan!', 'success');
+                    
+                    // Reset Form & Tutup Modal
+                    inspMerk.value = '';
+                    inspTipe.innerHTML = '<option value="">-- Pilih Tipe --</option>';
+                    inspTahun.value = '';
+                    inspNoPol.value = '';
+                    inspKMServis.value = '';
+                    inspKMAktual.value = '';
+                    inspModal.classList.remove('active');
+
+                } catch (error) {
+                    console.error('❌ Gagal simpan inspeksi:', error);
+                    showToast('❌ Gagal menyimpan data inspeksi. Periksa koneksi internet atau nama sheet "Inspeksi".', 'error');
+                } finally {
+                    btnSubmitInsp.disabled = false;
+                    btnSubmitInsp.textContent = '💾 Simpan Data Inspeksi';
+                }
+            });
+
+            // ─── Sinkronisasi Absensi ke Google Sheets ───
             async function syncToGoogleSheet(recordData) {
                 const url = getGoogleScriptUrl(); 
                 if (!url) return;
                 try {
                     const payload = [recordData];
-                    const response = await fetch(url, {
+                    await fetch(url, {
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
                     });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ Gagal mengirim ke Sheet.best:', response.status, errorText);
-                    } else {
-                        console.log('✅ Response dari Sheet.best:', await response.json());
-                    }
                 } catch (error) {
                     console.error('❌ Gagal mengirim ke Sheet.best:', error);
                 }
@@ -2082,16 +2333,12 @@
 
                     if (!response.ok) {
                         const errorText = await response.text();
-                        console.error('❌ Gagal sync batch:', response.status, errorText);
-                        showToast(`❌ Gagal sync: ${response.status} - ${errorText}`, 'error');
+                        showToast(`❌ Gagal sync: ${response.status}`, 'error');
                         return;
                     }
 
-                    const result = await response.json();
-                    console.log('✅ Sync batch berhasil:', result);
                     showToast(`✅ ${data.length} data berhasil disinkronkan!`, 'success');
                 } catch (error) {
-                    console.error('❌ Gagal sync batch:', error);
                     showToast('❌ Gagal sinkronisasi. Periksa koneksi.', 'error');
                 }
             }
@@ -2216,7 +2463,6 @@
                     XLSX.writeFile(wb, `Laporan_${data.year}-${String(data.month).padStart(2,'0')}.xlsx`);
                     showToast(`📊 Laporan berhasil diexport!`, 'success', 3000);
                 } catch (err) {
-                    console.error('Export error:', err);
                     showToast('❌ Gagal export laporan: ' + err.message, 'error');
                 }
             }
@@ -2249,7 +2495,6 @@
 
                 record.checkIn = { time: time, timestamp: now.getTime(), photo: photo, location: location };
 
-                // Ambil nama user dari cloudUsers untuk disimpan di record
                 const userData = cloudUsers.find(u => u.id === currentUser);
                 record.nama = userData ? userData.nama : currentUser;
 
@@ -2345,7 +2590,6 @@
                     XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
                     showToast(`📊 Excel berhasil diexport (tanpa foto).`, 'success', 3000);
                 } catch (err) {
-                    console.error('Export error:', err);
                     showToast('❌ Gagal export Excel: ' + err.message, 'error');
                 }
             }
@@ -2383,11 +2627,9 @@
 
             // ─── Init ───
             function init() {
-                // Load theme preference
                 loadThemePreference();
                 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-                // Ambil data user dari Cloud saat aplikasi dibuka
                 syncUsersFromCloud();
 
                 btnLogin.addEventListener('click', attemptLogin);
@@ -2443,19 +2685,16 @@
                 document.addEventListener('keydown', (e) => {
                     const target = e.target;
                     if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
-                    if (e.key === '1' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnIn.disabled) btnIn
-                        .click(); }
-                    if (e.key === '2' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnOut.disabled) btnOut
-                        .click(); }
-                    if (e.key === 'e' && (e.ctrlKey || e.metaKey)) { e.preventDefault();
-                        btnExport.click(); }
+                    if (e.key === '1' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnIn.disabled) btnIn.click(); }
+                    if (e.key === '2' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnOut.disabled) btnOut.click(); }
+                    if (e.key === 'e' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); btnExport.click(); }
                 });
 
                 renderUserList();
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Single Sheet, +Logo)');
+                console.log('📋 Aplikasi Absensi & Inspeksi siap digunakan.');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
