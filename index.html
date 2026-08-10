@@ -1145,7 +1145,6 @@
             margin-top: 6px;
         }
         
-        /* Responsive khusus halaman inspeksi */
         @media (max-width: 480px) {
             .insp-page .header h2 { font-size: 18px; }
             .insp-page .card { padding: 16px 12px 20px; }
@@ -1337,13 +1336,11 @@
     <!-- ─── HALAMAN INSPEKSI (LAYAR PENUH) ─── -->
     <div class="insp-page" id="inspPageContainer">
         
-        <!-- HEADER KHUSUS INSPEKSI -->
         <header class="header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
             <h2 style="color:#fff; margin:0; font-size:20px;">🚗 Inspeksi Kendaraan</h2>
             <button class="btn-back" id="btnBackFromInsp">⬅ Kembali</button>
         </header>
 
-        <!-- CARD INSPEKSI -->
         <div class="card" style="margin-top: 0; border-radius: 0 0 20px 20px;">
             
             <!-- Pilihan Kendaraan Tersimpan -->
@@ -1824,7 +1821,6 @@
                 
                 // Reset data kendaraan saat login
                 userVehicles = {};
-                loadUserVehicles();
                 
                 renderUI(); 
                 initCamera().then(() => renderUI());
@@ -2236,23 +2232,26 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── LOGIKA HALAMAN INSPEKSI ───
-            // Mengambil data kendaraan milik user dari Sheet Inspeksi
+            // ─── LOGIKA INSPEKSI KENDARAAN (1 SHEET) ───
+            // Mengambil data kendaraan milik user dari 1 Sheet
             async function loadUserVehicles() {
                 if (!currentUser || isAdmin) {
                     userVehicles = {};
                     return;
                 }
-                const url = getGoogleScriptUrl() + '?sheet=Inspeksi';
+                const url = getGoogleScriptUrl();
                 try {
                     const response = await fetch(url);
                     if (!response.ok) return;
                     const data = await response.json();
                     
-                    // Filter hanya milik user yang login
-                    const userData = data.filter(row => row.ID && row.ID.toLowerCase() === currentUser);
+                    // Filter data milik user yang login dan memiliki data kendaraan (Merk tidak kosong)
+                    const userData = data.filter(row => 
+                        row.ID && row.ID.toLowerCase() === currentUser && 
+                        row.Merk && row.Merk.trim() !== ''
+                    );
                     
-                    // Gunakan Object untuk menyimpan unik berdasarkan kombinasi data kendaraan (Merk+Tipe+Tahun+NoPol)
+                    // Gunakan Object untuk menyimpan unik berdasarkan kombinasi data kendaraan
                     const uniqueVehicles = {};
                     userData.forEach(row => {
                         // Buat key unik
@@ -2302,11 +2301,8 @@
                 const key = this.value;
                 if (key && userVehicles[key]) {
                     const v = userVehicles[key];
-                    // Set value Merk
                     inspMerk.value = v.merk;
-                    // Trigger change untuk memuat Tipe
                     inspMerk.dispatchEvent(new Event('change'));
-                    // Set Tipe, Tahun, NoPol
                     setTimeout(() => {
                         inspTipe.value = v.tipe;
                         inspTahun.value = v.tahun;
@@ -2383,7 +2379,7 @@
                 renderUI();
             });
 
-            // Simpan Data Inspeksi ke Sheet (sebagai catatan harian)
+            // Simpan Data Inspeksi ke Sheet 1
             btnSubmitInsp.addEventListener('click', async function() {
                 if (!currentUser || isAdmin) {
                     showToast('⚠️ Anda belum login.', 'error');
@@ -2409,11 +2405,17 @@
                 btnSubmitInsp.disabled = true;
                 btnSubmitInsp.textContent = '⏳ Menyimpan...';
 
-                const url = getGoogleScriptUrl() + '?sheet=Inspeksi';
+                const url = getGoogleScriptUrl();
                 try {
                     const payload = [{
-                        Tanggal: today,
                         ID: currentUser,
+                        PIN: '',
+                        Tanggal: today,
+                        Nama: nama,
+                        Masuk: '',
+                        Pulang: '',
+                        TotalKerja: '',
+                        Lokasi: '',
                         Merk: merk,
                         Tipe: tipe,
                         Tahun: tahun,
@@ -2438,7 +2440,7 @@
                     // Refresh data kendaraan user agar dropdown terupdate
                     await loadUserVehicles();
                     
-                    // Reset Form
+                    // Reset Form (kecuali KM Aktual agar bisa input hari berikutnya)
                     inspMerk.value = '';
                     inspMerk.dispatchEvent(new Event('change'));
                     inspTipe.value = '';
@@ -2450,14 +2452,14 @@
 
                 } catch (error) {
                     console.error('❌ Gagal simpan inspeksi:', error);
-                    showToast('❌ Gagal menyimpan data inspeksi. Periksa koneksi internet atau nama sheet "Inspeksi".', 'error');
+                    showToast('❌ Gagal menyimpan data inspeksi. Periksa koneksi internet.', 'error');
                 } finally {
                     btnSubmitInsp.disabled = false;
                     btnSubmitInsp.textContent = '💾 Simpan Data Inspeksi';
                 }
             });
 
-            // Simpan sebagai Kendaraan Baru (hanya simpan ke dropdown user, data hari ini sudah lewat tombol di atas)
+            // Simpan sebagai Kendaraan Baru (hanya simpan ke dropdown user)
             btnAddNewVehicle.addEventListener('click', function() {
                 if (!currentUser || isAdmin) {
                     showToast('⚠️ Anda belum login.', 'error');
@@ -2482,7 +2484,6 @@
 
                 userVehicles[key] = { merk, tipe, tahun, nopol };
                 updateVehicleSelect();
-                // Pilih kendaraan yang baru ditambahkan
                 savedVehicleSelect.value = key;
                 showToast('✅ Kendaraan baru berhasil ditambahkan ke daftar!', 'success');
             });
@@ -2911,7 +2912,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi & Inspeksi (Halaman Baru) siap digunakan.');
+                console.log('📋 Aplikasi Absensi & Inspeksi (1 Sheet Terintegrasi) siap digunakan.');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
