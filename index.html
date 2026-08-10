@@ -1391,7 +1391,7 @@
 
             <div class="form-group">
                 <label>KM Servis Terakhir</label>
-                <input type="number" id="inspKMServis" placeholder="Masukkan KM Servis terakhir" />
+                <input type="number" id="inspKMServis" placeholder="Isi hanya saat Servis" />
             </div>
 
             <div class="form-group">
@@ -1459,7 +1459,7 @@
 
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
-            let userVehicles = {}; // Menyimpan kendaraan milik user yang sedang login
+            let userVehicles = {}; // Menyimpan kendaraan + KM Servis terakhir
 
             // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
@@ -2232,7 +2232,7 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── LOGIKA INSPEKSI KENDARAAN (1 SHEET) ───
+            // ─── LOGIKA INSPEKSI KENDARAAN (1 SHEET + OTOMATIS KM SERVIS) ───
             // Mengambil data kendaraan milik user dari 1 Sheet
             async function loadUserVehicles() {
                 if (!currentUser || isAdmin) {
@@ -2252,16 +2252,25 @@
                     );
                     
                     // Gunakan Object untuk menyimpan unik berdasarkan kombinasi data kendaraan
+                    // Dan ambil KM Servis terakhir berdasarkan tanggal paling baru
                     const uniqueVehicles = {};
-                    userData.forEach(row => {
-                        // Buat key unik
+                    // Urutkan data dari yang terbaru ke terlama
+                    const sortedData = userData.sort((a, b) => {
+                        if (!a.Tanggal) return 1;
+                        if (!b.Tanggal) return -1;
+                        return b.Tanggal.localeCompare(a.Tanggal);
+                    });
+
+                    sortedData.forEach(row => {
                         const key = (row.Merk + '|' + row.Tipe + '|' + row.Tahun + '|' + row.NoPol).trim();
+                        // Jika kendaraan belum ada di list, simpan data lengkap dengan KM Servis terbaru
                         if (!uniqueVehicles[key]) {
                             uniqueVehicles[key] = {
                                 merk: row.Merk || '',
                                 tipe: row.Tipe || '',
                                 tahun: row.Tahun || '',
-                                nopol: row.NoPol || ''
+                                nopol: row.NoPol || '',
+                                kmServis: row.KMServis || '' // Ambil KM Servis terakhir yang pernah dicatat
                             };
                         }
                     });
@@ -2296,7 +2305,7 @@
                 });
             }
 
-            // Saat pilih kendaraan tersimpan -> isi form otomatis
+            // Saat pilih kendaraan tersimpan -> isi form otomatis (termasuk KM Servis)
             savedVehicleSelect.addEventListener('change', function() {
                 const key = this.value;
                 if (key && userVehicles[key]) {
@@ -2307,6 +2316,7 @@
                         inspTipe.value = v.tipe;
                         inspTahun.value = v.tahun;
                         inspNoPol.value = v.nopol;
+                        inspKMServis.value = v.kmServis; // 🛠 Isi otomatis KM Servis terakhir
                     }, 50);
                 } else {
                     // Reset form jika pilih tambah baru
@@ -2315,10 +2325,11 @@
                     inspTipe.value = '';
                     inspTahun.value = '';
                     inspNoPol.value = '';
+                    inspKMServis.value = '';
                 }
             });
 
-            // Hapus kendaraan dari daftar tersimpan (hanya di dropdown, data lama di sheet tetap untuk histori)
+            // Hapus kendaraan dari daftar tersimpan (hanya di dropdown)
             btnDeleteVehicle.addEventListener('click', function() {
                 const key = savedVehicleSelect.value;
                 if (!key || !userVehicles[key]) {
@@ -2336,6 +2347,7 @@
                 inspTipe.value = '';
                 inspTahun.value = '';
                 inspNoPol.value = '';
+                inspKMServis.value = '';
                 showToast('🗑️ Kendaraan berhasil dihapus dari daftar.', 'info');
             });
 
@@ -2393,8 +2405,8 @@
                 const kmServis = inspKMServis.value.trim();
                 const kmAktual = inspKMAktual.value.trim();
 
-                if (!merk || !tipe || !tahun || !nopol || !kmServis || !kmAktual) {
-                    showToast('⚠️ Harap isi semua kolom data kendaraan!', 'error');
+                if (!merk || !tipe || !tahun || !nopol || !kmAktual) {
+                    showToast('⚠️ Harap isi Merk, Tipe, Tahun, NoPol, dan KM Aktual!', 'error');
                     return;
                 }
 
@@ -2470,6 +2482,7 @@
                 const tipe = inspTipe.value;
                 const tahun = inspTahun.value.trim();
                 const nopol = inspNoPol.value.trim();
+                const kmServis = inspKMServis.value.trim();
 
                 if (!merk || !tipe || !tahun || !nopol) {
                     showToast('⚠️ Harap isi Merk, Tipe, Tahun, dan NoPol untuk menyimpan kendaraan baru.', 'error');
@@ -2482,7 +2495,7 @@
                     return;
                 }
 
-                userVehicles[key] = { merk, tipe, tahun, nopol };
+                userVehicles[key] = { merk, tipe, tahun, nopol, kmServis: kmServis };
                 updateVehicleSelect();
                 savedVehicleSelect.value = key;
                 showToast('✅ Kendaraan baru berhasil ditambahkan ke daftar!', 'success');
@@ -2912,7 +2925,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi & Inspeksi (1 Sheet Terintegrasi) siap digunakan.');
+                console.log('📋 Aplikasi Absensi & Inspeksi (Auto KM Servis) siap digunakan.');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
