@@ -1023,7 +1023,7 @@
         <div class="login-box">
             <h2>🔐 Absensi</h2>
             <p>Masukkan nama dan PIN Anda</p>
-            <input type="text" id="loginInput" placeholder="Nama pengguna" autocomplete="off" />
+            <input type="text" id="loginInput" placeholder="ID / Nama pengguna" autocomplete="off" />
             <input type="password" id="loginPinInput" maxlength="4" placeholder="PIN 4 digit" inputmode="numeric" />
             <div class="user-list" id="userList"></div>
             <button class="btn-login" id="btnLogin">Login</button>
@@ -1054,14 +1054,15 @@
                 <div class="admin-panel">
                     <h3>🛠️ Panel Admin</h3>
                     <div class="admin-grid">
-                        <input type="text" id="newUserName" placeholder="Nama baru" />
+                        <input type="text" id="newUserName" placeholder="ID Baru" />
                         <input type="password" id="newUserPin" maxlength="4" placeholder="PIN 4 digit" inputmode="numeric" />
+                        <input type="text" id="newUserFullName" placeholder="Nama Lengkap" />
                         <button class="btn-success" id="btnAddUser">➕ Tambah Pengguna</button>
                         <button class="btn-sm" id="btnRefreshUsers" style="background:#e2e8f0;">🔄 Refresh</button>
                     </div>
                     <div style="overflow-x:auto;">
                         <table class="user-table" id="userTable">
-                            <thead><tr><th>Nama</th><th>PIN</th><th>Aksi</th></tr></thead>
+                            <thead><tr><th>ID</th><th>Nama</th><th>PIN</th><th>Aksi</th></tr></thead>
                             <tbody id="userTableBody"></tbody>
                         </table>
                     </div>
@@ -1146,6 +1147,7 @@
                     <thead>
                         <tr>
                             <th>Tanggal</th>
+                            <th>ID</th>
                             <th>Nama</th>
                             <th>Masuk</th>
                             <th>Pulang</th>
@@ -1156,7 +1158,7 @@
                     </thead>
                     <tbody id="historyBody">
                         <tr class="empty-row">
-                            <td colspan="7">Belum ada data absensi</td>
+                            <td colspan="8">Belum ada data absensi</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1210,6 +1212,7 @@
                     <thead>
                         <tr>
                             <th>Tanggal</th>
+                            <th>Nama</th>
                             <th>Masuk</th>
                             <th>Pulang</th>
                             <th>Total Kerja</th>
@@ -1217,7 +1220,7 @@
                         </tr>
                     </thead>
                     <tbody id="reportTableBody">
-                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Pilih bulan dan klik Tampilkan</td></tr>
+                        <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Pilih bulan dan klik Tampilkan</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1240,7 +1243,6 @@
 
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
-            let usersSynced = false;
 
             // ─── Dark Mode ───
             function loadThemePreference() {
@@ -1284,6 +1286,7 @@
             const adminPanel = document.getElementById('adminPanel');
             const newUserName = document.getElementById('newUserName');
             const newUserPin = document.getElementById('newUserPin');
+            const newUserFullName = document.getElementById('newUserFullName');
             const btnAddUser = document.getElementById('btnAddUser');
             const btnRefreshUsers = document.getElementById('btnRefreshUsers');
             const userTableBody = document.getElementById('userTableBody');
@@ -1346,7 +1349,6 @@
 
             // ─── Data ───
             const STORAGE_PREFIX = 'attendance_data_';
-            const PIN_PREFIX = 'pin_';
 
             function getStorageKey(username) {
                 return STORAGE_PREFIX + username.toLowerCase().trim();
@@ -1367,7 +1369,7 @@
                 localStorage.setItem(getStorageKey(currentUser), JSON.stringify(data));
             }
 
-            // ─── User & PIN management via Cloud ───
+            // ─── User & PIN management via Cloud (Single Sheet) ───
             async function syncUsersFromCloud() {
                 const url = getGoogleScriptUrl(); 
                 console.log('🔄 Mencoba mengambil data user dari:', url);
@@ -1379,12 +1381,9 @@
                     
                     if (response.ok) {
                         const data = await response.json();
-                        
                         console.log('📄 Data mentah dari Sheet.best:', data);
-                        if (Array.isArray(data) && data.length > 0) {
-                            console.log('🔑 Kunci dari baris pertama:', Object.keys(data[0]));
-                        }
-
+                        
+                        // Fungsi fleksibel mencari header
                         const getKey = (obj, possibleKeys) => {
                             if (!obj || typeof obj !== 'object') return null;
                             for (let key of possibleKeys) {
@@ -1397,27 +1396,29 @@
                             return null;
                         };
 
+                        // Ambil semua baris yang memiliki ID dan PIN (sebagai data user)
                         cloudUsers = (Array.isArray(data) ? data : []).map(item => {
                             if (!item || typeof item !== 'object') return null;
 
-                            const namaKey = getKey(item, ['Nama', 'nama', 'Nama ', 'nama ']);
-                            const pinKey = getKey(item, ['PIN', 'pin', 'PIN ', 'pin ']);
+                            const idKey = getKey(item, ['ID', 'id', 'Id']);
+                            const pinKey = getKey(item, ['PIN', 'pin']);
+                            const nameKey = getKey(item, ['Nama', 'nama']);
 
-                            let nama = namaKey ? item[namaKey] : undefined;
-                            let pin = pinKey ? item[pinKey] : undefined;
+                            let id = idKey ? String(item[idKey]).trim() : '';
+                            let pin = pinKey ? String(item[pinKey]).trim() : '';
+                            let nama = nameKey ? String(item[nameKey]).trim() : '';
 
-                            if (!nama || String(nama).trim() === '' || pin === undefined || String(pin).trim() === '') {
-                                return null;
-                            }
+                            // Hanya ambil baris yang memiliki ID dan PIN (ini adalah master user)
+                            if (!id || pin === '' || id === 'admin') return null;
 
                             return {
-                                name: String(nama).toLowerCase().trim(),
-                                pin: String(pin).trim()
+                                id: id.toLowerCase(),
+                                nama: nama || id, // Jika nama kosong, gunakan ID sebagai nama
+                                pin: pin
                             };
-                        }).filter(u => u && u.name && u.name !== 'admin' && u.pin);
+                        }).filter(u => u && u.id && u.pin);
                         
-                        usersSynced = true;
-                        console.log('✅ Data user akhir (cloudUsers) dimuat:', cloudUsers.length, 'user');
+                        console.log('✅ Data user akhir dimuat:', cloudUsers.length, 'user');
                         
                         if (isAdmin) renderAdminPanel();
                         renderUserList();
@@ -1433,7 +1434,7 @@
             }
 
             function getUsers() {
-                return cloudUsers.map(u => u.name);
+                return cloudUsers.map(u => u.id);
             }
 
             function getAllUsersWithPin() {
@@ -1441,22 +1442,22 @@
             }
 
             function getUserPin(username) {
-                const found = cloudUsers.find(u => u.name === username);
+                const found = cloudUsers.find(u => u.id === username);
                 return found ? found.pin : null;
             }
 
             function userExists(username) {
-                return cloudUsers.some(u => u.name === username);
+                return cloudUsers.some(u => u.id === username);
             }
 
             function renderUserList() {
-                const users = getUsers();
+                const users = cloudUsers; // Mengambil dari cloudUsers yang sudah difilter
                 userList.innerHTML = '';
                 users.forEach(u => {
                     const btn = document.createElement('button');
-                    btn.textContent = u;
+                    btn.textContent = u.nama + ' (' + u.id + ')';
                     btn.addEventListener('click', () => {
-                        loginInput.value = u;
+                        loginInput.value = u.id;
                         loginPinInput.focus();
                     });
                     userList.appendChild(btn);
@@ -1465,31 +1466,32 @@
 
             function renderAdminPanel() {
                 if (!isAdmin) return;
-                const users = getAllUsersWithPin();
+                const users = cloudUsers;
                 let html = '';
                 users.forEach(u => {
                     html += `
                         <tr>
-                            <td>${u.name}</td>
+                            <td>${u.id}</td>
+                            <td>${u.nama}</td>
                             <td>${u.pin}</td>
                             <td>
-                                <button class="btn-sm btn-danger" onclick="window._resetPin('${u.name}')">Reset PIN</button>
-                                <button class="btn-sm btn-danger" onclick="window._deleteUser('${u.name}')" style="background:#fecaca;color:#991b1b;">Hapus</button>
+                                <button class="btn-sm btn-danger" onclick="window._resetPin('${u.id}')">Reset PIN</button>
+                                <button class="btn-sm btn-danger" onclick="window._deleteUser('${u.id}')" style="background:#fecaca;color:#991b1b;">Hapus</button>
                             </td>
                         </tr>
                     `;
                 });
                 if (!html) {
-                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud. Pastikan Data_User ada di sheet ke-1.</td></tr>`;
+                    html = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar.</td></tr>`;
                 }
                 userTableBody.innerHTML = html;
 
-                window._resetPin = function(name) {
+                window._resetPin = function(id) {
                     showToast('ℹ️ Untuk reset PIN, silakan hapus user ini lalu tambahkan kembali dengan PIN baru.', 'info', 5000);
                 };
 
-                window._deleteUser = async function(name) {
-                    if (confirm(`Hapus pengguna "${name}" dari Cloud?\n\nCatatan: Anda harus menghapus barisnya langsung di Google Sheet (Tab Data_User) untuk penghapusan permanen.`)) {
+                window._deleteUser = async function(id) {
+                    if (confirm(`Hapus user "${id}" dari Cloud?\n\nCatatan: Anda harus menghapus barisnya langsung di Google Sheet (baris ID tersebut) untuk penghapusan permanen.`)) {
                         showToast('🔄 Data diperbarui. Silakan hapus baris user di Google Sheet secara manual.', 'info', 5000);
                         await syncUsersFromCloud();
                         renderAdminPanel();
@@ -1499,12 +1501,15 @@
             }
 
             async function addUser() {
-                const name = newUserName.value.trim().toLowerCase();
+                const id = newUserName.value.trim().toLowerCase();
                 const pin = newUserPin.value.trim();
-                if (!name) { showToast('⚠️ Masukkan nama pengguna.', 'error'); return; }
+                const nama = newUserFullName.value.trim();
+
+                if (!id) { showToast('⚠️ Masukkan ID pengguna.', 'error'); return; }
                 if (!/^\d{4}$/.test(pin)) { showToast('⚠️ PIN harus 4 digit angka.', 'error'); return; }
-                if (userExists(name)) { showToast(`⚠️ Pengguna "${name}" sudah ada.`, 'error'); return; }
-                if (name === 'admin') { showToast('⚠️ Tidak bisa membuat user dengan nama admin.', 'error'); return; }
+                if (!nama) { showToast('⚠️ Masukkan Nama lengkap pengguna.', 'error'); return; }
+                if (userExists(id)) { showToast(`⚠️ ID "${id}" sudah ada.`, 'error'); return; }
+                if (id === 'admin') { showToast('⚠️ Tidak bisa membuat user dengan ID admin.', 'error'); return; }
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
@@ -1514,7 +1519,7 @@
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify([{ Nama: name, PIN: pin }])
+                        body: JSON.stringify([{ ID: id, PIN: pin, Nama: nama }])
                     });
 
                     if (!response.ok) {
@@ -1524,14 +1529,15 @@
 
                     newUserName.value = '';
                     newUserPin.value = '';
-                    showToast(`✅ Pengguna "${name}" berhasil ditambahkan ke Cloud!`, 'success');
+                    newUserFullName.value = '';
+                    showToast(`✅ User "${id}" berhasil ditambahkan ke Cloud!`, 'success');
                     
                     await syncUsersFromCloud();
                     renderAdminPanel();
                     renderUserList();
                 } catch (error) {
                     console.error('❌ Gagal tambah user cloud:', error);
-                    showToast('❌ Gagal menyimpan ke Cloud. Cek console (F12) untuk detail.', 'error');
+                    showToast('❌ Gagal menyimpan ke Cloud.', 'error');
                 }
             }
 
@@ -1543,7 +1549,7 @@
                 const pin = loginPinInput.value.trim();
                 loginError.textContent = '';
 
-                if (!username) { loginError.textContent = 'Masukkan nama pengguna.'; return; }
+                if (!username) { loginError.textContent = 'Masukkan ID pengguna.'; return; }
                 if (!pin) { loginError.textContent = 'Masukkan PIN.'; return; }
 
                 if (username === 'admin') {
@@ -1583,7 +1589,6 @@
                 loginPinInput.value = '';
                 loginInput.value = '';
                 
-                // 🛠️ PERBAIKAN PENTING: HANYA Render UI, JANGAN panggil saveData/log simpanan saat login!
                 renderUI(); 
                 initCamera().then(() => renderUI());
                 showToast(`👋 Selamat datang, ${currentUser}!${isAdmin ? ' (Admin)' : ''}`, 'success');
@@ -1813,13 +1818,13 @@
 
             function renderHistory(filteredData) {
                 if (!filteredData || filteredData.length === 0) {
-                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="7">Tidak ada data sesuai filter</td></tr>`;
+                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="8">Tidak ada data sesuai filter</td></tr>`;
                     return;
                 }
                 const sorted = [...filteredData].sort((a, b) => b.date.localeCompare(a.date));
                 let html = '';
                 for (const rec of sorted) {
-                    const nama = rec.nama || currentUser || 'Tidak diketahui';
+                    const nama = rec.nama || rec.id || currentUser || 'Tidak diketahui';
                     const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
                     const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
                     let workHours = '-';
@@ -1856,6 +1861,7 @@
                     html += `
                         <tr>
                             <td><strong>${formatDateDisplay(rec.date)}</strong></td>
+                            <td><strong>${rec.id || '-'}</strong></td>
                             <td>${nama}</td>
                             <td>${inTime}</td>
                             <td>${outTime}</td>
@@ -1986,9 +1992,9 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── Sinkronisasi Absensi ke Google Sheets ───
+            // ─── Sinkronisasi Absensi ke Google Sheets (Single Sheet) ───
             async function syncToGoogleSheet(recordData) {
-                const url = getGoogleScriptUrl() + '?sheet=Absensi'; 
+                const url = getGoogleScriptUrl(); 
                 if (!url) return;
                 try {
                     const payload = [recordData];
@@ -2011,7 +2017,7 @@
             }
 
             async function syncAllData() {
-                const url = getGoogleScriptUrl() + '?sheet=Absensi';
+                const url = getGoogleScriptUrl();
                 if (!url) {
                     showToast('⚠️ URL Google Script belum diatur.', 'error');
                     return;
@@ -2025,6 +2031,8 @@
                 
                 try {
                     const payload = data.map(rec => ({
+                        ID: rec.id || currentUser || 'Tidak diketahui',
+                        PIN: rec.pin || '',
                         Tanggal: rec.date || '',
                         Nama: rec.nama || currentUser || 'Tidak diketahui',
                         Masuk: rec.checkIn ? rec.checkIn.time : '',
@@ -2119,6 +2127,7 @@
                     html += `
                         <tr>
                             <td>${formatDateDisplay(rec.date)}</td>
+                            <td>${rec.nama || rec.id || 'Tidak diketahui'}</td>
                             <td>${inTime}</td>
                             <td>${outTime}</td>
                             <td>${workHours}</td>
@@ -2129,7 +2138,7 @@
                 });
 
                 if (!html) {
-                    html = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Tidak ada data untuk bulan ini</td></tr>`;
+                    html = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Tidak ada data untuk bulan ini</td></tr>`;
                 }
                 reportTableBody.innerHTML = html;
 
@@ -2178,7 +2187,7 @@
                             }
                         }
                         const lokasi = rec.checkIn?.location?.address || rec.checkOut?.location?.address || '';
-                        rows.push([rec.date, rec.nama || currentUser || 'Tidak diketahui', inTime, outTime, workStr, lokasi]);
+                        rows.push([rec.date, rec.nama || rec.id || 'Tidak diketahui', inTime, outTime, workStr, lokasi]);
                     }
                     const wb = XLSX.utils.book_new();
                     const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -2215,18 +2224,19 @@
                 const time = timeStr(now);
 
                 let record;
-                if (existing) { record = existing;
-                    record.nama = currentUser; } else { record = { date: today, nama: currentUser, checkIn: null,
-                        checkOut: null };
+                if (existing) { record = existing; } else { record = { date: today, id: currentUser, checkIn: null, checkOut: null };
                     data.push(record); }
 
                 record.checkIn = { time: time, timestamp: now.getTime(), photo: photo, location: location };
 
+                // Ambil nama user dari cloudUsers untuk disimpan di record
+                const userData = cloudUsers.find(u => u.id === currentUser);
+                record.nama = userData ? userData.nama : currentUser;
+
                 saveData(data);
                 renderUI();
 
-                const recordData = { Tanggal: today, Nama: currentUser, Masuk: time, Pulang: '', TotalKerja: '',
-                    Lokasi: location ? location.address : 'Tidak terdeteksi' };
+                const recordData = { ID: currentUser, PIN: '', Tanggal: today, Nama: record.nama, Masuk: time, Pulang: '', TotalKerja: '', Lokasi: location ? location.address : 'Tidak terdeteksi' };
                 syncToGoogleSheet(recordData).catch(() => {});
 
                 showToast(`✅ Absen masuk berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
@@ -2240,8 +2250,6 @@
                 const record = getTodayRecord(data);
                 if (!record || !record.checkIn) { showToast('⚠️ Anda belum absen masuk hari ini.', 'error'); return; }
                 if (record.checkOut) { showToast('⏳ Anda sudah absen pulang hari ini.', 'info'); return; }
-
-                if (!record.nama) record.nama = currentUser;
 
                 const photo = capturePhoto();
                 if (!photo) { showToast('❌ Gagal mengambil foto. Coba lagi.', 'error'); return; }
@@ -2273,8 +2281,7 @@
                 saveData(data);
                 renderUI();
 
-                const recordData = { Tanggal: today, Nama: currentUser, Masuk: record.checkIn ? record.checkIn.time : '',
-                    Pulang: time, TotalKerja: totalKerja, Lokasi: location ? location.address : 'Tidak terdeteksi' };
+                const recordData = { ID: currentUser, PIN: '', Tanggal: today, Nama: record.nama, Masuk: record.checkIn ? record.checkIn.time : '', Pulang: time, TotalKerja: totalKerja, Lokasi: location ? location.address : 'Tidak terdeteksi' };
                 syncToGoogleSheet(recordData).catch(() => {});
 
                 showToast(`✅ Absen pulang berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
@@ -2286,10 +2293,10 @@
                 if (data.length === 0) { showToast('📭 Tidak ada data untuk diexport.', 'info'); return; }
                 try {
                     const rows = [
-                        ['Tanggal', 'Nama', 'Masuk', 'Pulang', 'Total Kerja (jam:menit)', 'Latitude', 'Longitude', 'Alamat Masuk', 'Alamat Pulang']
+                        ['Tanggal', 'ID', 'Nama', 'Masuk', 'Pulang', 'Total Kerja (jam:menit)', 'Latitude', 'Longitude', 'Alamat Masuk', 'Alamat Pulang']
                     ];
                     for (const rec of data) {
-                        const nama = rec.nama || currentUser || 'Tidak diketahui';
+                        const nama = rec.nama || rec.id || currentUser || 'Tidak diketahui';
                         const inTime = rec.checkIn ? rec.checkIn.time : '';
                         const outTime = rec.checkOut ? rec.checkOut.time : '';
                         let workStr = '';
@@ -2307,11 +2314,11 @@
                         const lng = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.lng : '';
                         const inAddr = rec.checkIn && rec.checkIn.location ? rec.checkIn.location.address : '';
                         const outAddr = rec.checkOut && rec.checkOut.location ? rec.checkOut.location.address : '';
-                        rows.push([rec.date, nama, inTime, outTime, workStr, lat, lng, inAddr, outAddr]);
+                        rows.push([rec.date, rec.id || '-', nama, inTime, outTime, workStr, lat, lng, inAddr, outAddr]);
                     }
                     const wb = XLSX.utils.book_new();
                     const ws = XLSX.utils.aoa_to_sheet(rows);
-                    ws['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 16 }, { wch: 16 },
+                    ws['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 16 }, { wch: 16 },
                         { wch: 30 }, { wch: 30 }
                     ];
                     XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
@@ -2428,7 +2435,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Tidak ada lagi data dummy saat login)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Single Sheet: ID, PIN, Tanggal, Nama...)');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
