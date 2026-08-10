@@ -1369,7 +1369,6 @@
 
             // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
-                // 🚨 PERBAIKAN UTAMA: Tidak menggunakan parameter. Membaca sheet pertama.
                 const url = getGoogleScriptUrl(); 
                 console.log('🔄 Mencoba mengambil data user dari:', url);
                 if (!url) return;
@@ -1381,13 +1380,11 @@
                     if (response.ok) {
                         const data = await response.json();
                         
-                        // 📄 Debug: Cetak data mentah dan kunci kolomnya
                         console.log('📄 Data mentah dari Sheet.best:', data);
                         if (Array.isArray(data) && data.length > 0) {
                             console.log('🔑 Kunci dari baris pertama:', Object.keys(data[0]));
                         }
 
-                        // Fungsi pembantu untuk mencari nama kolom secara fleksibel (abaikan spasi dan huruf kapital)
                         const getKey = (obj, possibleKeys) => {
                             if (!obj || typeof obj !== 'object') return null;
                             for (let key of possibleKeys) {
@@ -1511,7 +1508,6 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
-                // 🚨 PERBAIKAN UTAMA: Jangan pakai parameter sheet agar menulis ke sheet pertama.
                 const url = getGoogleScriptUrl();
                 try {
                     const response = await fetch(url, {
@@ -1586,7 +1582,9 @@
                 appContainer.style.display = 'block';
                 loginPinInput.value = '';
                 loginInput.value = '';
-                renderUI();
+                
+                // 🛠️ PERBAIKAN PENTING: HANYA Render UI, JANGAN panggil saveData/log simpanan saat login!
+                renderUI(); 
                 initCamera().then(() => renderUI());
                 showToast(`👋 Selamat datang, ${currentUser}!${isAdmin ? ' (Admin)' : ''}`, 'success');
             }
@@ -1648,9 +1646,15 @@
                 return new Promise((resolve) => {
                     if (!navigator.geolocation) { resolve(null); return; }
                     navigator.geolocation.getCurrentPosition(
-                        (pos) => { resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
-                        () => { resolve(null); },
-                        { enableHighAccuracy: true, timeout: 8000 }
+                        (pos) => { 
+                            console.log('📍 Lokasi ditemukan:', pos.coords);
+                            resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); 
+                        },
+                        (err) => { 
+                            console.warn('⚠️ Gagal mengambil lokasi:', err.message);
+                            resolve(null); 
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                     );
                 });
             }
@@ -1984,7 +1988,6 @@
 
             // ─── Sinkronisasi Absensi ke Google Sheets ───
             async function syncToGoogleSheet(recordData) {
-                // 🚨 PERBAIKAN: Kirim ke sheet ke-2 (Absensi)
                 const url = getGoogleScriptUrl() + '?sheet=Absensi'; 
                 if (!url) return;
                 try {
@@ -2008,7 +2011,6 @@
             }
 
             async function syncAllData() {
-                // 🚨 PERBAIKAN: Kirim ke sheet ke-2 (Absensi)
                 const url = getGoogleScriptUrl() + '?sheet=Absensi';
                 if (!url) {
                     showToast('⚠️ URL Google Script belum diatur.', 'error');
@@ -2426,7 +2428,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Strategi Sheet ke-1 = User, Sheet ke-2 = Absensi)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Tidak ada lagi data dummy saat login)');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
