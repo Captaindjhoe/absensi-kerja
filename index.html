@@ -55,7 +55,10 @@
             --modal-overlay: rgba(0,0,0,0.7);
         }
 
-        body.dark-mode .toast { background: #f1f5f9; color: #0f172a; }
+        body.dark-mode .toast {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
         body.dark-mode .toast.success { background: #065f46; color: #fff; }
         body.dark-mode .toast.error { background: #991b1b; color: #fff; }
         body.dark-mode .toast.info { background: #1e3a5f; color: #fff; }
@@ -138,7 +141,9 @@
             justify-content: center;
             gap: 8px;
         }
-        .header h1 span { font-size: 26px; }
+        .header h1 span {
+            font-size: 26px;
+        }
         .header p {
             font-size: 12px;
             opacity: 0.85;
@@ -156,7 +161,9 @@
             padding: 4px 12px;
             border-radius: 30px;
         }
-        .header .user-info span { font-weight: 500; }
+        .header .user-info span {
+            font-weight: 500;
+        }
         .btn-logout {
             background: rgba(255,255,255,0.2);
             border: none;
@@ -167,7 +174,9 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .btn-logout:hover { background: rgba(255,255,255,0.35); }
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.35);
+        }
         .badge-admin {
             background: #f59e0b;
             color: #1e293b;
@@ -190,7 +199,9 @@
             transition: 0.2s;
             line-height: 1.4;
         }
-        .theme-toggle:hover { background: rgba(255,255,255,0.35); }
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.35);
+        }
         .header-controls {
             display: flex;
             align-items: center;
@@ -295,8 +306,12 @@
             background: #94a3b8;
             transition: background 0.3s;
         }
-        .status-label .dot.in { background: #22c55e; }
-        .status-label .dot.out { background: #f59e0b; }
+        .status-label .dot.in {
+            background: #22c55e;
+        }
+        .status-label .dot.out {
+            background: #f59e0b;
+        }
         .status-time {
             font-size: 13px;
             color: var(--text-secondary);
@@ -305,7 +320,9 @@
             border-radius: 30px;
             transition: background 0.3s, color 0.3s;
         }
-        .status-time strong { color: var(--text-primary); }
+        .status-time strong {
+            color: var(--text-primary);
+        }
 
         /* ─── Buttons ─── */
         .btn-group {
@@ -328,7 +345,9 @@
             transition: all 0.15s ease;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
         }
-        .btn:active { transform: scale(0.97); }
+        .btn:active {
+            transform: scale(0.97);
+        }
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -371,17 +390,23 @@
             background: #c7d2fe;
             box-shadow: 0 4px 12px rgba(55, 48, 163, 0.15);
         }
-        .btn-export:active { transform: scale(0.97); }
+        .btn-export:active {
+            transform: scale(0.97);
+        }
         .btn-backup {
             background: #d1fae5;
             color: #065f46;
         }
-        .btn-backup:hover { background: #a7f3d0; }
+        .btn-backup:hover {
+            background: #a7f3d0;
+        }
         .btn-restore {
             background: #fef3c7;
             color: #92400e;
         }
-        .btn-restore:hover { background: #fde68a; }
+        .btn-restore:hover {
+            background: #fde68a;
+        }
         .btn-sm {
             padding: 8px 16px;
             font-size: 13px;
@@ -391,27 +416,37 @@
             cursor: pointer;
             transition: all 0.15s ease;
         }
-        .btn-sm:active { transform: scale(0.95); }
+        .btn-sm:active {
+            transform: scale(0.95);
+        }
         .btn-danger {
             background: #fecaca;
             color: #991b1b;
         }
-        .btn-danger:hover { background: #fca5a5; }
+        .btn-danger:hover {
+            background: #fca5a5;
+        }
         .btn-success {
             background: #a7f3d0;
             color: #065f46;
         }
-        .btn-success:hover { background: #6ee7b7; }
+        .btn-success:hover {
+            background: #6ee7b7;
+        }
         .btn-sync {
             background: #c7d2fe;
             color: #3730a3;
         }
-        .btn-sync:hover { background: #a5b4fc; }
+        .btn-sync:hover {
+            background: #a5b4fc;
+        }
         .btn-report {
             background: #fde68a;
             color: #92400e;
         }
-        .btn-report:hover { background: #fcd34d; }
+        .btn-report:hover {
+            background: #fcd34d;
+        }
 
         /* ─── Today's Record ─── */
         .today-grid {
@@ -520,7 +555,9 @@
             border-color: #2d6a9f;
             outline: none;
         }
-        .filter-area .btn-sm { flex: 0 0 auto; }
+        .filter-area .btn-sm {
+            flex: 0 0 auto;
+        }
 
         /* ─── History Table ─── */
         .table-wrap {
@@ -566,7 +603,9 @@
             display: inline-block;
             vertical-align: middle;
         }
-        td .mini-photo + .mini-photo { margin-left: 4px; }
+        td .mini-photo + .mini-photo {
+            margin-left: 4px;
+        }
         .text-muted {
             color: var(--text-muted);
             font-size: 13px;
@@ -622,9 +661,18 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-        .toast.success { background: #065f46; color: #fff; }
-        .toast.error { background: #991b1b; color: #fff; }
-        .toast.info { background: #1e3a5f; color: #fff; }
+        .toast.success {
+            background: #065f46;
+            color: #fff;
+        }
+        .toast.error {
+            background: #991b1b;
+            color: #fff;
+        }
+        .toast.info {
+            background: #1e3a5f;
+            color: #fff;
+        }
 
         /* ─── Login Overlay ─── */
         .login-overlay {
@@ -710,7 +758,9 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .login-box .btn-login:hover { background: #1e3a5f; }
+        .login-box .btn-login:hover {
+            background: #1e3a5f;
+        }
         .login-box .btn-login:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -756,8 +806,12 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .admin-panel .admin-grid .btn-success:hover { background: #6ee7b7; }
-        .admin-panel .admin-grid .btn-danger:hover { background: #fca5a5; }
+        .admin-panel .admin-grid .btn-success:hover {
+            background: #6ee7b7;
+        }
+        .admin-panel .admin-grid .btn-danger:hover {
+            background: #fca5a5;
+        }
         .admin-panel .user-table {
             width: 100%;
             font-size: 13px;
@@ -779,7 +833,9 @@
             padding: 2px 10px;
             font-size: 11px;
         }
-        .admin-panel .user-table .btn-sm + .btn-sm { margin-left: 4px; }
+        .admin-panel .user-table .btn-sm + .btn-sm {
+            margin-left: 4px;
+        }
 
         /* ─── Laporan Bulanan Modal ─── */
         .modal-overlay {
@@ -797,7 +853,9 @@
             padding: 20px;
             transition: background 0.3s;
         }
-        .modal-overlay.active { display: flex; }
+        .modal-overlay.active {
+            display: flex;
+        }
         .modal-box {
             background: var(--modal-bg);
             border-radius: 24px;
@@ -826,7 +884,9 @@
             color: var(--text-secondary);
             transition: 0.2s;
         }
-        .modal-box .close-btn:hover { color: var(--text-primary); }
+        .modal-box .close-btn:hover {
+            color: var(--text-primary);
+        }
         .modal-box .report-controls {
             display: flex;
             flex-wrap: wrap;
@@ -861,7 +921,9 @@
             border-radius: 12px;
             transition: background 0.3s;
         }
-        .modal-box .report-summary .item { text-align: center; }
+        .modal-box .report-summary .item {
+            text-align: center;
+        }
         .modal-box .report-summary .item .num {
             font-size: 20px;
             font-weight: 700;
@@ -1107,10 +1169,11 @@
                 <input type="file" id="restoreInput" accept=".json" />
             </div>
 
-            <!-- Action Buttons -->
+            <!-- Action Buttons (Sinkronisasi & Laporan) -->
             <div class="action-row">
                 <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
                 <button class="btn btn-report btn-sm" id="btnReport">📊 Laporan Bulanan</button>
+                <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0; display:none;">⚙️ Set URL Google Script</button>
             </div>
 
             <!-- Export Excel -->
@@ -1170,11 +1233,44 @@
             'use strict';
 
             // ─── KONFIGURASI ───
-            // ⚠️ GANTI URL INI DENGAN URL SHEET.BEST ANDA
             const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/3a11c688-80c4-48fe-8abb-7e1b4dd7f95a';
             const ADMIN_PIN = '6455';
 
-            // ─── DOM REFS ───
+            function getGoogleScriptUrl() { return GOOGLE_SCRIPT_URL; }
+
+            // ─── STATE UNTUK CLOUD USER ───
+            let cloudUsers = [];
+            let usersSynced = false;
+
+            // ─── Dark Mode ───
+            function loadThemePreference() {
+                const saved = localStorage.getItem('theme_preference');
+                if (saved === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    document.getElementById('themeToggle').textContent = '🌙';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    document.getElementById('themeToggle').textContent = '☀️';
+                }
+            }
+
+            function toggleTheme() {
+                const body = document.body;
+                const toggle = document.getElementById('themeToggle');
+                if (body.classList.contains('dark-mode')) {
+                    body.classList.remove('dark-mode');
+                    toggle.textContent = '☀️';
+                    localStorage.setItem('theme_preference', 'light');
+                } else {
+                    body.classList.add('dark-mode');
+                    toggle.textContent = '🌙';
+                    localStorage.setItem('theme_preference', 'dark');
+                }
+                const data = loadData();
+                if (data) updateChart(data);
+            }
+
+            // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
             const loginInput = document.getElementById('loginInput');
             const loginPinInput = document.getElementById('loginPinInput');
@@ -1205,6 +1301,7 @@
             const btnRestore = document.getElementById('btnRestore');
             const restoreInput = document.getElementById('restoreInput');
             const btnSyncAll = document.getElementById('btnSyncAll');
+            const btnSetGoogleUrl = document.getElementById('btnSetGoogleUrl');
             const btnReport = document.getElementById('btnReport');
             const reportModal = document.getElementById('reportModal');
             const closeReportModal = document.getElementById('closeReportModal');
@@ -1239,17 +1336,17 @@
 
             let chartInstance = null;
 
-            // ─── STATE ───
+            // ─── State ───
             let cameraReady = false;
             let stream = null;
             let toastTimer = null;
             let currentFilters = { startDate: '', endDate: '', status: 'all' };
             let currentUser = null;
             let isAdmin = false;
-            let cloudUsers = [];
 
-            // ─── DATA ───
+            // ─── Data ───
             const STORAGE_PREFIX = 'attendance_data_';
+            const PIN_PREFIX = 'pin_';
 
             function getStorageKey(username) {
                 return STORAGE_PREFIX + username.toLowerCase().trim();
@@ -1270,66 +1367,72 @@
                 localStorage.setItem(getStorageKey(currentUser), JSON.stringify(data));
             }
 
-            // ─── USER & PIN MANAGEMENT ───
+            // ─── User & PIN management via Cloud ───
             async function syncUsersFromCloud() {
+                // 🚨 PERBAIKAN UTAMA: Tidak menggunakan parameter. Membaca sheet pertama.
+                const url = getGoogleScriptUrl(); 
+                console.log('🔄 Mencoba mengambil data user dari:', url);
+                if (!url) return;
+
                 try {
-                    const url = GOOGLE_SCRIPT_URL;
-                    console.log('🔄 Mengambil data dari Cloud...');
-                    
                     const response = await fetch(url);
-                    console.log('📡 Status respons:', response.status);
+                    console.log('📡 Status respons dari Sheet.best:', response.status);
                     
                     if (response.ok) {
-                        const allData = await response.json();
-                        console.log('📄 Total data dari Cloud:', allData.length, 'baris');
+                        const data = await response.json();
                         
-                        if (Array.isArray(allData) && allData.length > 0) {
-                            const headers = Object.keys(allData[0]);
-                            console.log('🔑 Header yang ditemukan:', headers);
-                            
-                            const namaKey = headers.find(h => 
-                                h.toLowerCase().includes('nama') || 
-                                h === 'Nama'
-                            );
-                            
-                            const pinKey = headers.find(h => 
-                                h.toLowerCase().includes('pin') || 
-                                h === 'PIN'
-                            );
-                            
-                            console.log('📌 Menggunakan key Nama:', namaKey, 'PIN:', pinKey);
-                            
-                            if (namaKey && pinKey) {
-                                cloudUsers = allData
-                                    .filter(item => {
-                                        const pin = String(item[pinKey] || '').trim();
-                                        return pin.length > 0;
-                                    })
-                                    .map(item => ({
-                                        name: String(item[namaKey] || '').toLowerCase().trim(),
-                                        pin: String(item[pinKey] || '').trim()
-                                    }))
-                                    .filter(u => u.name && u.name !== 'admin');
-                                
-                                console.log('✅ Data user ditemukan:', cloudUsers.length, 'user');
-                            } else {
-                                console.warn('⚠️ Kolom Nama atau PIN tidak ditemukan.');
-                                cloudUsers = [];
-                            }
-                        } else {
-                            cloudUsers = [];
+                        // 📄 Debug: Cetak data mentah dan kunci kolomnya
+                        console.log('📄 Data mentah dari Sheet.best:', data);
+                        if (Array.isArray(data) && data.length > 0) {
+                            console.log('🔑 Kunci dari baris pertama:', Object.keys(data[0]));
                         }
+
+                        // Fungsi pembantu untuk mencari nama kolom secara fleksibel (abaikan spasi dan huruf kapital)
+                        const getKey = (obj, possibleKeys) => {
+                            if (!obj || typeof obj !== 'object') return null;
+                            for (let key of possibleKeys) {
+                                if (obj.hasOwnProperty(key)) return key;
+                            }
+                            const lowerKeys = possibleKeys.map(k => k.toLowerCase().trim());
+                            for (let key of Object.keys(obj)) {
+                                if (lowerKeys.includes(key.toLowerCase().trim())) return key;
+                            }
+                            return null;
+                        };
+
+                        cloudUsers = (Array.isArray(data) ? data : []).map(item => {
+                            if (!item || typeof item !== 'object') return null;
+
+                            const namaKey = getKey(item, ['Nama', 'nama', 'Nama ', 'nama ']);
+                            const pinKey = getKey(item, ['PIN', 'pin', 'PIN ', 'pin ']);
+
+                            let nama = namaKey ? item[namaKey] : undefined;
+                            let pin = pinKey ? item[pinKey] : undefined;
+
+                            if (!nama || String(nama).trim() === '' || pin === undefined || String(pin).trim() === '') {
+                                return null;
+                            }
+
+                            return {
+                                name: String(nama).toLowerCase().trim(),
+                                pin: String(pin).trim()
+                            };
+                        }).filter(u => u && u.name && u.name !== 'admin' && u.pin);
+                        
+                        usersSynced = true;
+                        console.log('✅ Data user akhir (cloudUsers) dimuat:', cloudUsers.length, 'user');
+                        
+                        if (isAdmin) renderAdminPanel();
+                        renderUserList();
                     } else {
-                        console.error('❌ Gagal fetch data. Status:', response.status);
-                        cloudUsers = [];
+                        const errText = await response.text();
+                        console.error('❌ Gagal fetch user dari Cloud. Status:', response.status, 'Detail:', errText);
+                        if (isAdmin) showToast(`❌ Gagal memuat User. Status ${response.status}. Cek Console (F12).`, 'error', 6000);
                     }
                 } catch (error) {
                     console.error('❌ Error koneksi ke Cloud:', error);
-                    cloudUsers = [];
+                    if (isAdmin) showToast('❌ Error koneksi internet ke Cloud.', 'error', 6000);
                 }
-                
-                if (isAdmin) renderAdminPanel();
-                renderUserList();
             }
 
             function getUsers() {
@@ -1352,81 +1455,48 @@
             function renderUserList() {
                 const users = getUsers();
                 userList.innerHTML = '';
-                if (users.length === 0) {
-                    const msg = document.createElement('div');
-                    msg.style.cssText = 'color:var(--text-muted);font-size:13px;padding:8px 0;';
-                    msg.textContent = '⚠️ Belum ada user terdaftar. Login sebagai admin untuk menambah user.';
-                    userList.appendChild(msg);
-                } else {
-                    users.forEach(u => {
-                        const btn = document.createElement('button');
-                        btn.textContent = u;
-                        btn.addEventListener('click', () => {
-                            loginInput.value = u;
-                            loginPinInput.focus();
-                        });
-                        userList.appendChild(btn);
+                users.forEach(u => {
+                    const btn = document.createElement('button');
+                    btn.textContent = u;
+                    btn.addEventListener('click', () => {
+                        loginInput.value = u;
+                        loginPinInput.focus();
                     });
-                }
+                    userList.appendChild(btn);
+                });
             }
 
             function renderAdminPanel() {
                 if (!isAdmin) return;
                 const users = getAllUsersWithPin();
                 let html = '';
-                if (users.length === 0) {
-                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud</td></tr>`;
-                } else {
-                    users.forEach(u => {
-                        html += `
-                            <tr>
-                                <td>${u.name}</td>
-                                <td>${u.pin}</td>
-                                <td>
-                                    <button class="btn-sm btn-danger" onclick="window._deleteUser('${u.name}')" style="background:#fecaca;color:#991b1b;">Hapus</button>
-                                </td>
-                            </tr>
-                        `;
-                    });
+                users.forEach(u => {
+                    html += `
+                        <tr>
+                            <td>${u.name}</td>
+                            <td>${u.pin}</td>
+                            <td>
+                                <button class="btn-sm btn-danger" onclick="window._resetPin('${u.name}')">Reset PIN</button>
+                                <button class="btn-sm btn-danger" onclick="window._deleteUser('${u.name}')" style="background:#fecaca;color:#991b1b;">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                if (!html) {
+                    html = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Belum ada pengguna terdaftar di Cloud. Pastikan Data_User ada di sheet ke-1.</td></tr>`;
                 }
                 userTableBody.innerHTML = html;
 
+                window._resetPin = function(name) {
+                    showToast('ℹ️ Untuk reset PIN, silakan hapus user ini lalu tambahkan kembali dengan PIN baru.', 'info', 5000);
+                };
+
                 window._deleteUser = async function(name) {
-                    if (confirm(`Hapus pengguna "${name}" dari Cloud?`)) {
-                        try {
-                            const response = await fetch(GOOGLE_SCRIPT_URL);
-                            if (response.ok) {
-                                const allData = await response.json();
-                                const headers = Object.keys(allData[0] || {});
-                                const namaKey = headers.find(h => 
-                                    h.toLowerCase().includes('nama') || 
-                                    h === 'Nama'
-                                );
-                                
-                                if (namaKey) {
-                                    const filteredData = allData.filter(item => {
-                                        const nama = String(item[namaKey] || '').toLowerCase().trim();
-                                        return nama !== name;
-                                    });
-                                    
-                                    const updateResponse = await fetch(GOOGLE_SCRIPT_URL, {
-                                        method: 'POST',
-                                        mode: 'cors',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(filteredData)
-                                    });
-                                    
-                                    if (updateResponse.ok) {
-                                        showToast(`✅ Pengguna "${name}" dihapus!`, 'success');
-                                        await syncUsersFromCloud();
-                                        renderAdminPanel();
-                                        renderUserList();
-                                    }
-                                }
-                            }
-                        } catch (error) {
-                            showToast('❌ Gagal menghapus user.', 'error');
-                        }
+                    if (confirm(`Hapus pengguna "${name}" dari Cloud?\n\nCatatan: Anda harus menghapus barisnya langsung di Google Sheet (Tab Data_User) untuk penghapusan permanen.`)) {
+                        showToast('🔄 Data diperbarui. Silakan hapus baris user di Google Sheet secara manual.', 'info', 5000);
+                        await syncUsersFromCloud();
+                        renderAdminPanel();
+                        renderUserList();
                     }
                 };
             }
@@ -1441,43 +1511,37 @@
 
                 showToast('⏳ Menambahkan user ke Cloud...', 'info');
 
+                // 🚨 PERBAIKAN UTAMA: Jangan pakai parameter sheet agar menulis ke sheet pertama.
+                const url = getGoogleScriptUrl();
                 try {
-                    const getResponse = await fetch(GOOGLE_SCRIPT_URL);
-                    let existingData = [];
-                    if (getResponse.ok) {
-                        existingData = await getResponse.json();
-                    }
-                    
-                    const newUser = { Nama: name, PIN: pin };
-                    const updatedData = [...existingData, newUser];
-                    
-                    const postResponse = await fetch(GOOGLE_SCRIPT_URL, {
+                    const response = await fetch(url, {
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedData)
+                        body: JSON.stringify([{ Nama: name, PIN: pin }])
                     });
 
-                    if (!postResponse.ok) {
-                        throw new Error(`HTTP ${postResponse.status}`);
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errText}`);
                     }
 
                     newUserName.value = '';
                     newUserPin.value = '';
-                    showToast(`✅ Pengguna "${name}" berhasil ditambahkan!`, 'success');
+                    showToast(`✅ Pengguna "${name}" berhasil ditambahkan ke Cloud!`, 'success');
                     
                     await syncUsersFromCloud();
                     renderAdminPanel();
                     renderUserList();
                 } catch (error) {
-                    console.error('❌ Gagal tambah user:', error);
-                    showToast('❌ Gagal menyimpan ke Cloud.', 'error');
+                    console.error('❌ Gagal tambah user cloud:', error);
+                    showToast('❌ Gagal menyimpan ke Cloud. Cek console (F12) untuk detail.', 'error');
                 }
             }
 
             function getAdminPin() { return ADMIN_PIN; }
 
-            // ─── LOGIN ───
+            // ─── Login ───
             function attemptLogin() {
                 const username = loginInput.value.trim().toLowerCase();
                 const pin = loginPinInput.value.trim();
@@ -1496,11 +1560,7 @@
                 }
 
                 const storedPin = getUserPin(username);
-                if (!storedPin) { 
-                    loginError.textContent = 'Pengguna tidak terdaftar. Hubungi Admin.';
-                    syncUsersFromCloud();
-                    return; 
-                }
+                if (!storedPin) { loginError.textContent = 'Pengguna tidak terdaftar di Cloud. Hubungi Admin.'; return; }
                 if (pin === storedPin) {
                     isAdmin = false;
                     currentUser = username;
@@ -1516,9 +1576,11 @@
                     roleBadge.textContent = '👑 Admin';
                     adminPanel.style.display = 'block';
                     renderAdminPanel();
+                    btnSetGoogleUrl.style.display = 'inline-block';
                 } else {
                     roleBadge.textContent = '';
                     adminPanel.style.display = 'none';
+                    btnSetGoogleUrl.style.display = 'none';
                 }
                 loginOverlay.style.display = 'none';
                 appContainer.style.display = 'block';
@@ -1546,7 +1608,7 @@
                 showToast('🚪 Anda telah keluar.', 'info');
             }
 
-            // ─── HELPERS ───
+            // ─── Helpers ───
             function todayStr() {
                 const d = new Date();
                 const y = d.getFullYear();
@@ -1605,7 +1667,7 @@
                 }
             }
 
-            // ─── CAMERA ───
+            // ─── Camera ───
             async function initCamera() {
                 try {
                     if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
@@ -1630,7 +1692,7 @@
                     overlay.style.display = 'none';
                     cameraReady = false;
                     updateButtons();
-                    showToast('⚠️ Akses kamera ditolak.', 'error', 4000);
+                    showToast('⚠️ Akses kamera ditolak. Periksa izin browser.', 'error', 4000);
                     return false;
                 }
             }
@@ -1650,7 +1712,7 @@
                 return canvas.toDataURL('image/jpeg', 0.80);
             }
 
-            // ─── CLOCK ───
+            // ─── Clock ───
             function updateClock() {
                 const now = new Date();
                 clockDisplay.textContent = timeStr(now);
@@ -1658,7 +1720,7 @@
             setInterval(updateClock, 1000);
             updateClock();
 
-            // ─── CORE LOGIC ───
+            // ─── Core Logic ───
             function getTodayRecord(data) {
                 const today = todayStr();
                 return data.find(r => r.date === today) || null;
@@ -1802,7 +1864,7 @@
                 historyBody.innerHTML = html;
             }
 
-            // ─── STATISTIK ───
+            // ─── Statistik ───
             function renderStats(data) {
                 const total = data.length;
                 statTotal.textContent = total;
@@ -1865,6 +1927,7 @@
 
                 const labels = dates.map(d => formatDateDisplay(d));
 
+                // Warna grafik menyesuaikan dark/light mode
                 const isDark = document.body.classList.contains('dark-mode');
                 const barColor = isDark ? '#60a5fa' : '#2d6a9f';
                 const textColor = isDark ? '#f1f5f9' : '#1e293b';
@@ -1901,7 +1964,7 @@
                 });
             }
 
-            // ─── BUTTONS UPDATE ───
+            // ─── Buttons update ───
             function updateButtons() {
                 if (!currentUser) { btnIn.disabled = true;
                     btnOut.disabled = true; return; }
@@ -1919,146 +1982,96 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── SYNC TO GOOGLE SHEETS (DENGAN CEK DUPLIKAT) ───
+            // ─── Sinkronisasi Absensi ke Google Sheets ───
             async function syncToGoogleSheet(recordData) {
-                const url = GOOGLE_SCRIPT_URL;
+                // 🚨 PERBAIKAN: Kirim ke sheet ke-2 (Absensi)
+                const url = getGoogleScriptUrl() + '?sheet=Absensi'; 
                 if (!url) return;
-                
                 try {
-                    // Ambil data yang sudah ada di Cloud
-                    const getResponse = await fetch(url);
-                    let existingData = [];
-                    if (getResponse.ok) {
-                        existingData = await getResponse.json();
-                    }
-                    
-                    // Cek apakah data sudah ada (berdasarkan Tanggal dan Nama)
-                    const isDuplicate = existingData.some(item => {
-                        const tanggal = String(item.Tanggal || '').trim();
-                        const nama = String(item.Nama || '').toLowerCase().trim();
-                        const recordTanggal = String(recordData.Tanggal || '').trim();
-                        const recordNama = String(recordData.Nama || '').toLowerCase().trim();
-                        return tanggal === recordTanggal && nama === recordNama;
-                    });
-                    
-                    if (isDuplicate) {
-                        console.log('⏭️ Data sudah ada, dilewati:', recordData.Tanggal, recordData.Nama);
-                        return;
-                    }
-                    
-                    // Tambahkan data baru
-                    const updatedData = [...existingData, recordData];
-                    
+                    const payload = [recordData];
                     const response = await fetch(url, {
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedData),
+                        body: JSON.stringify(payload),
                     });
 
                     if (!response.ok) {
                         const errorText = await response.text();
-                        console.error('❌ Gagal mengirim ke Cloud:', response.status, errorText);
+                        console.error('❌ Gagal mengirim ke Sheet.best:', response.status, errorText);
                     } else {
-                        console.log('✅ Data berhasil dikirim ke Cloud');
+                        console.log('✅ Response dari Sheet.best:', await response.json());
                     }
                 } catch (error) {
-                    console.error('❌ Gagal mengirim ke Cloud:', error);
+                    console.error('❌ Gagal mengirim ke Sheet.best:', error);
                 }
             }
 
             async function syncAllData() {
-                const url = GOOGLE_SCRIPT_URL;
+                // 🚨 PERBAIKAN: Kirim ke sheet ke-2 (Absensi)
+                const url = getGoogleScriptUrl() + '?sheet=Absensi';
                 if (!url) {
                     showToast('⚠️ URL Google Script belum diatur.', 'error');
                     return;
                 }
-                
                 const data = loadData();
                 if (data.length === 0) {
                     showToast('📭 Tidak ada data untuk disinkronkan.', 'info');
                     return;
                 }
-                
                 showToast('⏳ Mengirim data ke Cloud...', 'info');
                 
                 try {
-                    // Ambil data yang sudah ada di Cloud
-                    const getResponse = await fetch(url);
-                    let existingData = [];
-                    if (getResponse.ok) {
-                        existingData = await getResponse.json();
-                    }
-                    
-                    // Buat set untuk pengecekan cepat
-                    const existingKeys = new Set();
-                    existingData.forEach(item => {
-                        const tanggal = String(item.Tanggal || '').trim();
-                        const nama = String(item.Nama || '').toLowerCase().trim();
-                        if (tanggal && nama) {
-                            existingKeys.add(`${tanggal}|${nama}`);
-                        }
-                    });
-                    
-                    // Format data dan filter yang sudah ada
-                    const payload = data
-                        .map(rec => ({
-                            Tanggal: rec.date || '',
-                            Nama: rec.nama || currentUser || 'Tidak diketahui',
-                            Masuk: rec.checkIn ? rec.checkIn.time : '',
-                            Pulang: rec.checkOut ? rec.checkOut.time : '',
-                            TotalKerja: (() => {
-                                if (rec.checkIn && rec.checkOut) {
-                                    const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
-                                    const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
-                                    const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
-                                    if (diff >= 0) {
-                                        const hrs = Math.floor(diff / 60);
-                                        const mins = diff % 60;
-                                        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-                                    }
+                    const payload = data.map(rec => ({
+                        Tanggal: rec.date || '',
+                        Nama: rec.nama || currentUser || 'Tidak diketahui',
+                        Masuk: rec.checkIn ? rec.checkIn.time : '',
+                        Pulang: rec.checkOut ? rec.checkOut.time : '',
+                        TotalKerja: (() => {
+                            if (rec.checkIn && rec.checkOut) {
+                                const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                                const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                                const diff = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                                if (diff >= 0) {
+                                    const hrs = Math.floor(diff / 60);
+                                    const mins = diff % 60;
+                                    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
                                 }
-                                return '';
-                            })(),
-                            Lokasi: rec.checkIn?.location?.address || rec.checkOut?.location?.address || 'Tidak terdeteksi'
-                        }))
-                        .filter(item => {
-                            const key = `${item.Tanggal}|${item.Nama}`;
-                            return !existingKeys.has(key);
-                        });
-                    
-                    if (payload.length === 0) {
-                        showToast('✅ Semua data sudah tersinkron!', 'success');
-                        return;
-                    }
-                    
-                    // Gabungkan data baru dengan data yang sudah ada
-                    const updatedData = [...existingData, ...payload];
+                            }
+                            return '';
+                        })(),
+                        Lokasi: rec.checkIn?.location?.address || rec.checkOut?.location?.address || 'Tidak terdeteksi'
+                    }));
 
                     const response = await fetch(url, {
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedData),
+                        body: JSON.stringify(payload),
                     });
 
                     if (!response.ok) {
                         const errorText = await response.text();
                         console.error('❌ Gagal sync batch:', response.status, errorText);
-                        showToast(`❌ Gagal sync: ${response.status}`, 'error');
+                        showToast(`❌ Gagal sync: ${response.status} - ${errorText}`, 'error');
                         return;
                     }
 
-                    console.log('✅ Sync batch berhasil:', payload.length, 'data baru');
-                    showToast(`✅ ${payload.length} data baru berhasil disinkronkan!`, 'success');
-                    
+                    const result = await response.json();
+                    console.log('✅ Sync batch berhasil:', result);
+                    showToast(`✅ ${data.length} data berhasil disinkronkan!`, 'success');
                 } catch (error) {
                     console.error('❌ Gagal sync batch:', error);
                     showToast('❌ Gagal sinkronisasi. Periksa koneksi.', 'error');
                 }
             }
 
-            // ─── LAPORAN BULANAN ───
+            function setGoogleScriptUrlPrompt() {
+                if (!isAdmin) { showToast('⚠️ Hanya admin yang bisa mengubah URL Google Script.', 'error'); return; }
+                showToast('ℹ️ URL Google Script sudah disematkan di kode.', 'info');
+            }
+
+            // ─── Laporan Bulanan ───
             function generateMonthlyReport() {
                 const monthValue = reportMonth.value;
                 if (!monthValue) {
@@ -2177,7 +2190,7 @@
                 }
             }
 
-            // ─── ACTIONS ───
+            // ─── Actions ───
             async function handleCheckIn() {
                 if (!currentUser) { showToast('⚠️ Silakan login terlebih dahulu.', 'error'); return; }
                 if (!cameraReady) { showToast('📷 Kamera belum siap.', 'error'); return; }
@@ -2265,7 +2278,7 @@
                 showToast(`✅ Absen pulang berhasil pada ${time}${location ? ' 📍' : ''}`, 'success');
             }
 
-            // ─── EXPORT EXCEL ───
+            // ─── Export Excel ───
             function exportExcel() {
                 const data = loadData();
                 if (data.length === 0) { showToast('📭 Tidak ada data untuk diexport.', 'info'); return; }
@@ -2301,14 +2314,14 @@
                     ];
                     XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
                     XLSX.writeFile(wb, `Absensi_${todayStr()}.xlsx`);
-                    showToast(`📊 Excel berhasil diexport!`, 'success', 3000);
+                    showToast(`📊 Excel berhasil diexport (tanpa foto).`, 'success', 3000);
                 } catch (err) {
                     console.error('Export error:', err);
                     showToast('❌ Gagal export Excel: ' + err.message, 'error');
                 }
             }
 
-            // ─── BACKUP & RESTORE ───
+            // ─── Backup & Restore ───
             function backupData() {
                 const data = loadData();
                 if (data.length === 0) { showToast('📭 Tidak ada data untuk dibackup.', 'info'); return; }
@@ -2339,39 +2352,13 @@
                 reader.readAsText(file);
             }
 
-            // ─── THEME ───
-            function loadThemePreference() {
-                const saved = localStorage.getItem('theme_preference');
-                if (saved === 'dark') {
-                    document.body.classList.add('dark-mode');
-                    document.getElementById('themeToggle').textContent = '🌙';
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    document.getElementById('themeToggle').textContent = '☀️';
-                }
-            }
-
-            function toggleTheme() {
-                const body = document.body;
-                const toggle = document.getElementById('themeToggle');
-                if (body.classList.contains('dark-mode')) {
-                    body.classList.remove('dark-mode');
-                    toggle.textContent = '☀️';
-                    localStorage.setItem('theme_preference', 'light');
-                } else {
-                    body.classList.add('dark-mode');
-                    toggle.textContent = '🌙';
-                    localStorage.setItem('theme_preference', 'dark');
-                }
-                const data = loadData();
-                if (data) updateChart(data);
-            }
-
-            // ─── INIT ───
+            // ─── Init ───
             function init() {
+                // Load theme preference
                 loadThemePreference();
                 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
+                // Ambil data user dari Cloud saat aplikasi dibuka
                 syncUsersFromCloud();
 
                 btnLogin.addEventListener('click', attemptLogin);
@@ -2380,10 +2367,7 @@
                 btnLogout.addEventListener('click', logout);
 
                 btnAddUser.addEventListener('click', addUser);
-                btnRefreshUsers.addEventListener('click', () => { 
-                    syncUsersFromCloud(); 
-                    showToast('🔄 Data user diperbarui.', 'info'); 
-                });
+                btnRefreshUsers.addEventListener('click', () => { syncUsersFromCloud(); showToast('🔄 Data user dari Cloud diperbarui.', 'info'); });
 
                 btnIn.addEventListener('click', handleCheckIn);
                 btnOut.addEventListener('click', handleCheckOut);
@@ -2396,6 +2380,7 @@
                 });
 
                 btnSyncAll.addEventListener('click', syncAllData);
+                btnSetGoogleUrl.addEventListener('click', setGoogleScriptUrlPrompt);
 
                 btnReport.addEventListener('click', () => {
                     const now = new Date();
@@ -2441,9 +2426,8 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Dengan Cek Duplikat)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Strategi Sheet ke-1 = User, Sheet ke-2 = Absensi)');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
-                console.log('📊 URL Cloud:', GOOGLE_SCRIPT_URL);
             }
 
             init();
