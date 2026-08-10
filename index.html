@@ -700,6 +700,16 @@
             text-align: center;
             transition: background 0.3s;
         }
+        
+        /* ─── CSS KHUSUS UNTUK LOGO ─── */
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            border-radius: 12px;
+        }
+
         .login-box h2 {
             font-size: 24px;
             margin-bottom: 4px;
@@ -987,6 +997,7 @@
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .filter-area input, .filter-area select { flex: 1 1 100%; }
             .login-box { padding: 24px 16px; }
+            .login-logo { width: 80px; height: 80px; }
             .admin-panel .admin-grid { grid-template-columns: 1fr; }
             .modal-box { padding: 16px; }
             .report-summary { grid-template-columns: 1fr 1fr; }
@@ -1021,6 +1032,10 @@
     <!-- ─── LOGIN OVERLAY ─── -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
+            
+            <!-- 🚀 GANTI LINK DI BAGIAN SRC="" DI BAWAH INI DENGAN LINK GAMBAR ANDA -->
+            <img class="login-logo" src="https://ibb.co.com/MDdP0wSd" alt="Logo Absensi" />
+            
             <h2>🔐 Absensi</h2>
             <p>Masukkan nama dan PIN Anda</p>
             <input type="text" id="loginInput" placeholder="ID / Nama pengguna" autocomplete="off" />
@@ -2440,7 +2455,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi siap digunakan (Single Sheet: ID, PIN, Tanggal, Nama...)');
+                console.log('📋 Aplikasi Absensi siap digunakan (Single Sheet, +Logo)');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
