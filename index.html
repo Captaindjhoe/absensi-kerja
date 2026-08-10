@@ -1383,7 +1383,6 @@
                         const data = await response.json();
                         console.log('📄 Data mentah dari Sheet.best:', data);
                         
-                        // Fungsi fleksibel mencari header
                         const getKey = (obj, possibleKeys) => {
                             if (!obj || typeof obj !== 'object') return null;
                             for (let key of possibleKeys) {
@@ -1396,7 +1395,6 @@
                             return null;
                         };
 
-                        // Ambil semua baris yang memiliki ID dan PIN (sebagai data user)
                         cloudUsers = (Array.isArray(data) ? data : []).map(item => {
                             if (!item || typeof item !== 'object') return null;
 
@@ -1408,12 +1406,11 @@
                             let pin = pinKey ? String(item[pinKey]).trim() : '';
                             let nama = nameKey ? String(item[nameKey]).trim() : '';
 
-                            // Hanya ambil baris yang memiliki ID dan PIN (ini adalah master user)
                             if (!id || pin === '' || id === 'admin') return null;
 
                             return {
                                 id: id.toLowerCase(),
-                                nama: nama || id, // Jika nama kosong, gunakan ID sebagai nama
+                                nama: nama || id, 
                                 pin: pin
                             };
                         }).filter(u => u && u.id && u.pin);
@@ -1451,11 +1448,17 @@
             }
 
             function renderUserList() {
-                const users = cloudUsers; // Mengambil dari cloudUsers yang sudah difilter
+                const users = cloudUsers;
                 userList.innerHTML = '';
                 users.forEach(u => {
                     const btn = document.createElement('button');
-                    btn.textContent = u.nama + ' (' + u.id + ')';
+                    // 🛠️ PERBAIKAN: Jika nama kosong/null, hanya tampilkan ID
+                    let displayText = u.id;
+                    if (u.nama && u.nama !== '' && u.nama !== 'null' && u.nama !== 'undefined') {
+                        displayText = u.nama + ' (' + u.id + ')';
+                    }
+                    btn.textContent = displayText;
+                    
                     btn.addEventListener('click', () => {
                         loginInput.value = u.id;
                         loginPinInput.focus();
@@ -1469,10 +1472,12 @@
                 const users = cloudUsers;
                 let html = '';
                 users.forEach(u => {
+                    // 🛠️ PERBAIKAN: Jika nama kosong di panel admin, tampilkan strip (-)
+                    let displayNama = u.nama && u.nama !== '' && u.nama !== 'null' && u.nama !== 'undefined' ? u.nama : '-';
                     html += `
                         <tr>
                             <td>${u.id}</td>
-                            <td>${u.nama}</td>
+                            <td>${displayNama}</td>
                             <td>${u.pin}</td>
                             <td>
                                 <button class="btn-sm btn-danger" onclick="window._resetPin('${u.id}')">Reset PIN</button>
