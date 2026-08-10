@@ -1025,68 +1025,56 @@
             flex-wrap: wrap;
         }
 
-        /* ─── CSS KHUSUS UNTUK MODAL INSPEKSI ─── */
-        .modal-overlay-insp {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--modal-overlay);
-            backdrop-filter: blur(6px);
+        /* ─── CSS KHUSUS UNTUK HALAMAN INSPEKSI (LAYAR PENUH) ─── */
+        .insp-page {
             display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            padding: 20px;
-            transition: background 0.3s;
-        }
-        .modal-overlay-insp.active {
-            display: flex;
-        }
-        .modal-box-insp {
-            background: var(--modal-bg);
-            border-radius: 24px;
-            padding: 24px 20px;
-            max-width: 700px;
             width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            transition: background 0.3s;
+            max-width: 700px;
+            margin: 0 auto;
         }
-        .modal-box-insp h2 {
-            font-size: 22px;
+        .insp-page.active {
+            display: block;
+        }
+        .insp-page .header {
             margin-bottom: 16px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
-        .modal-box-insp .close-btn {
-            float: right;
-            background: none;
+        .insp-page .header h2 {
+            color: #fff;
+            font-size: 20px;
+            margin: 0;
+        }
+        .insp-page .header .btn-back {
+            background: rgba(255,255,255,0.2);
             border: none;
-            font-size: 28px;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 14px;
             cursor: pointer;
-            color: var(--text-secondary);
             transition: 0.2s;
         }
-        .modal-box-insp .close-btn:hover {
-            color: var(--text-primary);
+        .insp-page .header .btn-back:hover {
+            background: rgba(255,255,255,0.35);
         }
-        .modal-box-insp .form-group {
+        .insp-page .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px 18px 24px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .insp-page .form-group {
             margin-bottom: 16px;
         }
-        .modal-box-insp .form-group label {
+        .insp-page .form-group label {
             display: block;
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 4px;
             font-size: 14px;
         }
-        .modal-box-insp .form-group input,
-        .modal-box-insp .form-group select {
+        .insp-page .form-group input,
+        .insp-page .form-group select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--input-border);
@@ -1096,12 +1084,12 @@
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        .modal-box-insp .form-group input:focus,
-        .modal-box-insp .form-group select:focus {
+        .insp-page .form-group input:focus,
+        .insp-page .form-group select:focus {
             border-color: #2d6a9f;
             outline: none;
         }
-        .modal-box-insp .btn-submit-insp {
+        .insp-page .btn-submit-insp {
             width: 100%;
             padding: 12px;
             background: #15803d;
@@ -1113,12 +1101,54 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .modal-box-insp .btn-submit-insp:hover {
+        .insp-page .btn-submit-insp:hover {
             background: #065f46;
         }
-        .modal-box-insp .btn-submit-insp:disabled {
+        .insp-page .btn-submit-insp:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        .insp-page .btn-danger-insp {
+            width: 100%;
+            padding: 12px;
+            background: #fecaca;
+            color: #991b1b;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .insp-page .btn-danger-insp:hover {
+            background: #fca5a5;
+        }
+        .insp-page .insp-saved-list {
+            margin-bottom: 16px;
+        }
+        .insp-page .insp-saved-list select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-filter);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .insp-page .insp-saved-list select:focus {
+            border-color: #2d6a9f;
+            outline: none;
+        }
+        .insp-page .insp-saved-list .btn-sm {
+            margin-top: 6px;
+        }
+        
+        /* Responsive khusus halaman inspeksi */
+        @media (max-width: 480px) {
+            .insp-page .header h2 { font-size: 18px; }
+            .insp-page .card { padding: 16px 12px 20px; }
         }
     </style>
 </head>
@@ -1127,10 +1157,7 @@
     <!-- ─── LOGIN OVERLAY ─── -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            
-            <!-- Logo Aplikasi -->
             <img class="login-logo" src="https://i.ibb.co/5G1Fk2Y/logo-D.png" alt="Logo Absensi" />
-            
             <h2>🔐 Absensi</h2>
             <p>Masukkan nama dan PIN Anda</p>
             <input type="text" id="loginInput" placeholder="ID / Nama pengguna" autocomplete="off" />
@@ -1141,6 +1168,7 @@
         </div>
     </div>
 
+    <!-- ─── APP CONTAINER (Halaman Utama Absensi) ─── -->
     <div class="app" id="appContainer" style="display:none;">
 
         <!-- HEADER -->
@@ -1158,158 +1186,180 @@
 
         <!-- MAIN CARD -->
         <div class="card">
+            <div id="mainContent">
 
-            <!-- Admin Panel (hanya untuk admin) -->
-            <div id="adminPanel" style="display:none;">
-                <div class="admin-panel">
-                    <h3>🛠️ Panel Admin</h3>
-                    <div class="admin-grid">
-                        <input type="text" id="newUserName" placeholder="ID Baru" />
-                        <input type="password" id="newUserPin" maxlength="4" placeholder="PIN 4 digit" inputmode="numeric" />
-                        <input type="text" id="newUserFullName" placeholder="Nama Lengkap" />
-                        <button class="btn-success" id="btnAddUser">➕ Tambah Pengguna</button>
-                        <button class="btn-sm" id="btnRefreshUsers" style="background:#e2e8f0;">🔄 Refresh</button>
+                <!-- Admin Panel (hanya untuk admin) -->
+                <div id="adminPanel" style="display:none;">
+                    <div class="admin-panel">
+                        <h3>🛠️ Panel Admin</h3>
+                        <div class="admin-grid">
+                            <input type="text" id="newUserName" placeholder="ID Baru" />
+                            <input type="password" id="newUserPin" maxlength="4" placeholder="PIN 4 digit" inputmode="numeric" />
+                            <input type="text" id="newUserFullName" placeholder="Nama Lengkap" />
+                            <button class="btn-success" id="btnAddUser">➕ Tambah Pengguna</button>
+                            <button class="btn-sm" id="btnRefreshUsers" style="background:#e2e8f0;">🔄 Refresh</button>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="user-table" id="userTable">
+                                <thead><tr><th>ID</th><th>Nama</th><th>PIN</th><th>Aksi</th></tr></thead>
+                                <tbody id="userTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div style="overflow-x:auto;">
-                        <table class="user-table" id="userTable">
-                            <thead><tr><th>ID</th><th>Nama</th><th>PIN</th><th>Aksi</th></tr></thead>
-                            <tbody id="userTableBody"></tbody>
-                        </table>
+                </div>
+
+                <!-- Camera -->
+                <div class="camera-wrapper" id="cameraWrapper">
+                    <video id="video" autoplay playsinline muted></video>
+                    <div class="placeholder" id="cameraPlaceholder">
+                        <span class="icon">📷</span>
+                        Menunggu akses kamera…<br />
+                        <span style="font-size:12px;opacity:0.7;">Izinkan akses kamera untuk melanjutkan</span>
+                    </div>
+                    <div class="camera-overlay" id="cameraOverlay">● Siaran langsung</div>
+                </div>
+
+                <!-- Status -->
+                <div class="status-bar">
+                    <span class="status-label">
+                        <span class="dot" id="statusDot"></span>
+                        <span id="statusText">Belum absen</span>
+                    </span>
+                    <span class="status-time" id="statusTime">
+                        ⏱ <strong id="clockDisplay">--:--:--</strong>
+                    </span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="btn-group">
+                    <button class="btn btn-in" id="btnIn">📸 Masuk</button>
+                    <button class="btn btn-out" id="btnOut">🚪 Pulang</button>
+                </div>
+                
+                <!-- TOMBOL INSPEKSI KENDARAAN -->
+                <div style="margin-top: 8px;">
+                    <button class="btn" id="btnInspeksi" style="background:#c7d2fe; color:#3730a3; width:100%;" disabled>🚗 Inspeksi Kendaraan</button>
+                </div>
+
+                <!-- Today's Record -->
+                <div class="card-title">📅 Catatan Hari Ini</div>
+                <div class="today-grid">
+                    <div class="today-item">
+                        <div class="label">Masuk</div>
+                        <div class="value" id="todayIn">--:--:--</div>
+                        <img class="photo-thumb" id="todayInPhoto" style="display:none;" alt="foto masuk" />
+                        <div class="loc-info" id="todayInLoc"></div>
+                    </div>
+                    <div class="today-item">
+                        <div class="label">Pulang</div>
+                        <div class="value" id="todayOut">--:--:--</div>
+                        <img class="photo-thumb" id="todayOutPhoto" style="display:none;" alt="foto pulang" />
+                        <div class="loc-info" id="todayOutLoc"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Camera -->
-            <div class="camera-wrapper" id="cameraWrapper">
-                <video id="video" autoplay playsinline muted></video>
-                <div class="placeholder" id="cameraPlaceholder">
-                    <span class="icon">📷</span>
-                    Menunggu akses kamera…<br />
-                    <span style="font-size:12px;opacity:0.7;">Izinkan akses kamera untuk melanjutkan</span>
+                <!-- Statistik -->
+                <div class="card-title" style="margin-top:18px;">📊 Statistik</div>
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total Hari</div></div>
+                    <div class="stat-card"><div class="num" id="statAvgIn">--:--</div><div class="label">Rata-rata Masuk</div></div>
+                    <div class="stat-card"><div class="num" id="statAvgOut">--:--</div><div class="label">Rata-rata Pulang</div></div>
+                    <div class="stat-card"><div class="num" id="statTotalWork">--:--</div><div class="label">Total Jam Kerja</div></div>
                 </div>
-                <div class="camera-overlay" id="cameraOverlay">● Siaran langsung</div>
-            </div>
-
-            <!-- Status -->
-            <div class="status-bar">
-                <span class="status-label">
-                    <span class="dot" id="statusDot"></span>
-                    <span id="statusText">Belum absen</span>
-                </span>
-                <span class="status-time" id="statusTime">
-                    ⏱ <strong id="clockDisplay">--:--:--</strong>
-                </span>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="btn-group">
-                <button class="btn btn-in" id="btnIn">📸 Masuk</button>
-                <button class="btn btn-out" id="btnOut">🚪 Pulang</button>
-            </div>
-            
-            <!-- TOMBOL INSPEKSI KENDARAAN -->
-            <div style="margin-top: 8px;">
-                <button class="btn" id="btnInspeksi" style="background:#c7d2fe; color:#3730a3; width:100%;" disabled>🚗 Inspeksi Kendaraan</button>
-            </div>
-
-            <!-- Today's Record -->
-            <div class="card-title">📅 Catatan Hari Ini</div>
-            <div class="today-grid">
-                <div class="today-item">
-                    <div class="label">Masuk</div>
-                    <div class="value" id="todayIn">--:--:--</div>
-                    <img class="photo-thumb" id="todayInPhoto" style="display:none;" alt="foto masuk" />
-                    <div class="loc-info" id="todayInLoc"></div>
+                <div class="chart-container">
+                    <canvas id="statsChart"></canvas>
                 </div>
-                <div class="today-item">
-                    <div class="label">Pulang</div>
-                    <div class="value" id="todayOut">--:--:--</div>
-                    <img class="photo-thumb" id="todayOutPhoto" style="display:none;" alt="foto pulang" />
-                    <div class="loc-info" id="todayOutLoc"></div>
+
+                <!-- Filter -->
+                <div class="card-title" style="margin-top:18px;">🔍 Filter Riwayat</div>
+                <div class="filter-area">
+                    <input type="date" id="filterStart" placeholder="Dari" />
+                    <input type="date" id="filterEnd" placeholder="Sampai" />
+                    <select id="filterStatus">
+                        <option value="all">Semua</option>
+                        <option value="in">Sudah Masuk</option>
+                        <option value="out">Sudah Pulang</option>
+                    </select>
+                    <button class="btn-sm" id="btnFilter" style="background:#e2e8f0;">Terapkan</button>
+                    <button class="btn-sm" id="btnResetFilter" style="background:#f1f5f9;">Reset</button>
                 </div>
-            </div>
 
-            <!-- Statistik -->
-            <div class="card-title" style="margin-top:18px;">📊 Statistik</div>
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total Hari</div></div>
-                <div class="stat-card"><div class="num" id="statAvgIn">--:--</div><div class="label">Rata-rata Masuk</div></div>
-                <div class="stat-card"><div class="num" id="statAvgOut">--:--</div><div class="label">Rata-rata Pulang</div></div>
-                <div class="stat-card"><div class="num" id="statTotalWork">--:--</div><div class="label">Total Jam Kerja</div></div>
-            </div>
-            <div class="chart-container">
-                <canvas id="statsChart"></canvas>
-            </div>
+                <!-- History -->
+                <div class="card-title" style="margin-top:6px;">📂 Riwayat</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>Masuk</th>
+                                <th>Pulang</th>
+                                <th style="text-align:center;">Total Kerja</th>
+                                <th style="text-align:center;">Foto</th>
+                                <th style="text-align:center;">Lokasi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <tr class="empty-row">
+                                <td colspan="8">Belum ada data absensi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <!-- Filter -->
-            <div class="card-title" style="margin-top:18px;">🔍 Filter Riwayat</div>
-            <div class="filter-area">
-                <input type="date" id="filterStart" placeholder="Dari" />
-                <input type="date" id="filterEnd" placeholder="Sampai" />
-                <select id="filterStatus">
-                    <option value="all">Semua</option>
-                    <option value="in">Sudah Masuk</option>
-                    <option value="out">Sudah Pulang</option>
-                </select>
-                <button class="btn-sm" id="btnFilter" style="background:#e2e8f0;">Terapkan</button>
-                <button class="btn-sm" id="btnResetFilter" style="background:#f1f5f9;">Reset</button>
-            </div>
+                <!-- Backup / Restore -->
+                <div class="backup-row">
+                    <button class="btn btn-backup btn-sm" id="btnBackup">💾 Backup (JSON)</button>
+                    <button class="btn btn-restore btn-sm" id="btnRestore">📂 Restore (JSON)</button>
+                    <input type="file" id="restoreInput" accept=".json" />
+                </div>
 
-            <!-- History -->
-            <div class="card-title" style="margin-top:6px;">📂 Riwayat</div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>ID</th>
-                            <th>Nama</th>
-                            <th>Masuk</th>
-                            <th>Pulang</th>
-                            <th style="text-align:center;">Total Kerja</th>
-                            <th style="text-align:center;">Foto</th>
-                            <th style="text-align:center;">Lokasi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyBody">
-                        <tr class="empty-row">
-                            <td colspan="8">Belum ada data absensi</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <!-- Action Buttons (Sinkronisasi & Laporan) -->
+                <div class="action-row">
+                    <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
+                    <button class="btn btn-report btn-sm" id="btnReport">📊 Laporan Bulanan</button>
+                    <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0; display:none;">⚙️ Set URL Google Script</button>
+                </div>
 
-            <!-- Backup / Restore -->
-            <div class="backup-row">
-                <button class="btn btn-backup btn-sm" id="btnBackup">💾 Backup (JSON)</button>
-                <button class="btn btn-restore btn-sm" id="btnRestore">📂 Restore (JSON)</button>
-                <input type="file" id="restoreInput" accept=".json" />
-            </div>
+                <!-- Export Excel -->
+                <button class="btn-export" id="btnExport">📊 Export ke Excel</button>
 
-            <!-- Action Buttons (Sinkronisasi & Laporan) -->
-            <div class="action-row">
-                <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
-                <button class="btn btn-report btn-sm" id="btnReport">📊 Laporan Bulanan</button>
-                <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0; display:none;">⚙️ Set URL Google Script</button>
-            </div>
+                <!-- Footer -->
+                <div class="footer">
+                    Data tersimpan di perangkat Anda &bull; <span id="recordCount">0</span> catatan
+                </div>
 
-            <!-- Export Excel -->
-            <button class="btn-export" id="btnExport">📊 Export ke Excel</button>
-
-            <!-- Footer -->
-            <div class="footer">
-                Data tersimpan di perangkat Anda &bull; <span id="recordCount">0</span> catatan
             </div>
         </div>
     </div>
 
-    <!-- ─── MODAL INSPEKSI KENDARAAN ─── -->
-    <div class="modal-overlay-insp" id="inspModal">
-        <div class="modal-box-insp">
-            <button class="close-btn" id="closeInspModal">&times;</button>
-            <h2>🚗 Form Inspeksi Kendaraan</h2>
+    <!-- ─── HALAMAN INSPEKSI (LAYAR PENUH) ─── -->
+    <div class="insp-page" id="inspPageContainer">
+        
+        <!-- HEADER KHUSUS INSPEKSI -->
+        <header class="header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+            <h2 style="color:#fff; margin:0; font-size:20px;">🚗 Inspeksi Kendaraan</h2>
+            <button class="btn-back" id="btnBackFromInsp">⬅ Kembali</button>
+        </header>
+
+        <!-- CARD INSPEKSI -->
+        <div class="card" style="margin-top: 0; border-radius: 0 0 20px 20px;">
             
-            <!-- Pilihan Merk Mobil -->
+            <!-- Pilihan Kendaraan Tersimpan -->
+            <div class="insp-saved-list">
+                <label style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:4px;">Pilih Kendaraan Tersimpan</label>
+                <select id="savedVehicleSelect">
+                    <option value="">-- Tambah Kendaraan Baru --</option>
+                </select>
+                <div style="display: flex; gap: 6px; margin-top: 6px;">
+                    <button class="btn-sm btn-danger" id="btnDeleteVehicle" style="background:#fecaca;color:#991b1b; flex:1;">🗑️ Hapus Kendaraan Ini</button>
+                </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+
+            <!-- Form Input Data Kendaraan -->
             <div class="form-group">
                 <label>Merk Mobil</label>
                 <select id="inspMerk">
@@ -1325,7 +1375,6 @@
                 </select>
             </div>
 
-            <!-- Pilihan Tipe Mobil -->
             <div class="form-group">
                 <label>Tipe Mobil</label>
                 <select id="inspTipe">
@@ -1354,6 +1403,7 @@
             </div>
 
             <button class="btn-submit-insp" id="btnSubmitInsp">💾 Simpan Data Inspeksi</button>
+            <button class="btn-danger-insp" id="btnAddNewVehicle" style="background:#e0e7ff; color:#3730a3;">➕ Simpan sebagai Kendaraan Baru</button>
         </div>
     </div>
 
@@ -1412,6 +1462,7 @@
 
             // ─── STATE UNTUK CLOUD USER ───
             let cloudUsers = [];
+            let userVehicles = {}; // Menyimpan kendaraan milik user yang sedang login
 
             // ─── DOM refs ───
             const loginOverlay = document.getElementById('loginOverlay');
@@ -1442,9 +1493,12 @@
             const btnOut = document.getElementById('btnOut');
             const btnInspeksi = document.getElementById('btnInspeksi');
             
-            // Inspeksi Modal Elements
-            const inspModal = document.getElementById('inspModal');
-            const closeInspModal = document.getElementById('closeInspModal');
+            // Inspeksi Page Elements
+            const inspPageContainer = document.getElementById('inspPageContainer');
+            const btnBackFromInsp = document.getElementById('btnBackFromInsp');
+            const savedVehicleSelect = document.getElementById('savedVehicleSelect');
+            const btnDeleteVehicle = document.getElementById('btnDeleteVehicle');
+            const btnAddNewVehicle = document.getElementById('btnAddNewVehicle');
             const inspMerk = document.getElementById('inspMerk');
             const inspTipe = document.getElementById('inspTipe');
             const inspTahun = document.getElementById('inspTahun');
@@ -1767,6 +1821,11 @@
                 appContainer.style.display = 'block';
                 loginPinInput.value = '';
                 loginInput.value = '';
+                
+                // Reset data kendaraan saat login
+                userVehicles = {};
+                loadUserVehicles();
+                
                 renderUI(); 
                 initCamera().then(() => renderUI());
                 showToast(`👋 Selamat datang, ${currentUser}!${isAdmin ? ' (Admin)' : ''}`, 'success');
@@ -1778,8 +1837,15 @@
                     stream = null;
                     cameraReady = false;
                 }
+                // Kembali ke halaman absensi jika sedang di halaman inspeksi
+                if (inspPageContainer.classList.contains('active')) {
+                    inspPageContainer.classList.remove('active');
+                    appContainer.style.display = 'block';
+                }
+
                 currentUser = null;
                 isAdmin = false;
+                userVehicles = {};
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
                 loginPinInput.value = '';
@@ -2170,7 +2236,113 @@
                     btnOut.disabled = true; }
             }
 
-            // ─── LOGIKA INSPEKSI KENDARAAN ───
+            // ─── LOGIKA HALAMAN INSPEKSI ───
+            // Mengambil data kendaraan milik user dari Sheet Inspeksi
+            async function loadUserVehicles() {
+                if (!currentUser || isAdmin) {
+                    userVehicles = {};
+                    return;
+                }
+                const url = getGoogleScriptUrl() + '?sheet=Inspeksi';
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    
+                    // Filter hanya milik user yang login
+                    const userData = data.filter(row => row.ID && row.ID.toLowerCase() === currentUser);
+                    
+                    // Gunakan Object untuk menyimpan unik berdasarkan kombinasi data kendaraan (Merk+Tipe+Tahun+NoPol)
+                    const uniqueVehicles = {};
+                    userData.forEach(row => {
+                        // Buat key unik
+                        const key = (row.Merk + '|' + row.Tipe + '|' + row.Tahun + '|' + row.NoPol).trim();
+                        if (!uniqueVehicles[key]) {
+                            uniqueVehicles[key] = {
+                                merk: row.Merk || '',
+                                tipe: row.Tipe || '',
+                                tahun: row.Tahun || '',
+                                nopol: row.NoPol || ''
+                            };
+                        }
+                    });
+                    
+                    userVehicles = uniqueVehicles;
+                    updateVehicleSelect();
+                } catch (e) {
+                    console.error('Error load vehicles:', e);
+                }
+            }
+
+            // Update dropdown pilihan kendaraan
+            function updateVehicleSelect() {
+                const select = savedVehicleSelect;
+                select.innerHTML = '<option value="">-- Tambah Kendaraan Baru --</option>';
+                
+                // Urutkan berdasarkan nama agar rapi
+                const sortedKeys = Object.keys(userVehicles).sort((a, b) => {
+                    const vehA = userVehicles[a];
+                    const vehB = userVehicles[b];
+                    return (vehA.merk + vehA.tipe).localeCompare(vehB.merk + vehB.tipe);
+                });
+
+                let index = 1;
+                sortedKeys.forEach(key => {
+                    const v = userVehicles[key];
+                    const label = `${v.merk} ${v.tipe} - ${v.nopol}`;
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = label;
+                    select.appendChild(option);
+                });
+            }
+
+            // Saat pilih kendaraan tersimpan -> isi form otomatis
+            savedVehicleSelect.addEventListener('change', function() {
+                const key = this.value;
+                if (key && userVehicles[key]) {
+                    const v = userVehicles[key];
+                    // Set value Merk
+                    inspMerk.value = v.merk;
+                    // Trigger change untuk memuat Tipe
+                    inspMerk.dispatchEvent(new Event('change'));
+                    // Set Tipe, Tahun, NoPol
+                    setTimeout(() => {
+                        inspTipe.value = v.tipe;
+                        inspTahun.value = v.tahun;
+                        inspNoPol.value = v.nopol;
+                    }, 50);
+                } else {
+                    // Reset form jika pilih tambah baru
+                    inspMerk.value = '';
+                    inspMerk.dispatchEvent(new Event('change'));
+                    inspTipe.value = '';
+                    inspTahun.value = '';
+                    inspNoPol.value = '';
+                }
+            });
+
+            // Hapus kendaraan dari daftar tersimpan (hanya di dropdown, data lama di sheet tetap untuk histori)
+            btnDeleteVehicle.addEventListener('click', function() {
+                const key = savedVehicleSelect.value;
+                if (!key || !userVehicles[key]) {
+                    showToast('⚠️ Pilih kendaraan yang ingin dihapus terlebih dahulu.', 'info');
+                    return;
+                }
+                if (!confirm('Apakah Anda yakin ingin menghapus kendaraan ini dari daftar kendaraan Anda?')) return;
+                
+                delete userVehicles[key];
+                updateVehicleSelect();
+                savedVehicleSelect.value = '';
+                // Reset form
+                inspMerk.value = '';
+                inspMerk.dispatchEvent(new Event('change'));
+                inspTipe.value = '';
+                inspTahun.value = '';
+                inspNoPol.value = '';
+                showToast('🗑️ Kendaraan berhasil dihapus dari daftar.', 'info');
+            });
+
             // Update Tipe Mobil saat Merk berubah
             inspMerk.addEventListener('change', function() {
                 const merk = this.value;
@@ -2187,22 +2359,33 @@
                 }
             });
 
-            // Buka Modal
+            // Buka Halaman Inspeksi
             btnInspeksi.addEventListener('click', function() {
-                inspModal.classList.add('active');
+                // Sembunyikan halaman absensi, tampilkan halaman inspeksi
+                appContainer.style.display = 'none';
+                inspPageContainer.classList.add('active');
+                // Reset form & Load data kendaraan
+                inspMerk.value = '';
+                inspMerk.dispatchEvent(new Event('change'));
+                inspTipe.value = '';
+                inspTahun.value = '';
+                inspNoPol.value = '';
+                inspKMServis.value = '';
+                inspKMAktual.value = '';
+                savedVehicleSelect.value = '';
+                loadUserVehicles();
             });
 
-            // Tutup Modal
-            closeInspModal.addEventListener('click', function() {
-                inspModal.classList.remove('active');
-            });
-            inspModal.addEventListener('click', function(e) {
-                if (e.target === inspModal) inspModal.classList.remove('active');
+            // Kembali ke Halaman Absensi
+            btnBackFromInsp.addEventListener('click', function() {
+                inspPageContainer.classList.remove('active');
+                appContainer.style.display = 'block';
+                renderUI();
             });
 
-            // Simpan Data Inspeksi ke Sheet
+            // Simpan Data Inspeksi ke Sheet (sebagai catatan harian)
             btnSubmitInsp.addEventListener('click', async function() {
-                if (!currentUser) {
+                if (!currentUser || isAdmin) {
                     showToast('⚠️ Anda belum login.', 'error');
                     return;
                 }
@@ -2252,14 +2435,18 @@
 
                     showToast('✅ Data inspeksi kendaraan berhasil disimpan!', 'success');
                     
-                    // Reset Form & Tutup Modal
+                    // Refresh data kendaraan user agar dropdown terupdate
+                    await loadUserVehicles();
+                    
+                    // Reset Form
                     inspMerk.value = '';
-                    inspTipe.innerHTML = '<option value="">-- Pilih Tipe --</option>';
+                    inspMerk.dispatchEvent(new Event('change'));
+                    inspTipe.value = '';
                     inspTahun.value = '';
                     inspNoPol.value = '';
                     inspKMServis.value = '';
                     inspKMAktual.value = '';
-                    inspModal.classList.remove('active');
+                    savedVehicleSelect.value = '';
 
                 } catch (error) {
                     console.error('❌ Gagal simpan inspeksi:', error);
@@ -2268,6 +2455,36 @@
                     btnSubmitInsp.disabled = false;
                     btnSubmitInsp.textContent = '💾 Simpan Data Inspeksi';
                 }
+            });
+
+            // Simpan sebagai Kendaraan Baru (hanya simpan ke dropdown user, data hari ini sudah lewat tombol di atas)
+            btnAddNewVehicle.addEventListener('click', function() {
+                if (!currentUser || isAdmin) {
+                    showToast('⚠️ Anda belum login.', 'error');
+                    return;
+                }
+
+                const merk = inspMerk.value;
+                const tipe = inspTipe.value;
+                const tahun = inspTahun.value.trim();
+                const nopol = inspNoPol.value.trim();
+
+                if (!merk || !tipe || !tahun || !nopol) {
+                    showToast('⚠️ Harap isi Merk, Tipe, Tahun, dan NoPol untuk menyimpan kendaraan baru.', 'error');
+                    return;
+                }
+
+                const key = (merk + '|' + tipe + '|' + tahun + '|' + nopol).trim();
+                if (userVehicles[key]) {
+                    showToast('⚠️ Kendaraan ini sudah ada di daftar Anda.', 'info');
+                    return;
+                }
+
+                userVehicles[key] = { merk, tipe, tahun, nopol };
+                updateVehicleSelect();
+                // Pilih kendaraan yang baru ditambahkan
+                savedVehicleSelect.value = key;
+                showToast('✅ Kendaraan baru berhasil ditambahkan ke daftar!', 'success');
             });
 
             // ─── Sinkronisasi Absensi ke Google Sheets ───
@@ -2694,7 +2911,7 @@
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi & Inspeksi siap digunakan.');
+                console.log('📋 Aplikasi Absensi & Inspeksi (Halaman Baru) siap digunakan.');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
