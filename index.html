@@ -1156,7 +1156,7 @@
     <!-- ─── LOGIN OVERLAY ─── -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            <img class="login-logo" src="https://i.ibb.co/5G1Fk2Y/logo-D.png" alt="Logo Absensi" />
+            <img class="login-logo" src="https://i.ibb.co.com/PsLCP9Jp/Whats-App-Image-2026-08-10-at-3-30-27-PM.jpg" alt="Logo Absensi" />
             <h2>🔐 Absensi</h2>
             <p>Masukkan nama dan PIN Anda</p>
             <input type="text" id="loginInput" placeholder="ID / Nama pengguna" autocomplete="off" />
@@ -1368,6 +1368,8 @@
                     <option value="Mitsubishi">Mitsubishi</option>
                     <option value="Nissan">Nissan</option>
                     <option value="Isuzu">Isuzu</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Mercedes">Mercedes</option>
                     <option value="Lainnya">Lainnya...</option>
                 </select>
             </div>
@@ -1574,7 +1576,7 @@
                 localStorage.setItem(getStorageKey(currentUser), JSON.stringify(data));
             }
 
-            // ─── Database Mobil (Hardcoded) ───
+           // ─── Database Mobil (Hardcoded) ───
             const vehicleDB = {
                 'Toyota': ['Avanza', 'Rush', 'Innova', 'Fortuner', 'Hilux', 'Agya', 'Calya', 'Camry', 'Corolla'],
                 'Honda': ['Brio', 'Mobilio', 'HR-V', 'CR-V', 'Civic', 'Accord', 'Jazz', 'BR-V'],
@@ -1582,10 +1584,11 @@
                 'Suzuki': ['Ertiga', 'XL7', 'Carry', 'Ignis', 'Swift', 'Jimny'],
                 'Mitsubishi': ['Xpander', 'Pajero Sport', 'L300', 'Mirage'],
                 'Nissan': ['X-Trail', 'Livina', 'Serena', 'Navara'],
-                'Isuzu': ['Panther', 'MU-X', 'D-Max', 'Elf'],
+                'BMW': ['Seri 1/2', 'Seri 3/4', 'Seri 5', 'Seri 7/8', 'Seri X', 'Seri i'],
+                'Mercedes': ['A Class', 'C Class', 'E Class', 'S Class'],
                 'Lainnya': ['Lainnya']
             };
-
+            
             // ─── Dark Mode ───
             function loadThemePreference() {
                 const saved = localStorage.getItem('theme_preference');
