@@ -1149,6 +1149,197 @@
             .insp-page .header h2 { font-size: 18px; }
             .insp-page .card { padding: 16px 12px 20px; }
         }
+
+        /* ─── CSS KHUSUS UNTUK HALAMAN HISTORY (LAYAR PENUH) ─── */
+        .history-page {
+            display: none;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .history-page.active {
+            display: block;
+        }
+        .history-page .header {
+            margin-bottom: 16px;
+        }
+        .history-page .header h2 {
+            color: #fff;
+            font-size: 20px;
+            margin: 0;
+        }
+        .history-page .header .btn-back {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .history-page .header .btn-back:hover {
+            background: rgba(255,255,255,0.35);
+        }
+        .history-page .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px 18px 24px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .history-page .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .history-page .filter-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        .history-page .filter-area input,
+        .history-page .filter-area select {
+            padding: 8px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-filter);
+            color: var(--text-primary);
+            flex: 1 1 120px;
+            min-width: 100px;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .history-page .filter-area input:focus,
+        .history-page .filter-area select:focus {
+            border-color: #2d6a9f;
+            outline: none;
+        }
+        .history-page .filter-area .btn-sm {
+            flex: 0 0 auto;
+        }
+        .history-page .table-wrap {
+            overflow-x: auto;
+            margin-top: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s;
+        }
+        .history-page table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 380px;
+        }
+        .history-page thead {
+            background: var(--bg-table-header);
+            transition: background 0.3s;
+        }
+        .history-page th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .history-page td {
+            padding: 10px 12px;
+            border-top: 1px solid var(--border-color);
+            vertical-align: middle;
+            color: var(--text-primary);
+            transition: border-color 0.3s;
+        }
+        .history-page td .mini-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-body);
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .history-page td .mini-photo + .mini-photo {
+            margin-left: 4px;
+        }
+        .history-page .text-muted {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .history-page .empty-row td {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 24px 12px;
+            font-style: italic;
+        }
+        .history-page .loc-badge {
+            font-size: 10px;
+            color: var(--text-secondary);
+            display: block;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .history-page .backup-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .history-page .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .history-page .btn-export {
+            background: #e0e7ff;
+            color: #3730a3;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .history-page .btn-export:hover {
+            background: #c7d2fe;
+            box-shadow: 0 4px 12px rgba(55, 48, 163, 0.15);
+        }
+        .history-page .btn-export:active {
+            transform: scale(0.97);
+        }
+        .history-page .footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 12px 0 4px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 18px;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        
+        @media (max-width: 480px) {
+            .history-page .header h2 { font-size: 18px; }
+            .history-page .card { padding: 16px 12px 20px; }
+            .history-page .filter-area input, .history-page .filter-area select { flex: 1 1 100%; }
+        }
     </style>
 </head>
 <body>
@@ -1156,7 +1347,7 @@
     <!-- ─── LOGIN OVERLAY ─── -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            <img class="login-logo" src="https://i.ibb.co.com/PsLCP9Jp/Whats-App-Image-2026-08-10-at-3-30-27-PM.jpg" alt="Logo Absensi" />
+            <img class="login-logo" src="https://i.ibb.co/5G1Fk2Y/logo-D.png" alt="Logo Absensi" />
             <h2>🔐 Absensi</h2>
             <p>Masukkan nama dan PIN Anda</p>
             <input type="text" id="loginInput" placeholder="ID / Nama pengguna" autocomplete="off" />
@@ -1167,7 +1358,7 @@
         </div>
     </div>
 
-    <!-- ─── APP CONTAINER (Halaman Utama Absensi) ─── -->
+    <!-- ─── APP CONTAINER (Halaman Utama Dashboard) ─── -->
     <div class="app" id="appContainer" style="display:none;">
 
         <!-- HEADER -->
@@ -1240,6 +1431,11 @@
                     <button class="btn" id="btnInspeksi" style="background:#c7d2fe; color:#3730a3; width:100%;" disabled>🚗 Inspeksi Kendaraan</button>
                 </div>
 
+                <!-- Tombol Navigasi ke History -->
+                <div style="margin-top: 12px;">
+                    <button class="btn" id="btnGoToHistory" style="background:#c7d2fe; color:#3730a3; width:100%;">📂 Lihat Riwayat & Data</button>
+                </div>
+
                 <!-- Today's Record -->
                 <div class="card-title">📅 Catatan Hari Ini</div>
                 <div class="today-grid">
@@ -1269,64 +1465,9 @@
                     <canvas id="statsChart"></canvas>
                 </div>
 
-                <!-- Filter -->
-                <div class="card-title" style="margin-top:18px;">🔍 Filter Riwayat</div>
-                <div class="filter-area">
-                    <input type="date" id="filterStart" placeholder="Dari" />
-                    <input type="date" id="filterEnd" placeholder="Sampai" />
-                    <select id="filterStatus">
-                        <option value="all">Semua</option>
-                        <option value="in">Sudah Masuk</option>
-                        <option value="out">Sudah Pulang</option>
-                    </select>
-                    <button class="btn-sm" id="btnFilter" style="background:#e2e8f0;">Terapkan</button>
-                    <button class="btn-sm" id="btnResetFilter" style="background:#f1f5f9;">Reset</button>
-                </div>
-
-                <!-- History -->
-                <div class="card-title" style="margin-top:6px;">📂 Riwayat</div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tanggal</th>
-                                <th>ID</th>
-                                <th>Nama</th>
-                                <th>Masuk</th>
-                                <th>Pulang</th>
-                                <th style="text-align:center;">Total Kerja</th>
-                                <th style="text-align:center;">Foto</th>
-                                <th style="text-align:center;">Lokasi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyBody">
-                            <tr class="empty-row">
-                                <td colspan="8">Belum ada data absensi</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Backup / Restore -->
-                <div class="backup-row">
-                    <button class="btn btn-backup btn-sm" id="btnBackup">💾 Backup (JSON)</button>
-                    <button class="btn btn-restore btn-sm" id="btnRestore">📂 Restore (JSON)</button>
-                    <input type="file" id="restoreInput" accept=".json" />
-                </div>
-
-                <!-- Action Buttons (Sinkronisasi & Laporan) -->
-                <div class="action-row">
-                    <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
-                    <button class="btn btn-report btn-sm" id="btnReport">📊 Laporan Bulanan</button>
-                    <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0; display:none;">⚙️ Set URL Google Script</button>
-                </div>
-
-                <!-- Export Excel -->
-                <button class="btn-export" id="btnExport">📊 Export ke Excel</button>
-
                 <!-- Footer -->
                 <div class="footer">
-                    Data tersimpan di perangkat Anda &bull; <span id="recordCount">0</span> catatan
+                    Dashboard Utama
                 </div>
 
             </div>
@@ -1368,8 +1509,6 @@
                     <option value="Mitsubishi">Mitsubishi</option>
                     <option value="Nissan">Nissan</option>
                     <option value="Isuzu">Isuzu</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Mercedes">Mercedes</option>
                     <option value="Lainnya">Lainnya...</option>
                 </select>
             </div>
@@ -1403,6 +1542,78 @@
 
             <button class="btn-submit-insp" id="btnSubmitInsp">💾 Simpan Data Inspeksi</button>
             <button class="btn-danger-insp" id="btnAddNewVehicle" style="background:#e0e7ff; color:#3730a3;">➕ Simpan sebagai Kendaraan Baru</button>
+        </div>
+    </div>
+
+    <!-- ─── HALAMAN HISTORY (LAYAR PENUH) ─── -->
+    <div class="history-page" id="historyPageContainer">
+        
+        <header class="header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+            <h2 style="color:#fff; margin:0; font-size:20px;">📂 Riwayat & Data</h2>
+            <button class="btn-back" id="btnBackFromHistory">⬅ Kembali</button>
+        </header>
+
+        <div class="card" style="margin-top: 0; border-radius: 0 0 20px 20px;">
+            
+            <!-- Filter Area (Dipindahkan ke sini) -->
+            <div class="card-title">🔍 Filter Riwayat</div>
+            <div class="filter-area">
+                <input type="date" id="filterStart" placeholder="Dari" />
+                <input type="date" id="filterEnd" placeholder="Sampai" />
+                <select id="filterStatus">
+                    <option value="all">Semua</option>
+                    <option value="in">Sudah Masuk</option>
+                    <option value="out">Sudah Pulang</option>
+                </select>
+                <button class="btn-sm" id="btnFilter" style="background:#e2e8f0;">Terapkan</button>
+                <button class="btn-sm" id="btnResetFilter" style="background:#f1f5f9;">Reset</button>
+            </div>
+
+            <!-- History Table (Dipindahkan ke sini) -->
+            <div class="card-title" style="margin-top:12px;">📂 Tabel Riwayat</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>ID</th>
+                            <th>Nama</th>
+                            <th>Masuk</th>
+                            <th>Pulang</th>
+                            <th style="text-align:center;">Total Kerja</th>
+                            <th style="text-align:center;">Foto</th>
+                            <th style="text-align:center;">Lokasi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr class="empty-row">
+                            <td colspan="8">Belum ada data absensi</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Backup / Restore (Dipindahkan ke sini) -->
+            <div class="backup-row">
+                <button class="btn btn-backup btn-sm" id="btnBackup">💾 Backup (JSON)</button>
+                <button class="btn btn-restore btn-sm" id="btnRestore">📂 Restore (JSON)</button>
+                <input type="file" id="restoreInput" accept=".json" />
+            </div>
+
+            <!-- Action Buttons (Dipindahkan ke sini) -->
+            <div class="action-row">
+                <button class="btn btn-sync btn-sm" id="btnSyncAll">☁️ Sinkronkan Semua ke Cloud</button>
+                <button class="btn btn-report btn-sm" id="btnReport">📊 Laporan Bulanan</button>
+                <button class="btn btn-sm" id="btnSetGoogleUrl" style="background:#e2e8f0; display:none;">⚙️ Set URL Google Script</button>
+            </div>
+
+            <!-- Export Excel -->
+            <button class="btn-export" id="btnExport">📊 Export ke Excel</button>
+
+            <!-- Footer -->
+            <div class="footer">
+                Data tersimpan di perangkat Anda &bull; <span id="recordCount">0</span> catatan
+            </div>
         </div>
     </div>
 
@@ -1491,6 +1702,7 @@
             const btnIn = document.getElementById('btnIn');
             const btnOut = document.getElementById('btnOut');
             const btnInspeksi = document.getElementById('btnInspeksi');
+            const btnGoToHistory = document.getElementById('btnGoToHistory');
             
             // Inspeksi Page Elements
             const inspPageContainer = document.getElementById('inspPageContainer');
@@ -1505,6 +1717,17 @@
             const inspKMServis = document.getElementById('inspKMServis');
             const inspKMAktual = document.getElementById('inspKMAktual');
             const btnSubmitInsp = document.getElementById('btnSubmitInsp');
+
+            // History Page Elements
+            const historyPageContainer = document.getElementById('historyPageContainer');
+            const btnBackFromHistory = document.getElementById('btnBackFromHistory');
+            const historyBody = document.getElementById('historyBody');
+            const recordCount = document.getElementById('recordCount');
+            const filterStart = document.getElementById('filterStart');
+            const filterEnd = document.getElementById('filterEnd');
+            const filterStatus = document.getElementById('filterStatus');
+            const btnFilter = document.getElementById('btnFilter');
+            const btnResetFilter = document.getElementById('btnResetFilter');
 
             const btnExport = document.getElementById('btnExport');
             const btnBackup = document.getElementById('btnBackup');
@@ -1530,15 +1753,7 @@
             const todayOutPhoto = document.getElementById('todayOutPhoto');
             const todayInLoc = document.getElementById('todayInLoc');
             const todayOutLoc = document.getElementById('todayOutLoc');
-            const historyBody = document.getElementById('historyBody');
-            const recordCount = document.getElementById('recordCount');
-            const toast = document.getElementById('toast');
-            const filterStart = document.getElementById('filterStart');
-            const filterEnd = document.getElementById('filterEnd');
-            const filterStatus = document.getElementById('filterStatus');
-            const btnFilter = document.getElementById('btnFilter');
-            const btnResetFilter = document.getElementById('btnResetFilter');
-
+            
             const statTotal = document.getElementById('statTotal');
             const statAvgIn = document.getElementById('statAvgIn');
             const statAvgOut = document.getElementById('statAvgOut');
@@ -1576,7 +1791,7 @@
                 localStorage.setItem(getStorageKey(currentUser), JSON.stringify(data));
             }
 
-           // ─── Database Mobil (Hardcoded) ───
+            // ─── Database Mobil (Hardcoded) ───
             const vehicleDB = {
                 'Toyota': ['Avanza', 'Rush', 'Innova', 'Fortuner', 'Hilux', 'Agya', 'Calya', 'Camry', 'Corolla'],
                 'Honda': ['Brio', 'Mobilio', 'HR-V', 'CR-V', 'Civic', 'Accord', 'Jazz', 'BR-V'],
@@ -1584,11 +1799,10 @@
                 'Suzuki': ['Ertiga', 'XL7', 'Carry', 'Ignis', 'Swift', 'Jimny'],
                 'Mitsubishi': ['Xpander', 'Pajero Sport', 'L300', 'Mirage'],
                 'Nissan': ['X-Trail', 'Livina', 'Serena', 'Navara'],
-                'BMW': ['Seri 1/2', 'Seri 3/4', 'Seri 5', 'Seri 7/8', 'Seri X', 'Seri i'],
-                'Mercedes': ['A Class', 'C Class', 'E Class', 'S Class'],
+                'Isuzu': ['Panther', 'MU-X', 'D-Max', 'Elf'],
                 'Lainnya': ['Lainnya']
             };
-            
+
             // ─── Dark Mode ───
             function loadThemePreference() {
                 const saved = localStorage.getItem('theme_preference');
@@ -1836,11 +2050,14 @@
                     stream = null;
                     cameraReady = false;
                 }
-                // Kembali ke halaman absensi jika sedang di halaman inspeksi
+                // Kembali ke halaman absensi jika sedang di halaman inspeksi atau history
                 if (inspPageContainer.classList.contains('active')) {
                     inspPageContainer.classList.remove('active');
-                    appContainer.style.display = 'block';
                 }
+                if (historyPageContainer.classList.contains('active')) {
+                    historyPageContainer.classList.remove('active');
+                }
+                appContainer.style.display = 'block';
 
                 currentUser = null;
                 isAdmin = false;
@@ -2052,70 +2269,10 @@
                     btnInspeksi.disabled = true;
                 }
 
-                const filtered = getFilteredData(data, currentFilters);
-                renderHistory(filtered);
+                // Update Chart Dashboard
+                updateChart(data);
                 renderStats(data);
-                recordCount.textContent = data.length;
                 updateButtons();
-                btnExport.disabled = data.length === 0;
-            }
-
-            function renderHistory(filteredData) {
-                if (!filteredData || filteredData.length === 0) {
-                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="8">Tidak ada data sesuai filter</td></tr>`;
-                    return;
-                }
-                const sorted = [...filteredData].sort((a, b) => b.date.localeCompare(a.date));
-                let html = '';
-                for (const rec of sorted) {
-                    const nama = rec.nama || rec.id || currentUser || 'Tidak diketahui';
-                    const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
-                    const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
-                    let workHours = '-';
-                    if (rec.checkIn && rec.checkOut) {
-                        const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
-                        const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
-                        const diffMinutes = (hOut * 60 + mOut) - (hIn * 60 + mIn);
-                        if (diffMinutes >= 0) {
-                            const hrs = Math.floor(diffMinutes / 60);
-                            const mins = diffMinutes % 60;
-                            workHours = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-                        }
-                    }
-                    let photosHtml = '';
-                    if (rec.checkIn && rec.checkIn.photo) {
-                        photosHtml += `<img class="mini-photo" src="${rec.checkIn.photo}" alt="masuk" title="Foto masuk" />`;
-                    } else { photosHtml += `<span class="text-muted" style="font-size:12px;">-</span>`; }
-                    if (rec.checkOut && rec.checkOut.photo) {
-                        photosHtml += `<img class="mini-photo" src="${rec.checkOut.photo}" alt="pulang" title="Foto pulang" />`;
-                    } else {
-                        if (rec.checkIn && rec.checkIn.photo) {
-                            photosHtml += `<span class="text-muted" style="font-size:12px;margin-left:4px;">-</span>`;
-                        }
-                    }
-                    let locHtml = '';
-                    if (rec.checkIn && rec.checkIn.location) {
-                        locHtml += `<span class="loc-badge" title="${rec.checkIn.location.address || ''}">📍${rec.checkIn.location.address ? rec.checkIn.location.address.substring(0,15)+'…' : '📍'}</span>`;
-                    }
-                    if (rec.checkOut && rec.checkOut.location) {
-                        locHtml += `<span class="loc-badge" title="${rec.checkOut.location.address || ''}">📍${rec.checkOut.location.address ? rec.checkOut.location.address.substring(0,15)+'…' : '📍'}</span>`;
-                    }
-                    if (!locHtml) locHtml = '<span class="text-muted">-</span>';
-
-                    html += `
-                        <tr>
-                            <td><strong>${formatDateDisplay(rec.date)}</strong></td>
-                            <td><strong>${rec.id || '-'}</strong></td>
-                            <td>${nama}</td>
-                            <td>${inTime}</td>
-                            <td>${outTime}</td>
-                            <td style="text-align:center;">${workHours}</td>
-                            <td style="text-align:center;white-space:nowrap;">${photosHtml}</td>
-                            <td style="text-align:center;">${locHtml}</td>
-                        </tr>
-                    `;
-                }
-                historyBody.innerHTML = html;
             }
 
             // ─── Statistik ───
@@ -2156,8 +2313,6 @@
                     const mins = Math.round(totalMinutes % 60);
                     statTotalWork.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
                 } else { statTotalWork.textContent = '--:--'; }
-
-                updateChart(data);
             }
 
             function updateChart(data) {
@@ -2235,8 +2390,100 @@
                     btnOut.disabled = true; }
             }
 
+            // ─── LOGIKA HALAMAN HISTORY ───
+            btnGoToHistory.addEventListener('click', function() {
+                appContainer.style.display = 'none';
+                historyPageContainer.classList.add('active');
+                renderHistoryPage();
+            });
+
+            btnBackFromHistory.addEventListener('click', function() {
+                historyPageContainer.classList.remove('active');
+                appContainer.style.display = 'block';
+                renderUI();
+            });
+
+            function renderHistoryPage() {
+                if (!currentUser) return;
+                const data = loadData();
+                const filtered = getFilteredData(data, currentFilters);
+                
+                // Render table di halaman history
+                if (!filtered || filtered.length === 0) {
+                    historyBody.innerHTML = `<tr class="empty-row"><td colspan="8">Tidak ada data sesuai filter</td></tr>`;
+                } else {
+                    const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
+                    let html = '';
+                    for (const rec of sorted) {
+                        const nama = rec.nama || rec.id || currentUser || 'Tidak diketahui';
+                        const inTime = rec.checkIn ? rec.checkIn.time : '--:--';
+                        const outTime = rec.checkOut ? rec.checkOut.time : '--:--';
+                        let workHours = '-';
+                        if (rec.checkIn && rec.checkOut) {
+                            const [hIn, mIn] = rec.checkIn.time.split(':').map(Number);
+                            const [hOut, mOut] = rec.checkOut.time.split(':').map(Number);
+                            const diffMinutes = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                            if (diffMinutes >= 0) {
+                                const hrs = Math.floor(diffMinutes / 60);
+                                const mins = diffMinutes % 60;
+                                workHours = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                            }
+                        }
+                        let photosHtml = '';
+                        if (rec.checkIn && rec.checkIn.photo) {
+                            photosHtml += `<img class="mini-photo" src="${rec.checkIn.photo}" alt="masuk" title="Foto masuk" />`;
+                        } else { photosHtml += `<span class="text-muted" style="font-size:12px;">-</span>`; }
+                        if (rec.checkOut && rec.checkOut.photo) {
+                            photosHtml += `<img class="mini-photo" src="${rec.checkOut.photo}" alt="pulang" title="Foto pulang" />`;
+                        } else {
+                            if (rec.checkIn && rec.checkIn.photo) {
+                                photosHtml += `<span class="text-muted" style="font-size:12px;margin-left:4px;">-</span>`;
+                            }
+                        }
+                        let locHtml = '';
+                        if (rec.checkIn && rec.checkIn.location) {
+                            locHtml += `<span class="loc-badge" title="${rec.checkIn.location.address || ''}">📍${rec.checkIn.location.address ? rec.checkIn.location.address.substring(0,15)+'…' : '📍'}</span>`;
+                        }
+                        if (rec.checkOut && rec.checkOut.location) {
+                            locHtml += `<span class="loc-badge" title="${rec.checkOut.location.address || ''}">📍${rec.checkOut.location.address ? rec.checkOut.location.address.substring(0,15)+'…' : '📍'}</span>`;
+                        }
+                        if (!locHtml) locHtml = '<span class="text-muted">-</span>';
+
+                        html += `
+                            <tr>
+                                <td><strong>${formatDateDisplay(rec.date)}</strong></td>
+                                <td><strong>${rec.id || '-'}</strong></td>
+                                <td>${nama}</td>
+                                <td>${inTime}</td>
+                                <td>${outTime}</td>
+                                <td style="text-align:center;">${workHours}</td>
+                                <td style="text-align:center;white-space:nowrap;">${photosHtml}</td>
+                                <td style="text-align:center;">${locHtml}</td>
+                            </tr>
+                        `;
+                    }
+                    historyBody.innerHTML = html;
+                }
+                recordCount.textContent = filtered.length;
+            }
+
+            // Filter di halaman history
+            btnFilter.addEventListener('click', function() {
+                currentFilters.startDate = filterStart.value;
+                currentFilters.endDate = filterEnd.value;
+                currentFilters.status = filterStatus.value;
+                renderHistoryPage();
+            });
+
+            btnResetFilter.addEventListener('click', function() {
+                filterStart.value = '';
+                filterEnd.value = '';
+                filterStatus.value = 'all';
+                currentFilters = { startDate: '', endDate: '', status: 'all' };
+                renderHistoryPage();
+            });
+
             // ─── LOGIKA INSPEKSI KENDARAAN (1 SHEET + OTOMATIS KM SERVIS) ───
-            // Mengambil data kendaraan milik user dari 1 Sheet
             async function loadUserVehicles() {
                 if (!currentUser || isAdmin) {
                     userVehicles = {};
@@ -2248,16 +2495,12 @@
                     if (!response.ok) return;
                     const data = await response.json();
                     
-                    // Filter data milik user yang login dan memiliki data kendaraan (Merk tidak kosong)
                     const userData = data.filter(row => 
                         row.ID && row.ID.toLowerCase() === currentUser && 
                         row.Merk && row.Merk.trim() !== ''
                     );
                     
-                    // Gunakan Object untuk menyimpan unik berdasarkan kombinasi data kendaraan
-                    // Dan ambil KM Servis terakhir berdasarkan tanggal paling baru
                     const uniqueVehicles = {};
-                    // Urutkan data dari yang terbaru ke terlama
                     const sortedData = userData.sort((a, b) => {
                         if (!a.Tanggal) return 1;
                         if (!b.Tanggal) return -1;
@@ -2266,14 +2509,13 @@
 
                     sortedData.forEach(row => {
                         const key = (row.Merk + '|' + row.Tipe + '|' + row.Tahun + '|' + row.NoPol).trim();
-                        // Jika kendaraan belum ada di list, simpan data lengkap dengan KM Servis terbaru
                         if (!uniqueVehicles[key]) {
                             uniqueVehicles[key] = {
                                 merk: row.Merk || '',
                                 tipe: row.Tipe || '',
                                 tahun: row.Tahun || '',
                                 nopol: row.NoPol || '',
-                                kmServis: row.KMServis || '' // Ambil KM Servis terakhir yang pernah dicatat
+                                kmServis: row.KMServis || ''
                             };
                         }
                     });
@@ -2285,12 +2527,10 @@
                 }
             }
 
-            // Update dropdown pilihan kendaraan
             function updateVehicleSelect() {
                 const select = savedVehicleSelect;
                 select.innerHTML = '<option value="">-- Tambah Kendaraan Baru --</option>';
                 
-                // Urutkan berdasarkan nama agar rapi
                 const sortedKeys = Object.keys(userVehicles).sort((a, b) => {
                     const vehA = userVehicles[a];
                     const vehB = userVehicles[b];
@@ -2308,7 +2548,6 @@
                 });
             }
 
-            // Saat pilih kendaraan tersimpan -> isi form otomatis (termasuk KM Servis)
             savedVehicleSelect.addEventListener('change', function() {
                 const key = this.value;
                 if (key && userVehicles[key]) {
@@ -2319,10 +2558,9 @@
                         inspTipe.value = v.tipe;
                         inspTahun.value = v.tahun;
                         inspNoPol.value = v.nopol;
-                        inspKMServis.value = v.kmServis; // 🛠 Isi otomatis KM Servis terakhir
+                        inspKMServis.value = v.kmServis;
                     }, 50);
                 } else {
-                    // Reset form jika pilih tambah baru
                     inspMerk.value = '';
                     inspMerk.dispatchEvent(new Event('change'));
                     inspTipe.value = '';
@@ -2332,7 +2570,6 @@
                 }
             });
 
-            // Hapus kendaraan dari daftar tersimpan (hanya di dropdown)
             btnDeleteVehicle.addEventListener('click', function() {
                 const key = savedVehicleSelect.value;
                 if (!key || !userVehicles[key]) {
@@ -2344,7 +2581,6 @@
                 delete userVehicles[key];
                 updateVehicleSelect();
                 savedVehicleSelect.value = '';
-                // Reset form
                 inspMerk.value = '';
                 inspMerk.dispatchEvent(new Event('change'));
                 inspTipe.value = '';
@@ -2354,7 +2590,6 @@
                 showToast('🗑️ Kendaraan berhasil dihapus dari daftar.', 'info');
             });
 
-            // Update Tipe Mobil saat Merk berubah
             inspMerk.addEventListener('change', function() {
                 const merk = this.value;
                 const tipeSelect = inspTipe;
@@ -2370,12 +2605,9 @@
                 }
             });
 
-            // Buka Halaman Inspeksi
             btnInspeksi.addEventListener('click', function() {
-                // Sembunyikan halaman absensi, tampilkan halaman inspeksi
                 appContainer.style.display = 'none';
                 inspPageContainer.classList.add('active');
-                // Reset form & Load data kendaraan
                 inspMerk.value = '';
                 inspMerk.dispatchEvent(new Event('change'));
                 inspTipe.value = '';
@@ -2387,14 +2619,12 @@
                 loadUserVehicles();
             });
 
-            // Kembali ke Halaman Absensi
             btnBackFromInsp.addEventListener('click', function() {
                 inspPageContainer.classList.remove('active');
                 appContainer.style.display = 'block';
                 renderUI();
             });
 
-            // Simpan Data Inspeksi ke Sheet 1
             btnSubmitInsp.addEventListener('click', async function() {
                 if (!currentUser || isAdmin) {
                     showToast('⚠️ Anda belum login.', 'error');
@@ -2451,11 +2681,8 @@
                     }
 
                     showToast('✅ Data inspeksi kendaraan berhasil disimpan!', 'success');
-                    
-                    // Refresh data kendaraan user agar dropdown terupdate
                     await loadUserVehicles();
                     
-                    // Reset Form (kecuali KM Aktual agar bisa input hari berikutnya)
                     inspMerk.value = '';
                     inspMerk.dispatchEvent(new Event('change'));
                     inspTipe.value = '';
@@ -2474,7 +2701,6 @@
                 }
             });
 
-            // Simpan sebagai Kendaraan Baru (hanya simpan ke dropdown user)
             btnAddNewVehicle.addEventListener('click', function() {
                 if (!currentUser || isAdmin) {
                     showToast('⚠️ Anda belum login.', 'error');
@@ -2886,6 +3112,11 @@
 
                 btnSyncAll.addEventListener('click', syncAllData);
                 btnSetGoogleUrl.addEventListener('click', setGoogleScriptUrlPrompt);
+                btnGoToHistory.addEventListener('click', () => {
+                    appContainer.style.display = 'none';
+                    historyPageContainer.classList.add('active');
+                    renderHistoryPage();
+                });
 
                 btnReport.addEventListener('click', () => {
                     const now = new Date();
@@ -2902,33 +3133,18 @@
                 btnGenerateReport.addEventListener('click', generateMonthlyReport);
                 btnExportReport.addEventListener('click', exportReportExcel);
 
-                btnFilter.addEventListener('click', () => {
-                    currentFilters.startDate = filterStart.value;
-                    currentFilters.endDate = filterEnd.value;
-                    currentFilters.status = filterStatus.value;
-                    renderUI();
-                });
-                btnResetFilter.addEventListener('click', () => {
-                    filterStart.value = '';
-                    filterEnd.value = '';
-                    filterStatus.value = 'all';
-                    currentFilters = { startDate: '', endDate: '', status: 'all' };
-                    renderUI();
-                });
-
                 document.addEventListener('keydown', (e) => {
                     const target = e.target;
                     if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
                     if (e.key === '1' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnIn.disabled) btnIn.click(); }
                     if (e.key === '2' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); if (!btnOut.disabled) btnOut.click(); }
-                    if (e.key === 'e' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); btnExport.click(); }
                 });
 
                 renderUserList();
                 loginOverlay.style.display = 'flex';
                 appContainer.style.display = 'none';
 
-                console.log('📋 Aplikasi Absensi & Inspeksi (Auto KM Servis) siap digunakan.');
+                console.log('📋 Aplikasi Absensi Selesai (Dashboard & History Terpisah).');
                 console.log('👑 Admin PIN:', ADMIN_PIN);
             }
 
